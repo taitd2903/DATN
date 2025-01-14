@@ -11,14 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->string('password');
-            $table->string('phone', 15)->nullable();
-            $table->text('address')->nullable();
-            $table->enum('role', ['user', 'admin'])->default('user');
+            $table->foreignId('invoice_id')->constrained()->cascadeOnDelete();
+            $table->decimal('amount', 10, 2);
+            $table->enum('method', ['credit_card', 'paypal', 'bank_transfer']);
+            $table->enum('status', ['pending', 'successful', 'failed'])->default('pending');
             $table->timestamps();
         });
     }
@@ -28,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('payments');
     }
 };
