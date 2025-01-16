@@ -6,15 +6,7 @@
     <title>OceanSports</title>
 </head>
 <body>
-    <h1>sangtest</h1>
-    <h1>Tài đã code </h1>
-    <h1>Hello world</h1>
-    <h1>Đạt test</h1>
-    <h1>Tài đã code </h1>
-    <h1>Tài đã code </h1>
-    <h2>
-        Thắng code rồi đây
-    </h2>
+<h1>Hello</h1>
 
 </body>
 </html>
