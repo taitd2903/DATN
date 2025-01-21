@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\Coupons\CouponController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 
@@ -36,3 +37,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('coupons', CouponController::class);
 });
 
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::resource('coupons', CouponController::class);
+});
