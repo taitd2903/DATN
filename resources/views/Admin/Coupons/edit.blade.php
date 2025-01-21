@@ -5,16 +5,27 @@
         @csrf
         @method('PUT')
         <label for="code">Mã giảm giá:</label>
-        <input type="text" name="code" id="code" value="{{ $coupon->code }}" required>
-    
+        <input type="text" name="code" id="code" value="{{ $coupon->code }}">
+
         <label for="discount">Giảm giá:</label>
-        <input type="number" name="discount" id="discount" value="{{ $coupon->discount }}" required>
-    
+        <input type="number" name="discount" id="discount" value="{{ $coupon->discount }}">
+
         <label for="expires_at">Ngày hết hạn:</label>
         {{-- <input type="date" name="expires_at" id="expires_at" value="{{ $coupon->expires_at->format('Y-m-d') }}" required> --}}
-        <input type="date" name="expires_at" id="expires_at" value="{{ \Carbon\Carbon::parse($coupon->expires_at)->format('Y-m-d') }}" required>
+        <input type="date" name="expires_at" id="expires_at"
+            value="{{ \Carbon\Carbon::parse($coupon->expires_at)->format('Y-m-d') }}">
 
         <button type="submit">Cập nhật</button>
     </form>
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
 </div>
 {{-- @endsection --}}

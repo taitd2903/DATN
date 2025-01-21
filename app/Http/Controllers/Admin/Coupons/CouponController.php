@@ -26,9 +26,18 @@ class CouponController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'code' => 'required|unique:coupons|max:255',
-            'discount' => 'required|numeric',
-            'expires_at' => 'nullable|date',
+            'code' => 'required|string|max:50|unique:coupons,code',
+            'discount' => 'required|numeric|min:0|max:100',
+            'expires_at' => 'required|date|after:today',
+        ], [
+            'code.required' => 'Vui lòng nhập mã giảm giá.',
+            'code.unique' => 'Mã giảm giá đã tồn tại.',
+            'discount.required' => 'Vui lòng nhập giá trị giảm giá.',
+            'discount.numeric' => 'Giá trị giảm giá phải là số.',
+            'discount.min' => 'Giá trị giảm giá không được nhỏ hơn 0.',
+            'discount.max' => 'Giá trị giảm giá không được lớn hơn 100.',
+            'expires_at.required' => 'Vui lòng chọn ngày hết hạn.',
+            'expires_at.after' => 'Ngày hết hạn phải là một ngày trong tương lai.',
         ]);
         Coupon::create($request->all());
 
@@ -53,23 +62,32 @@ class CouponController extends Controller
     public function update(Request $request, Coupon $coupon)
     {
         $request->validate([
-            'code' => 'required|max:255|unique:coupons,code,' . $coupon->id,
-            'discount' => 'required|numeric',
-            'expires_at' => 'nullable|date',
+            'code' => 'required|string|max:50|unique:coupons,code,' . $coupon->id,
+            'discount' => 'required|numeric|min:0|max:100',
+            'expires_at' => 'required|date|after:today',
+        ], [
+            'code.required' => 'Vui lòng nhập mã giảm giá.',
+            'code.unique' => 'Mã giảm giá đã tồn tại.',
+            'discount.required' => 'Vui lòng nhập giá trị giảm giá.',
+            'discount.numeric' => 'Giá trị giảm giá phải là số.',
+            'discount.min' => 'Giá trị giảm giá không được nhỏ hơn 0.',
+            'discount.max' => 'Giá trị giảm giá không được lớn hơn 100.',
+            'expires_at.required' => 'Vui lòng chọn ngày hết hạn.',
+            'expires_at.after' => 'Ngày hết hạn phải là một ngày trong tương lai.',
         ]);
         //Đạt đang cấn đoạn này:
-    // if ($request->has('expires_at')) {
-    //     $request->merge([
-    //         'expires_at' => date('Y-m-d', strtotime($request->expires_at))
-    //     ]);
-    // }
+        // if ($request->has('expires_at')) {
+        //     $request->merge([
+        //         'expires_at' => date('Y-m-d', strtotime($request->expires_at))
+        //     ]);
+        // }
         //Hết đoạn Đạt cấn
         $coupon->update($request->all());
 
         return redirect()->route('admin.coupons.index')->with('success', 'Coupon cập nhật thành công!.');
     }
 
-   
+
     public function destroy(Coupon $coupon)
     {
         $coupon->delete();
