@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\Coupons\CouponController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,3 +45,17 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('coupons', CouponController::class);
 });
+
+
+// Tài
+
+Route::prefix('admin')->group(function () {
+    Route::get('/categories', [CategoryController::class, 'index'])->name('admin.categories.index');
+    Route::get('/categories/create', [CategoryController::class, 'create'])->name('admin.categories.create');
+    Route::post('/categories/store', [CategoryController::class, 'store'])->name('admin.categories.store');
+    Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])->name('admin.categories.destroy');
+    Route::get('/categories/{id}/edit', [CategoryController::class, 'edit'])->name('admin.categories.edit');
+    Route::put('/categories/{id}', [CategoryController::class, 'update'])->name('admin.categories.update');
+
+});
+Route::get('/categories', [CategoryController::class, 'showCategories'])->name('categories.show');
