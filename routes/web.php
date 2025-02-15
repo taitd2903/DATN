@@ -4,7 +4,10 @@ use App\Http\Controllers\Admin\Coupons\CouponController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\Admin\Categories\CategoryController as CategoryController;
+use App\Http\Controllers\Admin\Products\ProductController;
+use App\Http\Controllers\Frontend\ProductController as UserProductController;
+use App\Http\Controllers\Admin\Products\ProductVariantController as ProductVariantController;
 
 /*
 |--------------------------------------------------------------------------
@@ -56,6 +59,15 @@ Route::prefix('admin')->group(function () {
     Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])->name('admin.categories.destroy');
     Route::get('/categories/{id}/edit', [CategoryController::class, 'edit'])->name('admin.categories.edit');
     Route::put('/categories/{id}', [CategoryController::class, 'update'])->name('admin.categories.update');
+    Route::resource('products', ProductController::class);
+    Route::delete('products/{product}/variants/{variant}', [ProductVariantController::class, 'destroy'])
+    ->name('admin.products.variants.destroy');
+
+    Route::delete('products/{product}/variants/{variant}', [ProductVariantController::class, 'destroy'])
+    ->name('admin.products.variants.destroy');
 
 });
 Route::get('/categories', [CategoryController::class, 'showCategories'])->name('categories.show');
+
+Route::get('products', [UserProductController::class, 'index'])->name('products.index');
+Route::get('products/{product}', [UserProductController::class, 'show'])->name('products.show');
