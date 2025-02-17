@@ -4,7 +4,10 @@ use App\Http\Controllers\Admin\Coupons\CouponController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\Admin\Categories\CategoryController as CategoryController;
+use App\Http\Controllers\Admin\Products\ProductController;
+use App\Http\Controllers\Users\ProductController as UserProductController;
+use App\Http\Controllers\Admin\Products\ProductVariantController as ProductVariantController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,7 +21,7 @@ use App\Http\Controllers\CategoryController;
 */
 
 Route::get('/', function () {
-    return view('index');
+    return view('welcome');
 });
 //Sáng
 Route::resource('users', UserController::class);
@@ -44,6 +47,14 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/dashboard', function () {
         return view('admin.dashboard');
     })->name('admin.dashboard');
+
+    // Tài
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::resource('categories', CategoryController::class)->except(['show']);
+    Route::resource('products', ProductController::class);
+    Route::delete('products/{product}/variants/{variant}', [ProductVariantController::class, 'destroy'])
+        ->name('products.variants.destroy');
+});
 });
 
 Route::middleware(['auth', 'role:user'])->group(function () {
@@ -62,15 +73,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
 });
 
 
-// Tài
 
-Route::prefix('admin')->group(function () {
-    Route::get('/categories', [CategoryController::class, 'index'])->name('admin.categories.index');
-    Route::get('/categories/create', [CategoryController::class, 'create'])->name('admin.categories.create');
-    Route::post('/categories/store', [CategoryController::class, 'store'])->name('admin.categories.store');
-    Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])->name('admin.categories.destroy');
-    Route::get('/categories/{id}/edit', [CategoryController::class, 'edit'])->name('admin.categories.edit');
-    Route::put('/categories/{id}', [CategoryController::class, 'update'])->name('admin.categories.update');
 
-});
+
+
 Route::get('/categories', [CategoryController::class, 'showCategories'])->name('categories.show');
+
+Route::get('products', [UserProductController::class, 'index'])->name('products.index');
+Route::get('products/{product}', [UserProductController::class, 'show'])->name('products.show');

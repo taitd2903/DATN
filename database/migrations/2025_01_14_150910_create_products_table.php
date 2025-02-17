@@ -4,30 +4,20 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
-    {
+return new class extends Migration {
+    public function up(): void {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('image');
+            $table->string('image')->nullable(); // Cho phép không có ảnh
             $table->text('description')->nullable();
-            $table->decimal('price', 10, 2);
-            $table->unsignedInteger('quantity');
-            $table->foreignId('category_id')->constrained()->cascadeOnDelete();
+            $table->decimal('base_price', 10, 2)->nullable(); // Giá tham khảo, không bắt buộc
+            $table->foreignId('category_id')->constrained()->cascadeOnDelete(); // Ràng buộc danh mục
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
+    public function down(): void {
         Schema::dropIfExists('products');
     }
 };
