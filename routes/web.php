@@ -44,7 +44,7 @@ Route::post('/login', [AuthController::class, 'login']);
 
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin/dashboard', function () {
+    Route::get('/admin', function () {
         return view('admin.dashboard');
     })->name('admin.dashboard');
 
@@ -58,7 +58,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 });
 
 Route::middleware(['auth', 'role:user'])->group(function () {
-    Route::get('/user/dashboard', function () {
+    Route::get('/user', function () {
         return view('users.dashboard');
     })->name('users.dashboard');
 });
@@ -67,11 +67,11 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 
 
-//Đạt
+
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('coupons', CouponController::class);
 });
-
+ 
 
 
 
