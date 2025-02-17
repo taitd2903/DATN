@@ -1,10 +1,10 @@
-{{-- @extends('layouts.app')
+@extends('layouts.app')
 
-@section('content') --}}
+@section('content')
     <h1>Danh sách sản phẩm</h1>
     <p><strong>Tổng số sản phẩm hiện có:</strong> {{ $totalProducts }}</p> <!-- Hiển thị tổng số sản phẩm tính từ tất cả các biến thể -->
 
-    <a href="{{ route('products.create') }}">Thêm sản phẩm</a>
+    <a href="{{ route('admin.products.create') }}">Thêm sản phẩm</a>
 
     @if(session('success'))
         <div>{{ session('success') }}</div>
@@ -28,9 +28,9 @@
                     @endforeach
                 </ul>
 
-                <a href="{{ route('products.edit', $product->id) }}">Sửa</a>
+                <a href="{{ route('admin.products.edit', $product->id) }}">Sửa</a>
 
-                <form action="{{ route('products.destroy', $product->id) }}" method="POST" style="display:inline;">
+                <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" style="display:inline;">
                     @csrf
                     @method('DELETE')
                     <button type="submit">Xóa</button>
@@ -38,4 +38,4 @@
             </li>
         @endforeach
     </ul>
-{{-- @endsection --}}
+@endsection

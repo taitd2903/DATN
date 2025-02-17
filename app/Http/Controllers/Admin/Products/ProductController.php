@@ -53,7 +53,7 @@ class ProductController extends Controller {
             }
         }
 
-        return redirect()->route('products.index')->with('success', 'Sản phẩm đã được thêm!');
+        return redirect()->route('admin.products.index')->with('success', 'Sản phẩm đã được thêm!');
     }
 
     public function edit(Product $product) {
@@ -83,11 +83,11 @@ class ProductController extends Controller {
             }
         }
 
-        return redirect()->route('products.index')->with('success', 'Sản phẩm đã được cập nhật!');
+        return redirect()->route('admin.products.index')->with('success', 'Sản phẩm đã được cập nhật!');
     }
 
     public function destroy(Product $product) {
         $product->delete();
-        return redirect()->route('products.index')->with('success', 'Sản phẩm đã được xóa!');
+        return redirect()->route('admin.products.index')->with('success', 'Sản phẩm đã được xóa!');
     }
 }

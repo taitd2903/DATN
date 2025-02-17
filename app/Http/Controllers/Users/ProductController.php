@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Controllers\Frontend;
+namespace App\Http\Controllers\Users;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -20,7 +20,7 @@ class ProductController extends Controller
     }
 
     public function show($id) {
-        // Lấy thông tin sản phẩm cùng với các biến thể
+        
         $product = Product::with('variants')->findOrFail($id);
 
         return view('Users.products.show', compact('product'));

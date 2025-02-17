@@ -3,23 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title')</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 500px; margin: 50px auto; text-align: center; }
-        input, button { display: block; width: 100%; margin: 10px 0; padding: 8px; }
-    </style>
+    <title>Quản trị</title>
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
 <body>
-    <h2>@yield('heading')</h2>
-    
-    @if(session('success'))
-        <p style="color: green;">{{ session('success') }}</p>
-    @endif
+    <header style="background: #333; color: white; padding: 10px; display: flex; justify-content: space-between; align-items: center;">
+        <h2>Trang Quản Trị</h2>
+        <div>
+            @if(Auth::check())
+                <span>Chào, <strong>{{ Auth::user()->name }}</strong>!</span>
+                <a href="{{ route('logout') }}"
+                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                   style="color: yellow; margin-left: 10px;">
+                    Đăng xuất
+                </a>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                    @csrf
+                </form>
+            @else
+                <a href="{{ route('login') }}" style="color: yellow;">Đăng nhập</a>
+            @endif
+        </div>
+    </header>
 
-    @if($errors->any())
-        <p style="color: red;">{{ $errors->first() }}</p>
-    @endif
-
-    @yield('content')
+    <main style="padding: 20px;">
+        @yield('content')
+    </main>
 </body>
 </html>

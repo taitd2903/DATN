@@ -2,7 +2,7 @@
 
 @section('content') --}}
     <h1>Thêm sản phẩm</h1>
-    <form action="{{ route('products.store') }}" method="POST">
+    <form action="{{ route('admin.products.store') }}" method="POST">
         @csrf
         <label>Tên sản phẩm:</label>
         <input type="text" name="name" required>

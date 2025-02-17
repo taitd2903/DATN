@@ -1,6 +1,6 @@
-{{-- @extends('layouts.app')
+@extends('layouts.app')
 
-@section('content') --}}
+@section('content')
 <div class="container">
     <h2>Thêm Danh Mục</h2>
 
@@ -34,4 +34,4 @@
         <button type="submit" class="btn btn-success">Lưu</button>
     </form>
 </div>
-{{-- @endsection --}}
+@endsection
