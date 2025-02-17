@@ -31,8 +31,13 @@ class AuthController extends Controller
             'role' => $request->role ?? 'user', // Mặc định là user
         ]);
     
-        return redirect()->route('login')->with('success', 'Đăng ký thành công!');
+        // Tạo token và lưu vào session
+        $token = $user->createToken('auth_token')->plainTextToken;
+        session(['auth_token' => $token]);
+    
+        return redirect()->route('login')->with('success', 'Đăng ký thành công! Vui lòng đăng nhập.');
     }
+    
     
 
     // Hiển thị form đăng nhập
@@ -55,12 +60,18 @@ class AuthController extends Controller
     
         $user = Auth::user();
         
+        // Tạo token và lưu vào session
+        $token = $user->createToken('auth_token')->plainTextToken;
+        session(['auth_token' => $token]);
+    
         if ($user->role === 'admin') {
             return redirect()->route('admin.dashboard')->with('success', 'Đăng nhập thành công (Admin)');
         }
-        
+    
         return redirect()->route('users.dashboard')->with('success', 'Đăng nhập thành công (User)');
     }
+    
+    
     
 
     // Hiển thị Dashboard
@@ -71,17 +82,16 @@ class AuthController extends Controller
 
     // Đăng xuất
     public function logout()
-{
-    Auth::logout();
-    return redirect()->route('login')->with('success', 'Đăng xuất thành công!');
-}
-
-
-    // public function logout()
-    // {
-    //     Auth::user()->tokens()->delete();
-    //     Auth::logout();
-
-    //     return redirect()->route('login')->with('success', 'Đăng xuất thành công!');
-    // }
+    {
+        // Xóa token của người dùng
+        Auth::user()->tokens()->delete();
+        
+        // Xóa session token
+        session()->forget('auth_token');
+    
+        Auth::logout();
+        return redirect()->route('login')->with('success', 'Bạn đã đăng xuất thành công.');
+    }
+    
+    
 }

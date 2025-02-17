@@ -1,13 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard')
-@section('heading', 'Chào mừng, ' . Auth::user()->name)
-
 @section('content')
-    <p>Email: {{ Auth::user()->email }}</p>
-    <h1>đây là giao diện user</h1>
-    <form action="{{ route('logout') }}" method="POST">
+    <h2>Chào mừng bạn đến với trang người dùng</h2>
+    <p>Xin chào, {{ Auth::user()->name }}!</p>
+
+    <form method="POST" action="{{ route('logout') }}">
         @csrf
-        <button type="submit">Đăng Xuất</button>
+        <button type="submit">Đăng xuất</button>
     </form>
 @endsection

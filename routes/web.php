@@ -39,7 +39,6 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/dashboard', function () {
@@ -52,6 +51,8 @@ Route::middleware(['auth', 'role:user'])->group(function () {
         return view('users.dashboard');
     })->name('users.dashboard');
 });
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
 
 
 
