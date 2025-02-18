@@ -2,7 +2,7 @@
 
 @section('content') --}}
 <div class="container">
-    <h2>User List</h2>
+    <h2>Quản lý tài khoản</h2>
     <a href="{{ route('users.create') }}">Create User</a>
 
     <!-- Nếu có thông báo thành công -->
@@ -43,15 +43,16 @@
                     </td>
 
                     <td>{{ $user->address }}</td>
-                    <td>{{ ucfirst($user->role) }}</td>
+                    <td>{{ $user->role }}</td>
+                    <td> 
 
                     <!-- Actions: Edit, Delete -->
-                    <td>
+                    
                         <a href="{{ route('users.edit', $user->id) }}" class="btn btn-warning">Edit</a>
                         <form action="{{ route('users.destroy', $user->id) }}" method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this user?')">Delete</button>
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('bạn có chắc muốn xóa?')">Delete</button>
                         </form>
                     </td>
                 </tr>

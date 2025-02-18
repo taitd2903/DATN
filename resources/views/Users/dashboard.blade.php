@@ -4,8 +4,12 @@
     <h2>Chào mừng bạn đến với trang người dùng</h2>
     <p>Xin chào, {{ Auth::user()->name }}!</p>
 
-    <form method="POST" action="{{ route('logout') }}">
+    @if(auth()->user()->role === 'admin')
+        <a href="{{ route('admin.dashboard') }}" class="btn btn-warning">Chuyển sang Admin</a>
+    @endif
+
+    <form method="POST" action="{{ route('logout') }}" style="display: inline;">
         @csrf
-        <button type="submit">Đăng xuất</button>
+        <button type="submit" class="btn btn-danger">Đăng Xuất</button>
     </form>
 @endsection

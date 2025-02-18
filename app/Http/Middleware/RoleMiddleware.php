@@ -9,15 +9,10 @@ use Symfony\Component\HttpFoundation\Response;
 
 class RoleMiddleware
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
     public function handle(Request $request, Closure $next, $role)
     {
-        if (!Auth::check() || Auth::user()->role !== $role) {
-            abort(403, 'bạn không có quyền truy cập'); // Cấm truy cập
+        if (!Auth::check() && Auth::user()-> role ==$role) {
+            abort(403, 'bạn không có quyền truy cập');
         }
         return $next($request);
     }

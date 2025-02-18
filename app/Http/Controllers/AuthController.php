@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -63,6 +64,7 @@ class AuthController extends Controller
         // Tạo token và lưu vào session
         $token = $user->createToken('auth_token')->plainTextToken;
         session(['auth_token' => $token]);
+        // Log::info('User role: ' . $user->role);
     
         if ($user->role === 'admin') {
             return redirect()->route('admin.dashboard')->with('success', 'Đăng nhập thành công (Admin)');
@@ -92,6 +94,18 @@ class AuthController extends Controller
         Auth::logout();
         return redirect()->route('login')->with('success', 'Bạn đã đăng xuất thành công.');
     }
-    
+
+    // chuyển từ admin sang user
+    public function switchToUser()
+{
+    if (Auth::user()->role === 'admin') {
+        session(['is_admin' => true]); // Lưu trạng thái admin vào session
+        return redirect()->route('users.dashboard')->with('success', 'Bạn đang xem với tư cách User');
+    }
+
+    return redirect()->route('admin.dashboard')->with('error', 'Bạn không có quyền thực hiện thao tác này.');
+}
+// hết code chuyển trang nha a
+
     
 }
