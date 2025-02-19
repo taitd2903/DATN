@@ -8,7 +8,7 @@ use App\Http\Controllers\Admin\Categories\CategoryController as CategoryControll
 use App\Http\Controllers\Admin\Products\ProductController;
 use App\Http\Controllers\Users\ProductController as UserProductController;
 use App\Http\Controllers\Admin\Products\ProductVariantController as ProductVariantController;
-
+use App\Http\Controllers\CartController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -78,10 +78,19 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 
 
+//---------------------------------Đạt------------------------------------
+//Giỏ Hàng
+Route::middleware('auth')->group(function () {
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+    Route::post('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+    Route::post('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
+});
+//Mã giảm giá
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('coupons', CouponController::class);
 });
- 
+//-------------------------------End Đạt----------------------------------
 
 
 
