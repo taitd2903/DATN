@@ -9,10 +9,11 @@ return new class extends Migration {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('image')->nullable(); // Cho phép không có ảnh
+            $table->string('image')->nullable(); 
             $table->text('description')->nullable();
-            $table->decimal('base_price', 10, 2)->nullable(); // Giá tham khảo, không bắt buộc
-            $table->foreignId('category_id')->constrained()->cascadeOnDelete(); // Ràng buộc danh mục
+            $table->decimal('base_price', 10, 2)->nullable(); 
+            $table->foreignId('category_id')->constrained()->cascadeOnDelete(); 
+            $table->enum('gender', ['male', 'female', 'unisex'])->default('unisex');
             $table->timestamps();
         });
     }

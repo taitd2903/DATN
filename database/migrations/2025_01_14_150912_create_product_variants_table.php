@@ -11,8 +11,9 @@ return new class extends Migration {
             $table->foreignId('product_id')->constrained()->cascadeOnDelete();
             $table->string('size')->nullable();
             $table->string('color')->nullable();
-            $table->decimal('price', 10, 2); // Giá riêng của biến thể
-            $table->unsignedInteger('quantity')->default(0); // Số lượng từng biến thể
+            $table->decimal('price', 10, 2); 
+            $table->unsignedInteger('stock_quantity')->default(0);
+            $table->unsignedInteger('sold_quantity')->default(0);
             $table->timestamps();
         });
     }

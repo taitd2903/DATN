@@ -2,7 +2,6 @@
 
 @section('content')
     <h1>Danh sách sản phẩm</h1>
-    <p><strong>Tổng số sản phẩm hiện có:</strong> {{ $totalProducts }}</p> <!-- Hiển thị tổng số sản phẩm tính từ tất cả các biến thể -->
 
     <a href="{{ route('admin.products.create') }}">Thêm sản phẩm</a>
 
@@ -15,15 +14,28 @@
             <li>
                 <strong>{{ $product->name }}</strong> - {{ $product->description }} - Giá gốc: {{ $product->base_price }} VND
                 <p>Danh mục: {{ $product->category->name }}</p>
-                <p><strong>Tổng số lượng sản phẩm: </strong>{{ $product->total_quantity }} </p> <!-- Hiển thị tổng số lượng của tất cả biến thể của sản phẩm -->
+                <p><strong>Giới tính:</strong> 
+                    @if($product->gender == 'male')
+                        Nam
+                    @elseif($product->gender == 'female')
+                        Nữ
+                    @else
+                        Unisex
+                    @endif
+                </p>
+                <p><strong>Tổng số lượng sản phẩm:</strong> {{ $product->total_quantity }}</p>
+                <p><strong>Số lượng tồn kho:</strong> {{ $product->total_stock }}</p> <!-- Hiển thị số lượng tồn kho -->
+                <p><strong>Đã bán:</strong> {{ $product->total_sold }}</p> <!-- Hiển thị số lượng đã bán -->
 
-                <!-- Hiển thị các biến thể (size, color) của sản phẩm -->
                 <h4>Biến thể sản phẩm:</h4>
                 <ul>
                     @foreach($product->variants as $variant)
                         <li>
-                            <strong>Size:</strong> {{ $variant->size }} - <strong>Màu sắc:</strong> {{ $variant->color }} 
-                            - <strong>Số lượng:</strong> {{ $variant->quantity }}
+                            <strong>Size:</strong> {{ $variant->size }} - 
+                            <strong>Màu sắc:</strong> {{ $variant->color }} - 
+                            <strong>Giá:</strong> {{ $variant->price }} VND - 
+                            <strong>Tồn kho:</strong> {{ $variant->stock_quantity }} - 
+                            <strong>Đã bán:</strong> {{ $variant->sold_quantity }}
                         </li>
                     @endforeach
                 </ul>

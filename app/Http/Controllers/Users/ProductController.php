@@ -5,24 +5,25 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
-class ProductController extends Controller
-{
+class ProductController extends Controller {
+    
+    // Hiển thị danh sách sản phẩm
     public function index() {
-        // Lấy tất cả sản phẩm và các biến thể
         $products = Product::with('category', 'variants')->get();
-
-        // Tính tổng số lượng của từng sản phẩm
+        
+        // Tính tổng số lượng tồn kho và số lượng đã bán của tất cả biến thể
         foreach ($products as $product) {
-            $product->total_quantity = $product->variants->sum('quantity');
+            $product->total_stock_quantity = $product->variants->sum('stock_quantity');
+            $product->total_sold_quantity = $product->variants->sum('sold_quantity');
         }
-
-        return view('Users.products.index', compact('products'));
+        
+        return view('users.products.index', compact('products'));
     }
 
+    // Hiển thị chi tiết sản phẩm
     public function show($id) {
+        $product = Product::with('category', 'variants')->findOrFail($id);
         
-        $product = Product::with('variants')->findOrFail($id);
-
-        return view('Users.products.show', compact('product'));
+        return view('users.products.show', compact('product'));
     }
 }

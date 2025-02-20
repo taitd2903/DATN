@@ -1,23 +1,23 @@
-{{-- @extends('layouts.app')
+{{-- @extends('layouts.app') --}}
 
-@section('content') --}}
+{{-- @section('content') --}}
     <h1>Thêm sản phẩm</h1>
     <form action="{{ route('admin.products.store') }}" method="POST">
         @csrf
-        <label>Tên sản phẩm:</label>
-        <input type="text" name="name" required>
+        <label for="name">Tên sản phẩm:</label>
+        <input type="text" name="name" id="name" required>
 
-        <label>Ảnh:</label>
-        <input type="text" name="image">
+        <label for="image">Ảnh:</label>
+        <input type="text" name="image" id="image" placeholder="URL ảnh sản phẩm">
 
-        <label>Mô tả:</label>
-        <textarea name="description"></textarea>
+        <label for="description">Mô tả:</label>
+        <textarea name="description" id="description" placeholder="Nhập mô tả sản phẩm"></textarea>
 
-        <label>Giá gốc:</label>
-        <input type="number" step="0.01" name="base_price">
+        <label for="base_price">Giá gốc:</label>
+        <input type="number" step="0.01" name="base_price" id="base_price" required>
 
-        <label>Danh mục:</label>
-        <select name="category_id" required>
+        <label for="category_id">Danh mục:</label>
+        <select name="category_id" id="category_id" required>
             <option value="">Chọn danh mục</option>
             @foreach($categories as $category)
                 <option value="{{ $category->id }}">{{ $category->name }}</option>
@@ -29,43 +29,58 @@
             @endforeach
         </select>
 
+        <label for="gender">Giới tính:</label>
+<select name="gender" id="gender" required>
+    <option value="male">Nam</option>
+    <option value="female">Nữ</option>
+    <option value="unisex">Unisex</option>
+</select>
+
         <h3>Thêm biến thể:</h3>
-        <div id="variant-container">
-            <div>
-                <label>Size:</label>
-                <input type="text" name="variants[0][size]">
-                <label>Màu:</label>
-                <input type="text" name="variants[0][color]">
-                <label>Giá:</label>
-                <input type="number" step="0.01" name="variants[0][price]">
-                <label>Số lượng:</label>
-                <input type="number" name="variants[0][quantity]">
-            </div>
-        </div>
+        <div id="variant-container"></div>
 
         <button type="button" onclick="addVariant()">Thêm biến thể</button>
         <button type="submit">Lưu</button>
     </form>
 
     <script>
-        let variantIndex = 1;
+        let variantIndex = 0;
 
         function addVariant() {
             let container = document.getElementById('variant-container');
+            let variantId = `variant-${variantIndex}`;
             let html = `
-                <div>
+                <div class="variant" id="${variantId}">
                     <label>Size:</label>
                     <input type="text" name="variants[${variantIndex}][size]">
+                    
                     <label>Màu:</label>
-                    <input type="text" name="variants[${variantIndex}][color]">
+                    <input type="text" name="variants[${variantIndex}][color]" required>
+                    
                     <label>Giá:</label>
-                    <input type="number" step="0.01" name="variants[${variantIndex}][price]">
-                    <label>Số lượng:</label>
-                    <input type="number" name="variants[${variantIndex}][quantity]">
+                    <input type="number" step="0.01" name="variants[${variantIndex}][price]" required>
+                    
+                    <label>Số lượng tồn kho:</label>
+                    <input type="number" name="variants[${variantIndex}][stock_quantity]" required min="0">
+                    
+                    <label>Số lượng đã bán:</label>
+                    <input type="number" name="variants[${variantIndex}][sold_quantity]" required min="0">
+
+                    <button type="button" onclick="removeVariant('${variantId}')">Xóa</button>
                 </div>
             `;
             container.insertAdjacentHTML('beforeend', html);
             variantIndex++;
         }
+
+        function removeVariant(variantId) {
+            document.getElementById(variantId).remove();
+            if (document.querySelectorAll('.variant').length === 0) {
+                variantIndex = 0;
+            }
+        }
+
+        // Thêm biến thể mặc định khi trang tải
+        addVariant();
     </script>
 {{-- @endsection --}}

@@ -1,6 +1,6 @@
-{{-- @extends('layouts.app')
+{{-- @extends('layouts.app') --}}
 
-@section('content') --}}
+@section('content')
     <h1>Danh sách sản phẩm</h1>
     
     @foreach($products as $product)
@@ -8,7 +8,7 @@
             <h2>{{ $product->name }}</h2>
             <p>{{ $product->description }}</p>
             <p>Danh mục: {{ $product->category->name }}</p>
-            <p>Tổng số lượng: {{ $product->total_quantity }}</p>
+            <p><strong>Tổng số lượng đã bán:</strong> {{ $product->total_sold_quantity }}</p>
 
             <h4>Biến thể:</h4>
             <ul>
@@ -16,7 +16,6 @@
                     <li>
                         <strong>Size:</strong> {{ $variant->size }} 
                         <strong>Màu sắc:</strong> {{ $variant->color }} 
-                        <strong>Số lượng:</strong> {{ $variant->quantity }}
                     </li>
                 @endforeach
             </ul>

@@ -10,17 +10,15 @@ use Illuminate\Http\Request;
 class ProductController extends Controller {
 
     public function index() {
-        // Lấy tất cả các sản phẩm cùng với các biến thể của chúng
         $products = Product::with('category', 'variants')->get();
 
-        // Tính tổng số sản phẩm của tất cả các biến thể cộng lại
+        // Tính tổng số lượng tồn kho của tất cả biến thể
         foreach ($products as $product) {
-            $product->total_quantity = $product->variants->sum('quantity');
+            $product->total_stock = $product->variants->sum('stock_quantity');
+            $product->total_sold = $product->variants->sum('sold_quantity');
         }
 
-        $totalProducts = $products->sum('total_quantity'); // Tổng số lượng của tất cả các sản phẩm và biến thể
-
-        return view('Admin.products.index', compact('products', 'totalProducts'));
+        return view('Admin.products.index', compact('products'));
     }
 
     public function create() {
@@ -33,22 +31,24 @@ class ProductController extends Controller {
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'base_price' => 'required|numeric',
-            'variants.*.size' => 'required|string|max:255',
+            'gender' => 'required|in:male,female,unisex',
             'variants.*.color' => 'required|string|max:255',
             'variants.*.price' => 'required|numeric',
-            'variants.*.quantity' => 'required|integer',
+            'variants.*.stock_quantity' => 'required|integer|min:0',
+            'variants.*.sold_quantity' => 'required|integer|min:0',
         ]);
 
-        $product = Product::create($request->only(['name', 'image', 'description', 'base_price', 'category_id']));
+        $product = Product::create($request->only(['name', 'image', 'description', 'base_price', 'category_id', 'gender']));
 
         if ($request->has('variants')) {
             foreach ($request->variants as $variant) {
                 ProductVariant::create([
                     'product_id' => $product->id,
-                    'size' => $variant['size'],
+                    'size' => $variant['size'] ?? null,
                     'color' => $variant['color'],
                     'price' => $variant['price'],
-                    'quantity' => $variant['quantity'],
+                    'stock_quantity' => $variant['stock_quantity'],
+                    'sold_quantity' => $variant['sold_quantity'],
                 ]);
             }
         }
@@ -66,19 +66,24 @@ class ProductController extends Controller {
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'base_price' => 'required|numeric',
-            'variants.*.size' => 'required|string|max:255',
+            'gender' => 'required|in:male,female,unisex',
             'variants.*.color' => 'required|string|max:255',
             'variants.*.price' => 'required|numeric',
-            'variants.*.quantity' => 'required|integer',
+            'variants.*.stock_quantity' => 'required|integer|min:0',
+            'variants.*.sold_quantity' => 'required|integer|min:0',
         ]);
 
-        $product->update($request->only(['name', 'image', 'description', 'base_price', 'category_id']));
+        $product->update($request->only(['name', 'image', 'description', 'base_price', 'category_id', 'gender']));
 
         if ($request->has('variants')) {
             foreach ($request->variants as $variant) {
                 ProductVariant::updateOrCreate(
-                    ['product_id' => $product->id, 'size' => $variant['size'], 'color' => $variant['color']],
-                    ['price' => $variant['price'], 'quantity' => $variant['quantity']]
+                    ['product_id' => $product->id, 'size' => $variant['size'] ?? null, 'color' => $variant['color']],
+                    [
+                        'price' => $variant['price'],
+                        'stock_quantity' => $variant['stock_quantity'],
+                        'sold_quantity' => $variant['sold_quantity'],
+                    ]
                 );
             }
         }
