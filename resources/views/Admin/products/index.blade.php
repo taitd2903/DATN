@@ -1,53 +1,101 @@
-@extends('layouts.app')
+@extends('layouts.layout')
 
 @section('content')
-    <h1>Danh sách sản phẩm</h1>
+<div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card strpied-tabled-with-hover">
+                    <div class="card-header">
+                        <h4 class="card-title">Danh sách sản phẩm</h4>
+                        <p class="card-category">Danh sách tất cả các sản phẩm và biến thể</p>
+                    </div>
+                    <div class="card-body table-full-width table-responsive">
+                        <table class="table table-hover table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Mô tả</th>
+                                    <th>Giá gốc (VND)</th>
+                                    <th>Danh mục</th>
+                                    <th>Giới tính</th>
+                                    <th>Tổng số lượng</th>
+                                    <th>Số biến thể</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($products as $product)
+                                <tr>
+                                    <td>{{ $product->id }}</td>
+                                    <td>{{ $product->name }}</td>
+                                    <td>{{ $product->description }}</td>
+                                    <td>{{ number_format($product->base_price) }}</td>
+                                    <td>{{ $product->category->name }}</td>
+                                    <td>
+                                        @if($product->gender == 'male') Nam
+                                        @elseif($product->gender == 'female') Nữ
+                                        @else Unisex
+                                        @endif
+                                    </td>
+                                    <td>{{ $product->variants->sum('stock_quantity') }}</td> <!-- Tổng số lượng biến thể -->
+                                    <td>
+                                        <button class="btn btn-info btn-sm" data-bs-toggle="collapse" data-bs-target="#variants-{{ $product->id }}">
+                                            {{ $product->variants->count() }}
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('admin.products.edit', $product->id) }}" class="btn btn-warning btn-sm">Sửa</a>
+                                        <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" style="display:inline;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+                                        </form>
+                                    </td>
+                                </tr>
 
-    <a href="{{ route('admin.products.create') }}">Thêm sản phẩm</a>
+                                <!-- Bảng hiển thị biến thể -->
+                                <tr id="variants-{{ $product->id }}" class="collapse">
+                                    <td colspan="9">
+                                        <div class="card card-body p-2"> <!-- Thêm card để tạo khoảng cách -->
+                                            <table class="table table-sm table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Size</th>
+                                                        <th>Màu sắc</th>
+                                                        <th>Giá (VND)</th>
+                                                        <th>Tồn kho</th>
+                                                        <th>Đã bán</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach($product->variants as $variant)
+                                                    <tr>
+                                                        <td>{{ $variant->size }}</td>
+                                                        <td>{{ $variant->color }}</td>
+                                                        <td>{{ number_format($variant->price) }}</td>
+                                                        <td>{{ $variant->stock_quantity }}</td>
+                                                        <td>{{ $variant->sold_quantity }}</td>
+                                                    </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
+                                
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-    @if(session('success'))
-        <div>{{ session('success') }}</div>
-    @endif
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <ul>
-        @foreach($products as $product)
-            <li>
-                <strong>{{ $product->name }}</strong> - {{ $product->description }} - Giá gốc: {{ $product->base_price }} VND
-                <p>Danh mục: {{ $product->category->name }}</p>
-                <p><strong>Giới tính:</strong> 
-                    @if($product->gender == 'male')
-                        Nam
-                    @elseif($product->gender == 'female')
-                        Nữ
-                    @else
-                        Unisex
-                    @endif
-                </p>
-                <p><strong>Tổng số lượng sản phẩm:</strong> {{ $product->total_quantity }}</p>
-                <p><strong>Số lượng tồn kho:</strong> {{ $product->total_stock }}</p> <!-- Hiển thị số lượng tồn kho -->
-                <p><strong>Đã bán:</strong> {{ $product->total_sold }}</p> <!-- Hiển thị số lượng đã bán -->
-
-                <h4>Biến thể sản phẩm:</h4>
-                <ul>
-                    @foreach($product->variants as $variant)
-                        <li>
-                            <strong>Size:</strong> {{ $variant->size }} - 
-                            <strong>Màu sắc:</strong> {{ $variant->color }} - 
-                            <strong>Giá:</strong> {{ $variant->price }} VND - 
-                            <strong>Tồn kho:</strong> {{ $variant->stock_quantity }} - 
-                            <strong>Đã bán:</strong> {{ $variant->sold_quantity }}
-                        </li>
-                    @endforeach
-                </ul>
-
-                <a href="{{ route('admin.products.edit', $product->id) }}">Sửa</a>
-
-                <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" style="display:inline;">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit">Xóa</button>
-                </form>
-            </li>
-        @endforeach
-    </ul>
 @endsection
