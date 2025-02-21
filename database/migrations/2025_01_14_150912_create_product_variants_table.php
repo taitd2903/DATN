@@ -15,7 +15,9 @@ return new class extends Migration {
             $table->unsignedInteger('stock_quantity')->default(0);
             $table->unsignedInteger('sold_quantity')->default(0);
             $table->timestamps();
+            $table->unique(['product_id', 'size', 'color']);
         });
+        
     }
 
     public function down(): void {
