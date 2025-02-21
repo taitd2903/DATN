@@ -1,10 +1,10 @@
-{{-- @extends('layouts.app')
+ @extends('layouts.layout')
 
-@section('content') --}}
+@section('content')
 <div class="container">
     <h2>Create New User</h2>
 
-    <form action="{{ route('users.store') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('admin.users.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
         <div class="form-group">
@@ -53,4 +53,4 @@
         <button type="submit" class="btn btn-primary">Create User</button>
     </form>
 </div>
-{{-- @endsection --}}
+ @endsection 

@@ -1,47 +1,66 @@
-{{-- @extends('layouts.app') --}}
+@extends('layouts.layout')
 
-{{-- @section('content') --}}
-    <h1>Thêm sản phẩm</h1>
-    <form action="{{ route('admin.products.store') }}" method="POST">
-        @csrf
-        <label for="name">Tên sản phẩm:</label>
-        <input type="text" name="name" id="name" required>
+@section('content')
+    <div class="container mt-4">
+        <h1 class="mb-4">Thêm sản phẩm</h1>
 
-        <label for="image">Ảnh:</label>
-        <input type="text" name="image" id="image" placeholder="URL ảnh sản phẩm">
+        <!-- Form tạo sản phẩm -->
+        <form action="{{ route('admin.products.store') }}" method="POST">
+            @csrf
+            <div class="mb-3">
+                <label for="name" class="form-label">Tên sản phẩm:</label>
+                <input type="text" class="form-control" name="name" id="name" required>
+            </div>
 
-        <label for="description">Mô tả:</label>
-        <textarea name="description" id="description" placeholder="Nhập mô tả sản phẩm"></textarea>
+            <div class="mb-3">
+                <label for="image" class="form-label">Ảnh:</label>
+                <input type="text" class="form-control" name="image" id="image" placeholder="URL ảnh sản phẩm">
+            </div>
 
-        <label for="base_price">Giá gốc:</label>
-        <input type="number" step="0.01" name="base_price" id="base_price" required>
+            <div class="mb-3">
+                <label for="description" class="form-label">Mô tả:</label>
+                <textarea class="form-control" name="description" id="description" placeholder="Nhập mô tả sản phẩm"></textarea>
+            </div>
 
-        <label for="category_id">Danh mục:</label>
-        <select name="category_id" id="category_id" required>
-            <option value="">Chọn danh mục</option>
-            @foreach($categories as $category)
-                <option value="{{ $category->id }}">{{ $category->name }}</option>
-                @if($category->children->count())
-                    @foreach($category->children as $child)
-                        <option value="{{ $child->id }}">-- {{ $child->name }}</option>
+            <div class="mb-3">
+                <label for="base_price" class="form-label">Giá gốc:</label>
+                <input type="number" class="form-control" step="0.01" name="base_price" id="base_price" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="category_id" class="form-label">Danh mục:</label>
+                <select class="form-select" name="category_id" id="category_id" required>
+                    <option value="">Chọn danh mục</option>
+                    @foreach($categories as $category)
+                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                        @if($category->children->count())
+                            @foreach($category->children as $child)
+                                <option value="{{ $child->id }}">-- {{ $child->name }}</option>
+                            @endforeach
+                        @endif
                     @endforeach
-                @endif
-            @endforeach
-        </select>
+                </select>
+            </div>
 
-        <label for="gender">Giới tính:</label>
-<select name="gender" id="gender" required>
-    <option value="male">Nam</option>
-    <option value="female">Nữ</option>
-    <option value="unisex">Unisex</option>
-</select>
+            <div class="mb-3">
+                <label for="gender" class="form-label">Giới tính:</label>
+                <select class="form-select" name="gender" id="gender" required>
+                    <option value="male">Nam</option>
+                    <option value="female">Nữ</option>
+                    <option value="unisex">Unisex</option>
+                </select>
+            </div>
 
-        <h3>Thêm biến thể:</h3>
-        <div id="variant-container"></div>
+            <h3>Thêm biến thể:</h3>
+            <div id="variant-container"></div>
 
-        <button type="button" onclick="addVariant()">Thêm biến thể</button>
-        <button type="submit">Lưu</button>
-    </form>
+            <button type="button" class="btn btn-primary mb-3" onclick="addVariant()">Thêm biến thể</button>
+
+            <div class="d-flex justify-content-end mt-3">
+                <button type="submit" class="btn btn-success">Lưu</button>
+            </div>
+        </form>
+    </div>
 
     <script>
         let variantIndex = 0;
@@ -50,23 +69,37 @@
             let container = document.getElementById('variant-container');
             let variantId = `variant-${variantIndex}`;
             let html = `
-                <div class="variant" id="${variantId}">
-                    <label>Size:</label>
-                    <input type="text" name="variants[${variantIndex}][size]">
-                    
-                    <label>Màu:</label>
-                    <input type="text" name="variants[${variantIndex}][color]" required>
-                    
-                    <label>Giá:</label>
-                    <input type="number" step="0.01" name="variants[${variantIndex}][price]" required>
-                    
-                    <label>Số lượng tồn kho:</label>
-                    <input type="number" name="variants[${variantIndex}][stock_quantity]" required min="0">
-                    
-                    <label>Số lượng đã bán:</label>
-                    <input type="number" name="variants[${variantIndex}][sold_quantity]" required min="0">
+                <div class="variant mb-3 row" id="${variantId}">
+                    <div class="col-md-2">
+                        <label>Size:</label>
+                        <input type="text" class="form-control" name="variants[${variantIndex}][size]">
+                    </div>
 
-                    <button type="button" onclick="removeVariant('${variantId}')">Xóa</button>
+                    <div class="col-md-2">
+                        <label>Màu:</label>
+                        <input type="text" class="form-control" name="variants[${variantIndex}][color]" required>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label>Giá:</label>
+                        <input type="number" class="form-control" step="0.01" name="variants[${variantIndex}][price]" required>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label>Số lượng tồn kho:</label>
+                        <input type="number" class="form-control" name="variants[${variantIndex}][stock_quantity]" required min="0">
+                    </div>
+
+           <div class="col-md-2">
+                        <label>Số lượng đã bán</label>
+                        <input type="number" class="form-control" name="variants[${variantIndex}][sold_quantity]" required min="0">
+                    </div>
+
+
+
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="button" class="btn btn-danger" onclick="removeVariant('${variantId}')">Xóa</button>
+                    </div>
                 </div>
             `;
             container.insertAdjacentHTML('beforeend', html);
@@ -83,4 +116,4 @@
         // Thêm biến thể mặc định khi trang tải
         addVariant();
     </script>
-{{-- @endsection --}}
+@endsection

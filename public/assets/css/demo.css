@@ -826,3 +826,7 @@
 .documentation .dropdown .dropdown-menu.show {
     transform: translate3d(0, 39px, 0) !important;
 }
+.img-bgr-users img{
+    max-width: 700px;
+    width: 100%;
+}

@@ -1,6 +1,6 @@
-{{-- @extends('layouts.app') --}}
+@extends('layouts.app')
 
-{{-- @section('content') --}}
+ @section('content')
 <h1>Sửa sản phẩm</h1>
 
 <form action="{{ route('admin.products.update', $product->id) }}" method="POST">
@@ -113,4 +113,4 @@
         }
     }
 </script>
-{{-- @endsection --}}
+@endsection 

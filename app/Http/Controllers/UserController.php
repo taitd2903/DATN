@@ -60,7 +60,7 @@ class UserController extends Controller
         $user->role = $validated['role'] ?? 'user';
         $user->save(); // Lưu vào DB
 
-        return redirect()->route('users.index')->with('success', 'User created successfully!');
+        return redirect()->route('admin.users.index')->with('success', 'User created successfully!');
     }
  
      // Hiển thị form chỉnh sửa user
@@ -109,7 +109,7 @@ class UserController extends Controller
 
     $user->save(); // Lưu dữ liệu
 
-    return redirect()->route('users.index')->with('success', 'User updated successfully.');
+    return redirect()->route('admin.users.index')->with('success', 'User updated successfully.');
 }
 
  
@@ -131,7 +131,7 @@ class UserController extends Controller
     $user->delete();
 
     // Chuyển hướng lại trang danh sách với thông báo thành công
-    return redirect()->route('users.index')->with('success', 'User deleted successfully.');
+    return redirect()->route('admin.users.index')->with('success', 'User deleted successfully.');
 }
 
 }

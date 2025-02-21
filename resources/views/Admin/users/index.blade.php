@@ -1,9 +1,9 @@
-{{-- @extends('layouts.app')
+ @extends('layouts.layout')
 
-@section('content') --}}
+@section('content') 
 <div class="container">
     <h2>Quản lý tài khoản</h2>
-    <a href="{{ route('users.create') }}">Create User</a>
+    <a href="{{ route('admin.users.create') }}">Create User</a>
 
     <!-- Nếu có thông báo thành công -->
     @if (session('success'))
@@ -48,8 +48,8 @@
 
                     <!-- Actions: Edit, Delete -->
                     
-                        <a href="{{ route('users.edit', $user->id) }}" class="btn btn-warning">Edit</a>
-                        <form action="{{ route('users.destroy', $user->id) }}" method="POST" style="display:inline;">
+                        <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-warning">Edit</a>
+                        <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger" onclick="return confirm('bạn có chắc muốn xóa?')">Delete</button>
@@ -63,4 +63,4 @@
     {{-- <!-- Pagination -->
     {{ $users->links() }} --}}
 </div>
-{{-- @endsection --}}
+@endsection 

@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\Categories\CategoryController;
 use App\Http\Controllers\Admin\Products\ProductController;
 use App\Http\Controllers\Users\ProductController as UserProductController;
 use App\Http\Controllers\Admin\Products\ProductVariantController;
+use App\Http\Controllers\Admin\Statistics\StatisticsController;
 use App\Http\Controllers\CartController;
 
 /*
@@ -39,6 +40,8 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::delete('products/{product}/variants/{variant}', [ProductVariantController::class, 'destroy'])->name('products.variants.destroy');
     Route::resource('users', UserController::class);
     Route::resource('coupons', CouponController::class);
+    Route::resource('statistics', StatisticsController::class);
+    
 });
 
 

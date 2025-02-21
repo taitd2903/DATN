@@ -10,7 +10,10 @@
                         <h4 class="card-title">Danh sách sản phẩm</h4>
                         <p class="card-category">Danh sách tất cả các sản phẩm và biến thể</p>
                     </div>
+                    
                     <div class="card-body table-full-width table-responsive">
+                    <a href="{{ route('admin.products.create') }}" class="btn btn-primary mb-3">Thêm Danh Mục</a>
+
                         <table class="table table-hover table-striped">
                             <thead>
                                 <tr>
