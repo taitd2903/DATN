@@ -10,6 +10,7 @@ use App\Http\Controllers\Users\ProductController as UserProductController;
 use App\Http\Controllers\Admin\Products\ProductVariantController;
 use App\Http\Controllers\Admin\Statistics\StatisticsController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\VnPayController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,8 +18,7 @@ use App\Http\Controllers\CartController;
 |--------------------------------------------------------------------------
 */
 
-// Trang chủ
-Route::get('/', fn () => view('welcome'));
+
 
 // ========================= XÁC THỰC (AUTH) =========================
 Route::controller(AuthController::class)->group(function () {
@@ -64,3 +64,25 @@ Route::prefix('products')->name('products.')->group(function () {
     Route::get('/', [UserProductController::class, 'index'])->name('index');
     Route::get('/{product}', [UserProductController::class, 'show'])->name('show');
 });
+
+// ========================= THANH TOÁN (VNPAY) =========================
+Route::get('/vnpay', function () {
+    return view('vnpay.index');
+})->name('vnpay.index');
+Route::get('/vnpay/pay', function () {
+    return view('vnpay.pay');
+})->name('vnpay.payForm');
+Route::post('/vnpay/pay', [VnPayController::class, 'createPayment'])->name('vnpay.pay');
+Route::get('/vnpay/query', function () {
+    return view('vnpay.query_transaction');
+})->name('vnpay.queryForm');
+Route::post('/vnpay/query', [VnPayController::class, 'queryTransaction'])->name('vnpay.query');
+Route::get('/vnpay/refund', function () {
+    return view('vnpay.refund');
+})->name('vnpay.refundForm');
+Route::post('/vnpay/refund', [VnPayController::class, 'processRefund'])->name('vnpay.refund');
+Route::get('/vnpay/response', function () {
+    return view('vnpay.response');
+})->name('vnpay.response');
+Route::post('/vnpay/payment', [VnPayController::class, 'createPayment'])->name('vnpay.payment');
+Route::get('/vnpay/payment_return', [VnPayController::class, 'paymentReturn'])->name('vnpay.payment_return');

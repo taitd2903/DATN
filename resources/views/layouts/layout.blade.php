@@ -49,7 +49,7 @@
             <div class="sidebar-wrapper">
                 <div class="logo">
                     <a href="http://www.creative-tim.com" class="simple-text">
-                        Creative Tim
+                        OCEAN SPORTS
                     </a>
                 </div>
                 <ul class="nav">
