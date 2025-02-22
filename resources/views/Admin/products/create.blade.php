@@ -5,7 +5,7 @@
         <h1 class="mb-4">Thêm sản phẩm</h1>
 
         <!-- Form tạo sản phẩm -->
-        <form action="{{ route('admin.products.store') }}" method="POST">
+        <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="mb-3">
                 <label for="name" class="form-label">Tên sản phẩm:</label>
@@ -14,7 +14,7 @@
 
             <div class="mb-3">
                 <label for="image" class="form-label">Ảnh:</label>
-                <input type="text" class="form-control" name="image" id="image" placeholder="URL ảnh sản phẩm">
+                <input type="file" class="form-control" name="image" id="image" accept="image/*">
             </div>
 
             <div class="mb-3">
@@ -25,8 +25,7 @@
             <div class="mb-3">
                 <label for="category_id" class="form-label">Danh mục:</label>
                 <select class="form-select" name="category_id" id="category_id" >
-                    
-                <option value="">Không chọn danh mục</option>
+                    <option value="">Không chọn danh mục</option>
                     @foreach($categories as $category)
                         <option value="{{ $category->id }}">{{ $category->name }}</option>
                         @if($category->children->count())
@@ -98,8 +97,7 @@
 
                     <div class="col-md-2">
                         <label>Ảnh biến thể:</label>
-                        <input type="text" class="form-control" name="variants[${variantIndex}][image]" oninput="previewVariantImage(${variantIndex})" placeholder="URL ảnh biến thể">
-                        <img id="preview-${variantIndex}" src="" alt="Ảnh biến thể" class="img-thumbnail mt-2" style="display:none; max-width: 100px;">
+                        <input type="file" class="form-control" name="variants[${variantIndex}][image]" accept="image/*">
                     </div>
 
                     <div class="col-md-2 d-flex align-items-end">
@@ -115,17 +113,6 @@
             document.getElementById(variantId).remove();
             if (document.querySelectorAll('.variant').length === 0) {
                 variantIndex = 0;
-            }
-        }
-
-        function previewVariantImage(index) {
-            let input = document.querySelector(`input[name="variants[${index}][image]"]`);
-            let img = document.getElementById(`preview-${index}`);
-            if (input.value.trim()) {
-                img.src = input.value.trim();
-                img.style.display = 'block';
-            } else {
-                img.style.display = 'none';
             }
         }
 
