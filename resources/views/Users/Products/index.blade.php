@@ -1,4 +1,4 @@
-{{-- @extends('layouts.app') --}}
+ @extends('layouts.app')
 
 @section('content')
     <h1>Danh sách sản phẩm</h1>
@@ -23,4 +23,4 @@
             <a href="{{ route('products.show', $product->id) }}">Xem chi tiết</a>
         </div>
     @endforeach
-{{-- @endsection --}}
+@endsection 

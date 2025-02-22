@@ -48,7 +48,7 @@
      -->
             <div class="sidebar-wrapper">
                 <div class="logo">
-                    <a href="http://www.creative-tim.com" class="simple-text">
+                    <a href="{{ route('admin.statistics.index') }}" class="simple-text">
                         OCEAN SPORTS
                     </a>
                 </div>

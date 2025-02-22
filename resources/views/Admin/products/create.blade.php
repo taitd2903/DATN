@@ -23,14 +23,10 @@
             </div>
 
             <div class="mb-3">
-                <label for="base_price" class="form-label">Giá gốc:</label>
-                <input type="number" class="form-control" step="0.01" name="base_price" id="base_price" required>
-            </div>
-
-            <div class="mb-3">
                 <label for="category_id" class="form-label">Danh mục:</label>
-                <select class="form-select" name="category_id" id="category_id" required>
-                    <option value="">Chọn danh mục</option>
+                <select class="form-select" name="category_id" id="category_id" >
+                    
+                <option value="">Không chọn danh mục</option>
                     @foreach($categories as $category)
                         <option value="{{ $category->id }}">{{ $category->name }}</option>
                         @if($category->children->count())
@@ -81,7 +77,12 @@
                     </div>
 
                     <div class="col-md-2">
-                        <label>Giá:</label>
+                        <label>Giá gốc:</label>
+                        <input type="number" class="form-control" step="0.01" name="variants[${variantIndex}][original_price]" required>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label>Giá bán:</label>
                         <input type="number" class="form-control" step="0.01" name="variants[${variantIndex}][price]" required>
                     </div>
 
@@ -90,12 +91,16 @@
                         <input type="number" class="form-control" name="variants[${variantIndex}][stock_quantity]" required min="0">
                     </div>
 
-           <div class="col-md-2">
-                        <label>Số lượng đã bán</label>
+                    <div class="col-md-2">
+                        <label>Số lượng đã bán:</label>
                         <input type="number" class="form-control" name="variants[${variantIndex}][sold_quantity]" required min="0">
                     </div>
 
-
+                    <div class="col-md-2">
+                        <label>Ảnh biến thể:</label>
+                        <input type="text" class="form-control" name="variants[${variantIndex}][image]" oninput="previewVariantImage(${variantIndex})" placeholder="URL ảnh biến thể">
+                        <img id="preview-${variantIndex}" src="" alt="Ảnh biến thể" class="img-thumbnail mt-2" style="display:none; max-width: 100px;">
+                    </div>
 
                     <div class="col-md-2 d-flex align-items-end">
                         <button type="button" class="btn btn-danger" onclick="removeVariant('${variantId}')">Xóa</button>
@@ -110,6 +115,17 @@
             document.getElementById(variantId).remove();
             if (document.querySelectorAll('.variant').length === 0) {
                 variantIndex = 0;
+            }
+        }
+
+        function previewVariantImage(index) {
+            let input = document.querySelector(`input[name="variants[${index}][image]"]`);
+            let img = document.getElementById(`preview-${index}`);
+            if (input.value.trim()) {
+                img.src = input.value.trim();
+                img.style.display = 'block';
+            } else {
+                img.style.display = 'none';
             }
         }
 

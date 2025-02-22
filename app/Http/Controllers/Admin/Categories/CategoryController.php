@@ -35,15 +35,23 @@ class CategoryController extends Controller {
     
     public function destroy($id) {
         $category = Category::findOrFail($id);
-
-       
+    
+   
+        if ($category->products()->count() > 0) {
+           
+            $category->products()->update(['category_id' => null]);
+        }
+    
         if ($category->children()->count() > 0) {
             return redirect()->route('admin.categories.index')->with('error', 'Không thể xóa danh mục có danh mục con!');
         }
+    
 
         $category->delete();
+    
         return redirect()->route('admin.categories.index')->with('success', 'Danh mục đã được xóa thành công!');
     }
+    
     public function edit($id) {
         $category = Category::findOrFail($id);
     

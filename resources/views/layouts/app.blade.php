@@ -8,7 +8,7 @@
 </head>
 <body>
     <header style="background: #333; color: white; padding: 10px; display: flex; justify-content: space-between; align-items: center;">
-        <h2>Trang Quản Trị</h2>
+        <h2>Trang sản phẩm</h2>
         <div>
             @if(Auth::check())
                 <span>Chào, <strong>{{ Auth::user()->name }}</strong>!</span>

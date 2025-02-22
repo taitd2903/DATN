@@ -34,7 +34,7 @@ Route::middleware(['auth', 'role:admin'])->get('/switch-to-user', [AuthControlle
 
 // ========================= QUẢN TRỊ VIÊN (ADMIN) =========================
 Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->group(function () {
-    Route::get('/', fn () => view('admin.dashboard'))->name('dashboard');
+    Route::get('/admin', fn () => view('admin.dashboard'))->name('dashboard');
     Route::resource('categories', CategoryController::class)->except(['show']);
     Route::resource('products', ProductController::class);
     Route::delete('products/{product}/variants/{variant}', [ProductVariantController::class, 'destroy'])->name('products.variants.destroy');
@@ -60,7 +60,7 @@ Route::middleware('auth')->prefix('cart')->name('cart.')->group(function () {
 
 // ========================= SẢN PHẨM (PRODUCTS) =========================
 Route::get('/categories', [CategoryController::class, 'showCategories'])->name('categories.show');
-Route::prefix('products')->name('products.')->group(function () {
+Route::prefix('')->name('products.')->group(function () {
     Route::get('/', [UserProductController::class, 'index'])->name('index');
     Route::get('/{product}', [UserProductController::class, 'show'])->name('show');
 });

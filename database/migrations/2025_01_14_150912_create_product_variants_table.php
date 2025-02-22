@@ -9,9 +9,11 @@ return new class extends Migration {
         Schema::create('product_variants', function (Blueprint $table) {
             $table->id();
             $table->foreignId('product_id')->constrained()->cascadeOnDelete();
+            $table->string('image')->nullable(); 
             $table->string('size')->nullable();
             $table->string('color')->nullable();
             $table->decimal('price', 10, 2); 
+            $table->decimal('original_price', 10, 2);
             $table->unsignedInteger('stock_quantity')->default(0);
             $table->unsignedInteger('sold_quantity')->default(0);
             $table->timestamps();

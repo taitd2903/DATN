@@ -10,9 +10,8 @@ return new class extends Migration {
             $table->id();
             $table->string('name');
             $table->string('image')->nullable(); 
-            $table->text('description')->nullable();
-            $table->decimal('base_price', 10, 2)->nullable(); 
-            $table->foreignId('category_id')->constrained()->cascadeOnDelete(); 
+            $table->text('description')->nullable(); 
+            $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
             $table->enum('gender', ['male', 'female', 'unisex'])->default('unisex');
             $table->timestamps();
         });
