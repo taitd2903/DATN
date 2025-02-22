@@ -4,9 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ocean Sports</title>
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <link rel="stylesheet" href="{{ asset('/app.css') }}">
+    {{-- thêm link css --}}
+    {{-- người dùng --}}
+    <link href="{{ asset('/assets/view-user/layout.css') }}" rel="stylesheet" />
+
 </head>
 <body>
+    <h1 class="testpro">heloo</h1>
     <header style="background: #333; color: white; padding: 10px; display: flex; justify-content: space-between; align-items: center;">
         <h2>Trang sản phẩm</h2>
         <div>
@@ -29,5 +34,6 @@
     <main style="padding: 20px;">
         @yield('content')
     </main>
+    <footer></footer>
 </body>
 </html>
