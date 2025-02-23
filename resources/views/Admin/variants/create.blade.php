@@ -64,3 +64,29 @@
     <a href="{{ route('admin.products.edit', $product->id) }}" class="btn btn-secondary mt-3">Quay lại</a>
 </form>
 @endsection
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const imageInput = document.querySelector('input[name="image"]');
+        const previewContainer = document.createElement("div");
+        previewContainer.classList.add("mt-3");
+        
+        const previewImage = document.createElement("img");
+        previewImage.style.maxWidth = "200px";
+        previewImage.style.display = "none"; // Ẩn ảnh ban đầu
+        previewContainer.appendChild(previewImage);
+        
+        imageInput.parentNode.appendChild(previewContainer);
+
+        imageInput.addEventListener("change", function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    previewImage.src = e.target.result;
+                    previewImage.style.display = "block";
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    });
+</script>

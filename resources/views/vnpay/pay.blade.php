@@ -23,7 +23,9 @@
                 @csrf
                 <div class="form-group">
                     <label for="amount">Số tiền</label>
-                    <input class="form-control" id="amount" name="amount" type="number" min="1000" max="100000000" value="10000" required />
+                    <input class="form-control" id="amount" name="amount" type="number" min="1000" max="100000000" 
+       value="{{ request('amount', session('amount', 10000)) }}" required />
+
                 </div>
                 <h4>Chọn phương thức thanh toán</h4>
                 <div class="form-group">

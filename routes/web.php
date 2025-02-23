@@ -11,7 +11,7 @@ use App\Http\Controllers\Admin\Products\ProductVariantController;
 use App\Http\Controllers\Admin\Statistics\StatisticsController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\VnPayController;
-
+use Illuminate\Http\Request;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -71,10 +71,11 @@ Route::prefix('')->name('products.')->group(function () {
 Route::get('/vnpay', function () {
     return view('vnpay.index');
 })->name('vnpay.index');
-Route::get('/vnpay/pay', function () {
-    return view('vnpay.pay');
-})->name('vnpay.payForm');
-Route::post('/vnpay/pay', [VnPayController::class, 'createPayment'])->name('vnpay.pay');
+Route::get('/vnpay/pay', function (Request $request) {
+    $amount = $request->query('amount', session('amount', 10000)); // Lấy từ URL hoặc session
+    return view('vnpay.pay', compact('amount'));
+})->name('vnpay.pay');
+
 Route::get('/vnpay/query', function () {
     return view('vnpay.query_transaction');
 })->name('vnpay.queryForm');

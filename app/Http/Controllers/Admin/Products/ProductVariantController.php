@@ -65,6 +65,13 @@ class ProductVariantController extends Controller
 
         return redirect()->route('admin.products.edit', $productId)->with('success', 'Biến thể đã được thêm thành công!');
     }
+    public function destroy($productId, $variantId)
+    {
+        $variant = ProductVariant::findOrFail($variantId);
+        $variant->delete();
+
+        return redirect()->back()->with('success', 'Biến thể đã được xóa thành công.');
+    }
 }
     
     

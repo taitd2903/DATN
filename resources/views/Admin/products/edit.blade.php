@@ -18,9 +18,16 @@
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Ảnh:</label>
+        <label class="form-label">Ảnh hiện tại:</label>
+        @if($product->image)
+            <div>
+                <img src="{{ asset('storage/' . $product->image) }}" alt="Ảnh sản phẩm" class="img-thumbnail" style="width: 150px; height: 150px; object-fit: cover;">
+            </div>
+        @endif
+        <label class="form-label mt-2">Chọn ảnh mới:</label>
         <input type="file" name="image" class="form-control">
     </div>
+    
 
     <div class="mb-3">
         <label class="form-label">Danh mục:</label>
@@ -85,9 +92,17 @@
                 </div>
 
                 <div class="mt-3">
-                    <label class="form-label">Ảnh biến thể:</label>
+                    <label class="form-label">Ảnh hiện tại của biến thể:</label>
+                    @if($variant->image)
+                        <div>
+                            <img src="{{ asset('storage/' . $variant->image) }}" alt="Ảnh biến thể" class="img-thumbnail" style="width: 150px; height: 150px; object-fit: cover;">
+                        </div>
+                    @endif
+                    <label class="form-label mt-2">Chọn ảnh mới:</label>
                     <input type="file" name="variants[{{ $index }}][image]" class="form-control">
                 </div>
+                
+                
                 @if(count($product->variants) > 1)
                 <button type="button" onclick="deleteVariant(this, {{ $variant->id }})" class="btn btn-danger mt-2">Xóa</button>
             @endif
@@ -95,9 +110,18 @@
         @endforeach
     </div>
 
-    <a href="{{ route('admin.variants.create', $product->id) }}" class="btn btn-secondary mt-3">Thêm biến thể</a>
-
-    <button type="submit" class="btn btn-primary mt-3">Cập nhật sản phẩm</button>
+    <a href="{{ route('admin.variants.create', $product->id) }}" 
+        class="btn btn-secondary mt-3"
+        style="float: right; margin-left: 10px;">
+         Thêm biến thể
+     </a>
+     
+     <button type="submit" 
+             class="btn btn-primary mt-3" 
+             style="float: right;">
+         Cập nhật sản phẩm
+     </button>
+     
 </form>
 <button id="add-size-button" class="btn btn-primary mt-2" onclick="showSizeFields()" style="display: none;">
     Thêm Size

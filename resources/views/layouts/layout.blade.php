@@ -18,9 +18,10 @@
 <head>
     <meta charset="utf-8" />
     <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
-    <link rel="icon" type="image/png" href="../assets/img/favicon.ico">
+    <link rel="icon" type="image/png" href="{{ asset('assets/img/Logo.svg') }}">
+
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <title>Light Bootstrap Dashboard - Free Bootstrap 4 Admin Dashboard by Creative Tim</title>
+    <title>Quản  trị Ocean Sports</title>
     <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no'
         name='viewport' />
     <!--     Fonts and icons     -->
@@ -49,7 +50,9 @@
             <div class="sidebar-wrapper">
                 <div class="logo">
                     <a href="{{ route('admin.statistics.index') }}" class="simple-text">
-                        OCEAN SPORTS
+                        {{-- <img src="../assets/img/Logo.svg" alt="Logo"> --}}
+                        <h4>Ocean Sports</h4>
+
                     </a>
                 </div>
                 <ul class="nav">

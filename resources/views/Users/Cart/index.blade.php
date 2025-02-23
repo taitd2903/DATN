@@ -55,7 +55,7 @@
                                     <button type="button" class="btn btn-sm btn-secondary decrement" data-id="{{ $item->id }}">-</button>
                                     {{-- Input số lượng --}}
                                     <input type="number" name="quantity" value="{{ $item->quantity }}" min="1"
-                                        max="{{ $item->variant->stock_quantity }}" class="form-control quantity-input"
+                                        max="{{ $item->variant->stock_quantity }}" class=" quantity-input"
                                         data-id="{{ $item->id }}" style="width: 50px; text-align: center;">
                                     {{-- Nút tăng số lượng --}}
                                     <button type="button" class="btn btn-sm btn-secondary increment" data-id="{{ $item->id }}">+</button>
@@ -78,7 +78,9 @@
         <h4 class="text-right">Tổng tiền: <span id="total-price">{{ number_format($total, 0, ',', '.') }}</span> đ</h4>
         <a href="{{ route('products.index') }}" class="btn btn-secondary">Tiếp tục mua hàng</a>
         <div class="text-right">
-            <a href="#" class="btn btn-success">Thanh toán</a>
+            <a href="{{ route('vnpay.pay', ['amount' => $total]) }}" class="btn btn-success">Thanh toán</a>
+
+
         </div>
     @else
         <p>Giỏ hàng của bạn đang trống.</p>
