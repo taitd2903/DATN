@@ -39,11 +39,11 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::resource('products', ProductController::class);
     Route::delete('products/{product}/variants/{variant}', [ProductVariantController::class, 'destroy'])->name('products.variants.destroy');
     Route::get('products/{id}', [ProductController::class, 'show'])->name('admin.products.show');
-
     Route::resource('users', UserController::class);
     Route::resource('coupons', CouponController::class);
     Route::resource('statistics', StatisticsController::class);
-    
+    Route::get('/products/{product}/variants/create', [ProductVariantController::class, 'create'])->name('variants.create');
+    Route::post('/products/{product}/variants', [ProductVariantController::class, 'store'])->name('variants.store');
 });
 
 

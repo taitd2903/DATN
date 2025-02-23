@@ -3,7 +3,7 @@
 @section('content')
 <div class="container mt-4">
     <h2>Chi tiết sản phẩm: {{ $product->name }}</h2>
-    <p class="text-muted">{{ $product->description }}</p>
+   <h4>Mô tả: <span class=""> {{ $product->description }}</span></h4>
 
     <!-- Hiển thị ảnh sản phẩm chính -->
     @if($product->image)
@@ -28,7 +28,8 @@
                 <th>Ảnh</th>
                 <th>Size</th>
                 <th>Màu sắc</th>
-                <th>Giá (VND)</th>
+                <th>Giá gốc (VND)</th>
+                <th>Giá bán (VND)</th>
                 <th>Tồn kho</th>
                 <th>Đã bán</th>
             </tr>
@@ -45,6 +46,7 @@
                 </td>
                 <td>{{ $variant->size }}</td>
                 <td>{{ $variant->color }}</td>
+                <td>{{ number_format($variant->original_price) }}</td>
                 <td>{{ number_format($variant->price) }}</td>
                 <td>{{ $variant->stock_quantity }}</td>
                 <td>{{ $variant->sold_quantity }}</td>

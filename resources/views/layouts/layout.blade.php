@@ -170,9 +170,8 @@
                                 </div>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('users.dashboard') }}">
-                                    <span class="no-icon">Trang người dùng</span>
-                                </a>
+                                <a class="nav-link" href="{{ route('products.index') }}">Trang Người dùng</a>
+
                             </li>
 
 

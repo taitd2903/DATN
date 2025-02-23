@@ -12,7 +12,9 @@
     <link href="{{ asset('assets/jumbotron-narrow.css') }}" rel="stylesheet">
     <script src="{{ asset('assets/jquery-1.11.3.min.js') }}"></script>
 </head>
-
+<p>Xin chào, {{ Auth::user()->name }}!</p>
+<p>Địa chỉ: {{ Auth::user()->address }}</p>
+<p>Số điện thoại: {{ Auth::user()->phone }}</p>
 <body>
     <div class="container">
         <h3 class="text-center">Tạo mới đơn hàng</h3>

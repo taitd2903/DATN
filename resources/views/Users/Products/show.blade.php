@@ -2,8 +2,13 @@
 
 @section('content')
     <h1>{{ $product->name }}</h1>
+    @if($product->image)
+    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" width="200">
+@else
+    <p>Chưa có hình ảnh</p>
+@endif
     <p>{{ $product->description }}</p>
-    <p>Danh mục: {{ $product->category->name }}</p>
+    <p>Danh mục: {{ $product->category ? $product->category->name : 'Chưa có danh mục' }}</p>
 
     <div>
         <img id="product-image" src="{{ $product->image }}" alt="{{ $product->name }}"
