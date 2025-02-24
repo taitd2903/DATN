@@ -10,6 +10,7 @@ use App\Http\Controllers\Users\ProductController as UserProductController;
 use App\Http\Controllers\Admin\Products\ProductVariantController;
 use App\Http\Controllers\Admin\Statistics\StatisticsController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\VnPayController;
 
 /*
@@ -34,12 +35,10 @@ Route::middleware(['auth', 'role:admin'])->get('/switch-to-user', [AuthControlle
 
 // ========================= QUẢN TRỊ VIÊN (ADMIN) =========================
 Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->group(function () {
-    Route::get('/admin', fn () => view('admin.dashboard'))->name('dashboard');
+    Route::get('/', fn () => view('admin.dashboard'))->name('dashboard');
     Route::resource('categories', CategoryController::class)->except(['show']);
     Route::resource('products', ProductController::class);
     Route::delete('products/{product}/variants/{variant}', [ProductVariantController::class, 'destroy'])->name('products.variants.destroy');
-    Route::get('products/{id}', [ProductController::class, 'show'])->name('admin.products.show');
-
     Route::resource('users', UserController::class);
     Route::resource('coupons', CouponController::class);
     Route::resource('statistics', StatisticsController::class);
@@ -62,7 +61,7 @@ Route::middleware('auth')->prefix('cart')->name('cart.')->group(function () {
 
 // ========================= SẢN PHẨM (PRODUCTS) =========================
 Route::get('/categories', [CategoryController::class, 'showCategories'])->name('categories.show');
-Route::prefix('')->name('products.')->group(function () {
+Route::prefix('products')->name('products.')->group(function () {
     Route::get('/', [UserProductController::class, 'index'])->name('index');
     Route::get('/{product}', [UserProductController::class, 'show'])->name('show');
 });
@@ -88,3 +87,12 @@ Route::get('/vnpay/response', function () {
 })->name('vnpay.response');
 Route::post('/vnpay/payment', [VnPayController::class, 'createPayment'])->name('vnpay.payment');
 Route::get('/vnpay/payment_return', [VnPayController::class, 'paymentReturn'])->name('vnpay.payment_return');
+
+
+//chêckout
+Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
+Route::post('/checkout/apply-discount', [CheckoutController::class, 'applyDiscount'])->name('checkout.applyDiscount');
+Route::post('/checkout/place-order', [CheckoutController::class, 'placeOrder'])->name('checkout.placeOrder');
+
+
+

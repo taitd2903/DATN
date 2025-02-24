@@ -32,6 +32,6 @@ class CartItem extends Model
     // Liên kết với bảng ProductVariants
     public function variant()
     {
-        return $this->belongsTo(ProductVariant::class);
+        return $this->belongsTo(ProductVariant::class, 'variant_id');
     }
 }

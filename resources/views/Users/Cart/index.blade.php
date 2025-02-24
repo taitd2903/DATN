@@ -78,7 +78,7 @@
         <h4 class="text-right">Tổng tiền: <span id="total-price">{{ number_format($total, 0, ',', '.') }}</span> đ</h4>
         <a href="{{ route('products.index') }}" class="btn btn-secondary">Tiếp tục mua hàng</a>
         <div class="text-right">
-            <a href="#" class="btn btn-success">Thanh toán</a>
+            <a href="{{ route('checkout') }}" class="btn btn-success">Thanh toán</a>
         </div>
     @else
         <p>Giỏ hàng của bạn đang trống.</p>
