@@ -83,6 +83,9 @@
             <a href="{{ route('cart.index') }}" class="btn-custom btn-cart" style="background: #007bff;">
                 🛒 Giỏ hàng
             </a>
+            <a href="{{ route('users.profile.edit') }}" class="btn-custom btn-cart" style="background: #007bff;">
+                Chỉnh sửa tài khoản
+            </a>
             
             @if(Auth::check())
                 <span>Chào, <strong>{{ Auth::user()->name }}</strong>!</span>

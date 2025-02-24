@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\User;
-
+use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
 
@@ -132,6 +132,50 @@ class UserController extends Controller
 
     // Chuyển hướng lại trang danh sách với thông báo thành công
     return redirect()->route('admin.users.index')->with('success', 'User deleted successfully.');
+}
+
+
+public function editProfile()
+{
+    $user = Auth::user(); // Lấy thông tin người dùng đang đăng nhập
+    return view('users.profile.edit', compact('user')); // Trả về view chỉnh sửa
+}
+
+public function updateProfile(Request $request)
+{
+    $user = Auth::user(); // Lấy thông tin người dùng đang đăng nhập
+
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email,' . $user->id,
+        'phone' => 'nullable|string|max:15',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'address' => 'nullable|string',
+    ]);
+
+    // Cập nhật thông tin
+    $user->name = $request->name;
+    $user->email = $request->email;
+    $user->phone = $request->phone;
+    $user->address = $request->address;
+
+    // Xử lý ảnh mới
+    if ($request->hasFile('image')) {
+        if ($user->image) {
+            $oldImagePath = public_path('storage/' . $user->image);
+            if (file_exists($oldImagePath)) {
+                unlink($oldImagePath);
+            }
+        }
+
+        $imagePath = $request->file('image')->store('images', 'public');
+        $user->image = $imagePath;
+    }
+
+    $user->save(); // Lưu dữ liệu
+
+    return redirect('/')->with('success', 'Profile updated successfully.');
+
 }
 
 }

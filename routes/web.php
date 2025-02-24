@@ -51,6 +51,13 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
 Route::middleware(['auth'])->group(function () {
     Route::get('/user', fn () => view('users.dashboard'))->name('users.dashboard');
 });
+Route::prefix('user/profile')->name('user.profile.')->middleware('auth')->group(function () {
+    Route::get('/edit', [UserController::class, 'editProfile'])->name('edit'); // Chỉnh sửa profile
+    Route::put('/update', [UserController::class, 'updateProfile'])->name('update'); // Cập nhật profile
+    
+});
+
+Route::get('/profile/edit', [UserController::class, 'editProfile'])->name('users.profile.edit');
 
 // ========================= GIỎ HÀNG (CART) =========================
 Route::middleware('auth')->prefix('cart')->name('cart.')->group(function () {
