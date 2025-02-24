@@ -12,7 +12,9 @@
     <link href="{{ asset('assets/jumbotron-narrow.css') }}" rel="stylesheet">
     <script src="{{ asset('assets/jquery-1.11.3.min.js') }}"></script>
 </head>
-
+<p>Xin chào, {{ Auth::user()->name }}!</p>
+<p>Địa chỉ: {{ Auth::user()->address }}</p>
+<p>Số điện thoại: {{ Auth::user()->phone }}</p>
 <body>
     <div class="container">
         <h3 class="text-center">Tạo mới đơn hàng</h3>
@@ -21,7 +23,9 @@
                 @csrf
                 <div class="form-group">
                     <label for="amount">Số tiền</label>
-                    <input class="form-control" id="amount" name="amount" type="number" min="1000" max="100000000" value="10000" required />
+                    <input class="form-control" id="amount" name="amount" type="number" min="1000" max="100000000" 
+       value="{{ request('amount', session('amount', 10000)) }}" required />
+
                 </div>
                 <h4>Chọn phương thức thanh toán</h4>
                 <div class="form-group">

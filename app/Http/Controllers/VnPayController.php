@@ -15,14 +15,13 @@ class VnPayController extends Controller
             'bankCode' => 'nullable|string',
         ]);
 
-        // Lấy thông tin từ request
+       
         $vnp_TxnRef = time(); 
         $vnp_Amount = $request->input('amount') * 100;
         $vnp_Locale = $request->input('language', 'vn');
         $vnp_BankCode = $request->input('bankCode');
         $vnp_IpAddr = $request->ip();
 
-        // Lấy thông tin cấu hình VNPAY từ config
         $vnp_TmnCode = config('vnpay.vnp_TmnCode');
         $vnp_HashSecret = config('vnpay.vnp_HashSecret');
         $vnp_Url = config('vnpay.vnp_Url');
@@ -31,7 +30,7 @@ class VnPayController extends Controller
         $vnp_CreateDate = now()->format('YmdHis');
         $vnp_ExpireDate = now()->addMinutes(30)->format('YmdHis');
 
-        // Dữ liệu gửi đến VNPAY
+       
         $inputData = [
             "vnp_Version" => "2.1.0",
             "vnp_TmnCode" => $vnp_TmnCode,
@@ -52,10 +51,10 @@ class VnPayController extends Controller
             $inputData['vnp_BankCode'] = $vnp_BankCode;
         }
 
-        // Sắp xếp theo key để tạo chữ ký
+       
         ksort($inputData);
 
-        // Tạo hashdata theo đúng format của base PHP cũ
+       
         $hashdata = '';
         $i = 0;
         foreach ($inputData as $key => $value) {
@@ -71,10 +70,7 @@ class VnPayController extends Controller
         $vnp_SecureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);
         $paymentUrl = $vnp_Url . '?' . http_build_query($inputData) . '&vnp_SecureHash=' . $vnp_SecureHash;
 
-        // Log để kiểm tra
-        Log::info('🔑 Hash Data:', ['hashData' => $hashdata]);
-        Log::info('🔑 Secure Hash:', ['vnp_SecureHash' => $vnp_SecureHash]);
-        Log::info('🔗 VNPAY Payment URL:', ['paymentUrl' => $paymentUrl]);
+
 
         return redirect()->away($paymentUrl);
     }
@@ -101,10 +97,7 @@ class VnPayController extends Controller
         $secureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);
         $isValidSignature = ($secureHash === $request->query('vnp_SecureHash'));
 
-        // Log để debug nếu lỗi
-        Log::info('🔍 VNPAY Response Data:', ['received' => $request->all()]);
-        Log::info('🔑 Generated Hash:', ['secureHash' => $secureHash]);
-        Log::info('✅ Signature Valid:', ['isValid' => $isValidSignature]);
+
 
         return view('vnpay.response', [
             'data' => $request->all(),

@@ -41,7 +41,7 @@
                     <th>Mô tả</th>
                     <th>Danh mục</th>
                     <th>Giới tính</th>
-                    <th>Tổng số lượng</th>
+                    <th>Số lượng tồn kho</th>
                     <th>Số biến thể</th>
                     <th>Hành động</th>
                 </tr>

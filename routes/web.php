@@ -12,7 +12,7 @@ use App\Http\Controllers\Admin\Statistics\StatisticsController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\VnPayController;
-
+use Illuminate\Http\Request;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -39,10 +39,15 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::resource('categories', CategoryController::class)->except(['show']);
     Route::resource('products', ProductController::class);
     Route::delete('products/{product}/variants/{variant}', [ProductVariantController::class, 'destroy'])->name('products.variants.destroy');
+// HEAD
+
+    Route::get('products/{id}', [ProductController::class, 'show'])->name('admin.products.show');
+
     Route::resource('users', UserController::class);
     Route::resource('coupons', CouponController::class);
     Route::resource('statistics', StatisticsController::class);
-    
+    Route::get('/products/{product}/variants/create', [ProductVariantController::class, 'create'])->name('variants.create');
+    Route::post('/products/{product}/variants', [ProductVariantController::class, 'store'])->name('variants.store');
 });
 
 
@@ -50,6 +55,13 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
 Route::middleware(['auth'])->group(function () {
     Route::get('/user', fn () => view('users.dashboard'))->name('users.dashboard');
 });
+Route::prefix('user/profile')->name('user.profile.')->middleware('auth')->group(function () {
+    Route::get('/edit', [UserController::class, 'editProfile'])->name('edit'); // Chỉnh sửa profile
+    Route::put('/update', [UserController::class, 'updateProfile'])->name('update'); // Cập nhật profile
+    
+});
+
+Route::get('/profile/edit', [UserController::class, 'editProfile'])->name('users.profile.edit');
 
 // ========================= GIỎ HÀNG (CART) =========================
 Route::middleware('auth')->prefix('cart')->name('cart.')->group(function () {
@@ -70,10 +82,11 @@ Route::prefix('products')->name('products.')->group(function () {
 Route::get('/vnpay', function () {
     return view('vnpay.index');
 })->name('vnpay.index');
-Route::get('/vnpay/pay', function () {
-    return view('vnpay.pay');
-})->name('vnpay.payForm');
-Route::post('/vnpay/pay', [VnPayController::class, 'createPayment'])->name('vnpay.pay');
+Route::get('/vnpay/pay', function (Request $request) {
+    $amount = $request->query('amount', session('amount', 10000)); // Lấy từ URL hoặc session
+    return view('vnpay.pay', compact('amount'));
+})->name('vnpay.pay');
+
 Route::get('/vnpay/query', function () {
     return view('vnpay.query_transaction');
 })->name('vnpay.queryForm');
