@@ -19,7 +19,12 @@ return new class extends Migration
             $table->string('phone', 15)->nullable();
             $table->string('image', 512)->nullable();
             $table->enum('gender', ['male', 'female', 'unisex'])->default('unisex');
-            $table->text('address')->nullable();
+            $table->string('house_number')->nullable(); 
+            $table->string('street')->nullable(); 
+            $table->string('ward')->nullable(); 
+            $table->string('district')->nullable(); 
+            $table->string('city')->nullable(); 
+            $table->string('country')->default('Vietnam'); 
             $table->enum('role', ['user', 'admin'])->default('user');
            
             $table->timestamps();

@@ -73,7 +73,7 @@ Route::middleware('auth')->prefix('cart')->name('cart.')->group(function () {
 
 // ========================= SẢN PHẨM (PRODUCTS) =========================
 Route::get('/categories', [CategoryController::class, 'showCategories'])->name('categories.show');
-Route::prefix('products')->name('products.')->group(function () {
+Route::prefix('/')->name('products.')->group(function () {
     Route::get('/', [UserProductController::class, 'index'])->name('index');
     Route::get('/{product}', [UserProductController::class, 'show'])->name('show');
 });
