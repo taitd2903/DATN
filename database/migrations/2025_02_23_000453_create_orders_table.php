@@ -8,13 +8,18 @@ return new class extends Migration {
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
+            $table->string('customer_name');  
+            $table->string('customer_phone');  
+            $table->text('customer_address');  
+            
             $table->unsignedBigInteger('user_id');
             $table->text('note')->nullable();
             $table->decimal('total_price', 10, 2);
             $table->enum('payment_method', ['cod', 'vnpay']);
-            $table->enum('status', ['pending', 'processing', 'completed', 'cancelled'])->default('pending');
+            $table->enum('status', ['Chờ xác nhận', 'Đang giao', 'Hoàn thành', 'Hủy'])->default('Chờ xác nhận'); // Trạng thái đơn hàng
+            $table->enum('payment_status', ['Chưa thanh toán', 'Đã thanh toán', 'Hoàn tiền'])->default('Chưa thanh toán'); // Trạng thái thanh toán
             $table->timestamps();
-
+            
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }

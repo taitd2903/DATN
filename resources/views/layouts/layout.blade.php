@@ -94,6 +94,12 @@
                         </a>
                     </li>
                     <li>
+                        <a class="nav-link" href="{{ route('admin.orders.index') }}">
+                            <i class="nc-icon nc-pin-3"></i>
+                            <p>Quản lý đơn hàng</p>
+                        </a>
+                    </li>
+                    <li>
                         <a class="nav-link" href="./notifications.html">
                             <i class="nc-icon nc-cart-simple"></i>
                             <p>Combo</p>

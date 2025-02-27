@@ -107,6 +107,12 @@ Route::get('/vnpay/payment_return', [VnPayController::class, 'paymentReturn'])->
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
 Route::post('/checkout/apply-discount', [CheckoutController::class, 'applyDiscount'])->name('checkout.applyDiscount');
 Route::post('/checkout/place-order', [CheckoutController::class, 'placeOrder'])->name('checkout.placeOrder');
+Route::get('/checkout/invoice/{id}', [CheckoutController::class, 'invoice'])->name('checkout.invoice');
 
-
+//admin/oder
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/orders', [CheckoutController::class, 'orderList'])->name('orders.index');
+    Route::get('/orders/{order}/edit-status', [CheckoutController::class, 'editStatus'])->name('orders.editStatus');
+    Route::put('/orders/{order}/update-status', [CheckoutController::class, 'updateStatus'])->name('orders.updateStatus');
+});
 
