@@ -9,6 +9,7 @@
                 <th>ID</th>
                 <th>Khách hàng</th>
                 <th>Số điện thoại</th>
+                <th>Địa chỉ</th>
                 <th>Tổng tiền</th>
                 <th>Trạng thái</th>
                 <th>Hành động</th>
@@ -20,6 +21,7 @@
         <td>{{ $orders->firstItem() + $index }}</td>  <!-- STT bắt đầu từ 1 -->
         <td>{{ $order->customer_name }}</td>
         <td>{{ $order->customer_phone }}</td>
+        <td>{{ $order->note }}</td>
         <td>{{ number_format($order->total_price, 0, ',', '.') }} đ</td>
         <td>
             <span class="badge
@@ -34,7 +36,13 @@
         <td>
             <a href="{{ route('admin.orders.editStatus', $order->id) }}" class="btn btn-info btn-sm">Cập nhật trạng thái</a>
             
+            {{-- <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa đơn hàng này không?');">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+            </form> --}}
         </td>
+        
     </tr>
 @endforeach
 

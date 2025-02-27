@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\CartItem;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\ProductVariant;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class CheckoutController extends Controller
 {
@@ -30,7 +33,7 @@ class CheckoutController extends Controller
         return view('Users.Checkout.index', compact('cartItems', 'totalPrice', 'finalPrice', 'discount', 'user'));
     }
 
-  
+
 
     public function placeOrder(Request $request)
     {
@@ -44,22 +47,22 @@ class CheckoutController extends Controller
             'ward' => 'required|string|max:255',
             'payment_method' => 'required|in:cod,vnpay',
         ]);
-    
+
         $cartItems = CartItem::with(['product', 'variant'])->where('user_id', auth()->id())->get();
         if ($cartItems->isEmpty()) {
             return redirect()->route('cart.index')->with('error', 'Giỏ hàng trống.');
         }
-    
+
         $totalPrice = $cartItems->sum(fn($item) => $item->price * $item->quantity);
         $discount = min(session('discount', 0), $totalPrice);
         $finalPrice = $totalPrice - $discount;
-    
+
         if ($finalPrice <= 0) {
             return redirect()->route('cart.index')->with('error', 'Tổng giá trị đơn hàng không hợp lệ.');
         }
-    
+
         $note = "Địa chỉ: {$validated['address']}, {$request->ward_name}, {$request->district_name}, {$request->province_name}";
-    
+
         $order = Order::create([
             'user_id' => auth()->id(),
             'note' => $note,
@@ -71,7 +74,7 @@ class CheckoutController extends Controller
             'customer_address' => $request->address,
             'payment_status' => "Chưa thanh toán"
         ]);
-    
+
         // Lưu sản phẩm vào order_items và cập nhật kho hàng
         foreach ($cartItems as $item) {
             OrderItem::create([
@@ -81,51 +84,51 @@ class CheckoutController extends Controller
                 'quantity' => $item->quantity,
                 'price' => $item->price,
             ]);
-    
+
             // Cập nhật tồn kho
             if ($item->variant) {
                 $variant = $item->variant;
-    
+
                 if ($variant->stock_quantity < $item->quantity) {
                     return redirect()->route('cart.index')->with('error', 'Biến thể "' . $variant->name . '" không đủ số lượng trong kho.');
                 }
-    
+
                 $variant->stock_quantity -= $item->quantity;
                 $variant->sold_quantity += $item->quantity;
-    
+
                 // Nếu hết hàng, chỉ đặt stock_quantity = 0 (không dùng is_available)
                 if ($variant->stock_quantity <= 0) {
                     $variant->stock_quantity = 0;
                 }
-    
+
                 $variant->save();
             } else {
                 $product = $item->product;
-    
+
                 if ($product->stock_quantity < $item->quantity) {
                     return redirect()->route('cart.index')->with('error', 'Sản phẩm "' . $product->name . '" không đủ số lượng trong kho.');
                 }
-    
+
                 $product->stock_quantity -= $item->quantity;
                 $product->sold_quantity += $item->quantity;
-    
+
                 // Nếu hết hàng, chỉ đặt stock_quantity = 0 (không dùng is_available)
                 if ($product->stock_quantity <= 0) {
                     $product->stock_quantity = 0;
                 }
-    
+
                 $product->save();
             }
         }
-    
+
         // Xóa giỏ hàng sau khi đặt hàng
         CartItem::where('user_id', auth()->id())->delete();
         session()->forget('discount');
-    
+
         return redirect()->route('checkout.invoice', ['id' => $order->id])
             ->with('success', 'Đơn hàng đã được đặt thành công!');
     }
-    
+
 
 
     // Hiển thị sang trang invoice
@@ -134,16 +137,17 @@ class CheckoutController extends Controller
         $order = Order::with(['orderItems.product', 'orderItems.variant', 'user'])->findOrFail($id);
 
 
-        
+
         return view('Users.Checkout.invoice', compact('order'));
     }
 
     // Hiển thị danh sách đơn hàng
     public function orderList()
     {
-        $orders = Order::latest()->paginate(10);
+        $orders = Order::oldest()->paginate(10); // Sắp xếp theo thời gian tạo đơn (cũ nhất trước)
         return view('admin.orders.index', compact('orders'));
     }
+
 
     // Trang chỉnh sửa trạng thái đơn hàng
     public function editStatus(Order $order)
@@ -158,13 +162,69 @@ class CheckoutController extends Controller
         $request->validate([
             'status' => 'required|in:Chờ xác nhận,Đang giao,Hoàn thành,Hủy',
         ]);
-    
+
         $order->update(['status' => $request->status]);
-    
+
         return redirect()->route('admin.orders.index')->with('success', 'Cập nhật trạng thái thành công!');
     }
 
-    
-    
-   
+
+    public function orderTracking()
+    {
+        $orders = Order::where('user_id', Auth::id())->with('orderItems.product')->get();
+        return view('users.tracking.order_tracking', compact('orders'));
+    }
+
+    public function cancelOrder(Order $order)
+    {
+        if ($order->user_id !== Auth::id()) {
+            return redirect()->back()->with('error', 'Bạn không có quyền hủy đơn này!');
+        }
+
+        if ($order->status !== 'Chờ xác nhận') {
+            return redirect()->back()->with('error', 'Đơn hàng đang vận chuyển, không thể hủy!');
+        }
+
+        DB::transaction(function () use ($order) {
+            foreach ($order->orderItems as $item) {
+                $variant = $item->variant;
+                if ($variant) {
+                    $variant->stock_quantity += $item->quantity;
+                    $variant->save();
+                } else {
+                    $product = $item->product;
+                    if ($product) {
+                        $product->stock_quantity += $item->quantity;
+                        $product->sold_quantity -= $item->quantity;
+                        $product->save();
+                    }
+                }
+            }
+
+            $order->status = 'Hủy';
+            $order->save();
+        });
+
+        return redirect()->back()->with('success', 'Đơn hàng đã được hủy thành công.');
+    }
+
+
+
+
+
+
+
+    //xoá ở quản lý đơn  hàng admin
+    // public function destroy($id)
+    // {
+    //     $order = Order::findOrFail($id);
+    //     $order->delete();
+
+    //     return redirect()->route('admin.orders.index')->with('success', 'Đơn hàng đã được xóa thành công!');
+    // }
+
+
+
+
+
 }

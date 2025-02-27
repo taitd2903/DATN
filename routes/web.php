@@ -114,5 +114,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/orders', [CheckoutController::class, 'orderList'])->name('orders.index');
     Route::get('/orders/{order}/edit-status', [CheckoutController::class, 'editStatus'])->name('orders.editStatus');
     Route::put('/orders/{order}/update-status', [CheckoutController::class, 'updateStatus'])->name('orders.updateStatus');
+   // Route::delete('/orders/{id}', [CheckoutController::class, 'destroy'])->name('orders.destroy'); //xoá ở phần amin
+    
 });
-
+Route::middleware(['auth'])->group(function () {
+    Route::get('users/tracking/order_tracking', [CheckoutController::class, 'orderTracking'])->name('order.tracking');
+    Route::post('users/tracking/order_tracking/cancel/{order}', [CheckoutController::class, 'cancelOrder'])->name('order.cancel');
+});

@@ -78,34 +78,38 @@
 </head>
 <body>
     <header>
-       <a href="/"><img src="../assets/img/Logo.svg" alt="Logo"></a> 
-        <div class="user-info">
-            <a href="{{ route('cart.index') }}" class="btn-custom btn-cart" style="background: #007bff;">
-                🛒 Giỏ hàng
-            </a>
-           
+        <a href="/"><img src="../assets/img/Logo.svg" alt="Logo"></a> 
+         <div class="user-info">
+             <a href="{{ route('cart.index') }}" class="btn-custom btn-cart" style="background: #007bff;">
+                 🛒 Giỏ hàng
+             </a>
             
-            @if(Auth::check())
-                <span>Chào, <strong>{{ Auth::user()->name }}</strong>!</span>
-                @if(auth()->user()->role === 'admin')
-                    <a href="{{ route('admin.dashboard') }}" class="btn-custom btn-admin">Chuyển sang Admin</a>
-                @endif
-                <a href="{{ route('users.profile.edit') }}" class="btn-custom btn-cart" style="background: #007bff;">
-                    Chỉnh sửa tài khoản
-                </a>
-                <a href="{{ route('logout') }}"
-                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
-                   class="btn-custom btn-logout">
-                    Đăng xuất
-                </a>
-                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                    @csrf
-                </form>
-            @else
-                <a href="{{ route('login') }}" class="btn-custom btn-login">Đăng nhập</a>
-            @endif
-        </div>
-    </header>
+             @if(Auth::check())
+                 <span>Chào, <strong>{{ Auth::user()->name }}</strong>!</span>
+                 <a href="{{ route('order.tracking') }}" class="btn-custom btn-tracking" style="background: #17a2b8;">
+
+                     📦 Theo dõi đơn hàng
+                 </a>
+                 @if(auth()->user()->role === 'admin')
+                     <a href="{{ route('admin.dashboard') }}" class="btn-custom btn-admin">Chuyển sang Admin</a>
+                 @endif
+                 <a href="{{ route('users.profile.edit') }}" class="btn-custom btn-cart" style="background: #007bff;">
+                     Chỉnh sửa tài khoản
+                 </a>
+                 <a href="{{ route('logout') }}"
+                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                    class="btn-custom btn-logout">
+                     Đăng xuất
+                 </a>
+                 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                     @csrf
+                 </form>
+             @else
+                 <a href="{{ route('login') }}" class="btn-custom btn-login">Đăng nhập</a>
+             @endif
+         </div>
+     </header>
+     
 
     <main>
         @yield('content')

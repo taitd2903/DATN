@@ -46,5 +46,9 @@
         </table>
 
         {{-- <a href="{{ route('/') }}" class="btn btn-primary mt-3">Quay lại</a> --}}
+
+        
     </div>
 @endsection
+
+

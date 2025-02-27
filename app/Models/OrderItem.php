@@ -17,14 +17,24 @@ class OrderItem extends Model
         'variant_id',
         'is_available'
      ];
-     public function product()
-{
-    return $this->belongsTo(Product::class);
-}
+    // Quan hệ với Product
+    public function product()
+    {
+        return $this->belongsTo(Product::class, 'product_id' ,'id');
+    }
 
-public function variant()
-{
-    return $this->belongsTo(ProductVariant::class, 'variant_id');
-}
+    // Quan hệ với ProductVariant (nếu có)
+    public function variant()
+    {
+        return $this->belongsTo(ProductVariant::class, 'variant_id', 'id');
+    }
+    
+
+
+    // Quan hệ với Order
+    public function order()
+    {
+        return $this->belongsTo(Order::class, 'order_id');
+    }
 
 }
