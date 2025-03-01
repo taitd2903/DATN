@@ -1,96 +1,86 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1>Giỏ hàng của bạn</h1>
+    <div class="cart-container">
+        <h2>Giỏ hàng của bạn</h2>
 
-    {{-- Kiểm tra xem có thông báo thành công nào từ session không --}}
-    @if (session('success'))
-        <div class="alert alert-success" id="success-message">
-            {{ session('success') }} {{-- Hiển thị thông báo thành công --}}
-        </div>
-        <script>
-            // Tự động ẩn thông báo sau 3 giây
-            setTimeout(function() {
-                document.getElementById('success-message').style.display = 'none';
-            }, 3000);
-        </script>
-    @endif
+        @if (session('success'))
+            <div class="alert alert-success" id="success-message">
+                {{ session('success') }}
+            </div>
+            <script>
+                setTimeout(function () {
+                    document.getElementById('success-message').style.display = 'none';
+                }, 3000);
+            </script>
+        @endif
 
-    {{-- Kiểm tra xem giỏ hàng có sản phẩm hay không --}}
-    @if ($cartItems->count() > 0)
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Sản phẩm</th>
-                    <th>Hình Ảnh</th>
-                    <th>Biến thể</th>
-                    <th>Giá</th>
-                    <th>Số lượng</th>
-                    <th>Thành tiền</th>
-                    <th>Hành động</th>
-                </tr>
-            </thead>
-            <tbody>
-                @php $total = 0; @endphp {{-- Khởi tạo tổng tiền giỏ hàng --}}
-                @foreach ($cartItems as $item)
-                    @php
-                        $subtotal = $item->quantity * $item->price; // Tính thành tiền của mỗi sản phẩm
-                        $total += $subtotal; // Cộng dồn vào tổng tiền
-                    @endphp
+        @if ($cartItems->count() > 0)
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/cart.css') }}">
+            <table class="cart-table">
+                <thead>
                     <tr>
-                        <td>{{ $item->product->name }}</td>
-                        <td>
-                            {{-- <img src="{{ asset('storage/' . $item->product->image) }}" alt="{{ $item->product->name }}" width="80" height="80" style="object-fit: cover; border-radius: 8px;"> --}}
-                            <img id="product-image" src="{{ $item->product->image }}" alt="{{ $item->product->name }}" width="80" height="80">
-                        </td>
-                        <td>{{ $item->variant->size }} / {{ $item->variant->color }}</td>
-                        <td>{{ number_format($item->price, 0, ',', '.') }} đ</td>
-                        <td>
-                            {{-- Form cập nhật số lượng sản phẩm --}}
-                            <form action="{{ route('cart.update', $item->id) }}" method="POST" class="update-form">
-                                @csrf
-                                @method('PATCH')
-                                <div class="quantity-container">
-                                    {{-- Nút giảm số lượng --}}
-                                    <button type="button" class="btn btn-sm btn-secondary decrement" data-id="{{ $item->id }}">-</button>
-                                    {{-- Input số lượng --}}
-                                    <input type="number" name="quantity" value="{{ $item->quantity }}" min="1"
-                                        max="{{ $item->variant->stock_quantity }}" class=" quantity-input"
-                                        data-id="{{ $item->id }}" style="width: 50px; text-align: center;">
-                                    {{-- Nút tăng số lượng --}}
-                                    <button type="button" class="btn btn-sm btn-secondary increment" data-id="{{ $item->id }}">+</button>
-                                </div>
-                            </form>
-                        </td>
-                        <td>{{ number_format($subtotal, 0, ',', '.') }} đ</td> {{-- Thành tiền của sản phẩm --}}
-                        <td>
-                            {{-- Form xoá sản phẩm khỏi giỏ hàng --}}
-                            <form action="{{ route('cart.remove', $item->id) }}" method="POST">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-danger">Xóa</button>
-                            </form>
-                        </td>
+                        <th>Sản phẩm</th>
+                        <th>Hình ảnh</th>
+                        <th>Biến thể</th>
+                        <th>Giá</th>
+                        <th>Số lượng</th>
+                        <th>Thành tiền</th>
+                        <th>Hành động</th>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
-        <h4 class="text-right">Tổng tiền: <span id="total-price">{{ number_format($total, 0, ',', '.') }}</span> đ</h4>
-        <a href="{{ route('products.index') }}" class="btn btn-secondary">Tiếp tục mua hàng</a>
-        <div class="text-right">
+                </thead>
+                <tbody>
+                    @php $total = 0; @endphp
+                    @foreach ($cartItems as $item)
+                        @php
+                            $subtotal = $item->quantity * $item->price;
+                            $total += $subtotal;
+                        @endphp
+                        <tr>
+                            <td>{{ $item->product->name }}</td>
+                            
+                            <td><img src="{{ asset('storage/' . $item->variant->image) }}" style="width: 80px; height: 80px;" ></td>
+                            <td>{{ $item->variant->size }} / {{ $item->variant->color }}</td>
+                            <td>{{ number_format($item->price, 0, ',', '.') }} đ</td>
+                            <td>
+                                <form action="{{ route('cart.update', $item->id) }}" method="POST" class="update-form">
+                                    @csrf
+                                    @method('PATCH')
+                                    <div class="quantity-container">
+                                        <button type="button" class="btn decrement" data-id="{{ $item->id }}">-</button>
+                                        <input type="number" name="quantity" value="{{ $item->quantity }}" min="1"
+                                            max="{{ $item->variant->stock_quantity }}" class="quantity-input"
+                                            data-id="{{ $item->id }}">
+                                        <button type="button" class="btn increment" data-id="{{ $item->id }}">+</button>
+                                    </div>
+                                </form>
+                            </td>
+                            <td>{{ number_format($subtotal, 0, ',', '.') }} đ</td>
+                            <td>
+                                <form action="{{ route('cart.remove', $item->id) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger">Xóa</button>
+                                </form>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
 
-            <a href="{{ route('checkout') }}" class="btn btn-success">Thanh toán</a>
+            <h4 class="text-right">Tổng tiền: <span id="total-price">{{ number_format($total, 0, ',', '.') }}</span> đ</h4>
+            <div class="cart-actions">
+                <a href="{{ route('products.index') }}" class="btn btn-secondary">Tiếp tục mua hàng</a>
+                <a href="{{ route('checkout') }}" class="btn btn-success">Thanh toán</a>
+            </div>
+        @else
+            <p>Giỏ hàng của bạn đang trống.</p>
+        @endif
+    </div>
 
-            <a href="{{ route('vnpay.pay', ['amount' => $total]) }}" class="btn btn-success">Thanh toán</a>
-
-
-
-        </div>
-    @else
-        <p>Giỏ hàng của bạn đang trống.</p>
-    @endif
-
-    <script>
+     <script>
         document.addEventListener("DOMContentLoaded", function() {
             // Đăng ký sự kiện click cho các nút tăng và giảm số lượng
             document.querySelectorAll(".increment, .decrement").forEach(button => {
@@ -116,5 +106,6 @@
             });
         });
     </script>
+
 
 @endsection

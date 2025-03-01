@@ -1,0 +1,30 @@
+/* * CHI TIET SP */ 
+.container{
+    margin-top: 20px;
+    /* display: flex; */
+    /* justify-content: center; */
+}
+.color-box {
+    margin-top: 30px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+    cursor: pointer;
+}
+
+.img-thumbnail {
+    width: 150px;
+    height: 200px;
+    cursor: pointer;
+}
+
+.rating-box {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+}
+.img-fluid{
+    margin-left: 50px;
+    margin-right: 20px;
+}

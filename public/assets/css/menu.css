@@ -1,0 +1,107 @@
+/* Định dạng header */
+.navbar {
+    height: 100px;
+    /* background-color: #f8f9fa; */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+}
+
+/* Logo */
+.navbar .logo img {
+    height: 60px;
+    /* margin-left: 100px; */
+}
+
+/* Menu chính */
+.menu {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    /* background: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); */
+    margin-left: -85px;
+    margin-top: 25px;
+}
+
+.menu li {
+    position: relative;
+}
+
+.menu a {
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* SALE màu đỏ */
+.menu a.sale {
+    color: brown;
+}
+
+/* Dropdown menu */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    min-width: 150px;
+    padding: 10px 0;
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+/* Thanh tìm kiếm */
+.search-box {
+    display: flex;
+    align-items: center;
+    background: #f1f1f1;
+    padding: 5px 5px;
+    border-radius: 20px;
+    width: 250px;
+    height: -5px;
+    margin-left: -100px;
+    margin-top: 10px;
+}
+
+.search-box input {
+    border: none;
+    background: none;
+    outline: none;
+    flex: 1;
+    padding: 5px;
+
+}
+
+.search-box button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: gray;
+}
+
+/* Icon bên phải */
+.icons {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+   
+}
+
+.icons i {
+    font-size: 22px;
+    cursor: pointer;
+    /* margin-left: -70px; */
+    /* margin-right: 100px; */
+}

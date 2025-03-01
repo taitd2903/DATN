@@ -1,0 +1,136 @@
+/* ==================== PHẦN TỔNG QUAN ==================== */
+.sale-section {
+    background: #f9fcff;
+    padding: 20px;
+    border-radius: 10px;
+    position: relative;
+}
+
+.sale-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.sale-title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #d32f2f;
+}
+
+.view-more {
+    font-size: 16px;
+    color: black;
+    text-decoration: none;
+}
+
+/* ==================== PHẦN SLIDER ==================== */
+.sale-slider {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    gap: 15px;
+}
+
+.sale-item {
+    background: white;
+    border-radius: 15px;
+    padding: 15px;
+    width: 250px;
+    text-align: center;
+    flex: 0 0 auto;
+    position: relative;
+}
+
+/* ==================== HÌNH ẢNH VÀ HIỆU ỨNG HOVER ==================== */
+.sale-image {
+    position: relative;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.sale-image img {
+    width: 100%;
+    border-radius: 10px;
+    transition: transform 0.3s ease-in-out;
+}
+
+/* ==================== LỚP PHỦ OVERLAY ==================== */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.buy-now {
+    background: white;
+    color: black;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 10px 15px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+}
+
+/* ==================== HOVER: HIỆN MUA NGAY + PHÓNG TO ẢNH ==================== */
+.sale-image:hover .overlay {
+    opacity: 1;
+}
+
+.sale-image:hover img {
+    transform: scale(1.1);
+}
+
+/* ==================== THÔNG TIN SẢN PHẨM ==================== */
+.sale-info h3 {
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.price {
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.price del {
+    color: grey;
+}
+
+.price span {
+    color: red;
+    font-weight: bold;
+}
+
+/* ==================== NÚT TRÁI / PHẢI ==================== */
+.prev-btn, .next-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: white;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 50%;
+}
+
+.prev-btn {
+    left: 0;
+}
+
+.next-btn {
+    right: 0;
+}

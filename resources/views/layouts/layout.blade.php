@@ -50,7 +50,7 @@
             <div class="sidebar-wrapper">
                 <div class="logo">
                     <a href="{{ route('admin.statistics.index') }}" class="simple-text">
-                        {{-- <img src="../assets/img/Logo.svg" alt="Logo"> --}}
+                        {{-- <img src="../assets/img/logo.png" alt="Logo"> --}}
                         <h4>Ocean Sports</h4>
 
                     </a>
@@ -91,12 +91,6 @@
                         <a class="nav-link" href="{{ route('admin.coupons.index') }}">
                             <i class="nc-icon nc-pin-3"></i>
                             <p>Hóa đơn</p>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="nav-link" href="{{ route('admin.orders.index') }}">
-                            <i class="nc-icon nc-pin-3"></i>
-                            <p>Quản lý đơn hàng</p>
                         </a>
                     </li>
                     <li>
