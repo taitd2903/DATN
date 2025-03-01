@@ -72,7 +72,7 @@
                         <strong>Số lượng:</strong> {{ $item->quantity }} <br>
                         <strong>Size:</strong> {{ $item->variant->size ?? 'Không có' }} <br>
                         <strong>Màu sắc:</strong> {{ $item->variant->color ?? 'Không có' }} <br>
-                        <strong>Thành tiền:</strong> {{ number_format($item->price, 0, ',', '.') }} VND
+                        <strong>Giá:</strong> {{ number_format($item->price, 0, ',', '.') }} VND
                     </li>
                 @endforeach
             </ul>
@@ -81,17 +81,17 @@
 
             <!-- Nhập mã giảm giá -->
             <h4>Nhập mã giảm giá</h4>
-            <input type="text" name="discount_code" placeholder="Nhập mã giảm giá">
-            <button type="submit" formaction="{{ route('checkout.applyDiscount') }}">Áp dụng</button>
+            <input type="text" id="coupon_code" name="coupon_code" class="form-control" placeholder="Mã giảm giá">
+        <button type="button" id="apply_coupon_btn" class="btn btn-primary mt-2">Áp dụng</button>
+        <div id="coupon_message" class="mt-2"></div>
 
-            @if (session('discount'))
-                <p style="color: green;">Mã giảm giá đã được áp dụng:
-                    -{{ number_format(session('discount'), 0, ',', '.') }} VND</p>
-                <h4><strong>Tổng sau khi giảm: {{ number_format($totalPrice - session('discount'), 0, ',', '.') }}
-                        VND</strong></h4>
-            @endif
-
-            <h4><strong>Tổng giá trị: {{ number_format($totalPrice, 0, ',', '.') }} VND</strong></h4>
+        <div class="price-summary mt-4">
+            <p>Tổng tiền trước giảm: <span id="total_price">{{ number_format($totalPrice, 0, ',', '.') }} VNĐ</span></p>
+            <p>Số tiền giảm: <span id="discount_amount">0 VNĐ</span></p>
+            <h4>Thành tiền: <span id="final_price">{{ number_format($totalPrice, 0, ',', '.') }} VNĐ</span></h4>
+        </div>
+        <!-- Hidden input để lưu finalPrice cho form thanh toán -->
+        <input type="hidden" name="final_price" id="hidden_final_price" value="{{ $totalPrice }}">
 
             <h4>Chọn phương thức thanh toán:</h4>
             <input type="radio" name="payment_method" value="cod" checked> Thanh toán khi nhận hàng (COD)
@@ -100,7 +100,52 @@
             <button type="submit" class="btn btn-success">Thanh toán</button>
 
         </form>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const applyCouponBtn = document.getElementById('apply_coupon_btn');
+        const couponCodeInput = document.getElementById('coupon_code');
+        const couponMessage = document.getElementById('coupon_message');
+        const totalPriceElement = document.getElementById('total_price');
+        const discountAmountElement = document.getElementById('discount_amount');
+        const finalPriceElement = document.getElementById('final_price');
+        const hiddenFinalPrice = document.getElementById('hidden_final_price');
 
+        let totalPrice = {{ $totalPrice }}; // Tổng tiền trước giảm từ server
+
+        applyCouponBtn.addEventListener('click', function () {
+            const couponCode = couponCodeInput.value.trim();
+
+            // Gửi yêu cầu Ajax
+            fetch('{{ route("checkout.applyCoupon") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ coupon_code: couponCode })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Cập nhật giao diện khi áp dụng mã thành công
+                    couponMessage.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+                    discountAmountElement.textContent = `${data.discount_amount.toLocaleString('vi-VN')} VNĐ`;
+                    finalPriceElement.textContent = `${data.final_price.toLocaleString('vi-VN')} VNĐ`;
+                    hiddenFinalPrice.value = data.final_price; // Cập nhật giá trị để gửi form
+                } else {
+                    // Hiển thị thông báo lỗi
+                    couponMessage.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
+                    discountAmountElement.textContent = '0 VNĐ';
+                    finalPriceElement.textContent = `${totalPrice.toLocaleString('vi-VN')} VNĐ`;
+                    hiddenFinalPrice.value = totalPrice;
+                }
+            })
+            .catch(error => {
+                couponMessage.innerHTML = `<div class="alert alert-danger">Đã có lỗi xảy ra. Vui lòng thử lại.</div>`;
+            });
+        });
+    });
+</script>
 
         {{-- Đổ dữ liệu API về tỉnh ,thành phố, xã --}}
         <script>
@@ -166,6 +211,5 @@
                 document.getElementById("ward_name").value = wardName; // Gán tên xã vào input ẩn
             });
         </script>
-
     </div>
 @endsection

@@ -38,17 +38,22 @@
 
         <div class="mb-3">
             <label for="start_date" class="form-label">Ngày bắt đầu:</label>
-            <input type="date" class="form-control" name="start_date" id="start_date" value="{{ old('start_date', $coupon->start_date) }}" required>
+            <input type="date" class="form-control" name="start_date" id="start_date" value="{{ old('start_date', optional($coupon->start_date)->format('Y-m-d')) }}" required>
         </div>
 
         <div class="mb-3">
             <label for="end_date" class="form-label">Ngày hết hạn:</label>
-            <input type="date" class="form-control" name="end_date" id="end_date" value="{{ old('end_date', $coupon->end_date) }}" required>
+            <input type="date" class="form-control" name="end_date" id="end_date" value="{{ old('end_date', optional($coupon->end_date)->format('Y-m-d')) }}" required>
         </div>
 
         <div class="mb-3">
             <label for="usage_limit" class="form-label">Số lần sử dụng tối đa:</label>
             <input type="number" class="form-control" name="usage_limit" id="usage_limit" value="{{ old('usage_limit', $coupon->usage_limit) }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="usage_per_user" class="form-label">Số lần sử dụng mỗi người:</label>
+            <input type="number" class="form-control" name="usage_per_user" id="usage_per_user" value="{{ old('usage_per_user', $coupon->usage_per_user) }}" required>
         </div>
 
         <div class="mb-3">

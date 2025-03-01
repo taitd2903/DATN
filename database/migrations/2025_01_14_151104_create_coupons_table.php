@@ -29,6 +29,7 @@ return new class extends Migration
             $table->integer('user_voucher_limit')->default(1) // Loại đối tượng áp dụng
                 ->comment('1: Tất cả; 2: Người cụ thể; 3: Giới tính');
             $table->string('title', 255); // Tiêu đề coupon
+            $table->string('gender')->nullable()->comment('male: Nam, female: Nữ');
             $table->timestamps(); // Thời gian tạo và cập nhật
         });
     }
