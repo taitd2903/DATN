@@ -28,7 +28,7 @@ return new class extends Migration
             $table->integer('max_discount_amount')->nullable(); // Giảm tối đa (nếu là %)
             $table->integer('user_voucher_limit')->default(1) // Loại đối tượng áp dụng
                 ->comment('1: Tất cả; 2: Người cụ thể; 3: Giới tính');
-            $table->string('title', 255); // Tiêu đề coupon
+            $table->string('title', 255)->nullable();; // Tiêu đề coupon
             $table->string('gender')->nullable()->comment('male: Nam, female: Nữ');
             $table->timestamps(); // Thời gian tạo và cập nhật
         });

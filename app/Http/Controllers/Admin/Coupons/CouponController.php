@@ -39,7 +39,33 @@ class CouponController extends Controller
             'max_discount_amount' => 'nullable|integer|min:0',
             'user_voucher_limit' => 'required|integer|in:1,2,3', // 1: Tất cả, 2: Người cụ thể, 3: Giới tính
             'selected_users' => 'nullable|array',  // Danh sách ID người dùng (chỉ khi chọn "Người dùng cụ thể")
-            'title' => 'required|string|max:255'
+            'title' => 'nullable|string|max:255'
+        ],[
+            'code.required' => 'Mã giảm giá không được để trống.',
+            'code.max' => 'Mã giảm giá không được vượt quá 255 ký tự.',
+            'code.unique' => 'Mã giảm giá đã tồn tại.',
+            'discount_type.required' => 'Vui lòng nhập loại giảm giá.',
+            'discount_type.in' => 'Loại giảm giá không hợp lệ.',
+            'discount_value.required' => 'Giá trị giảm không được để trống.',
+            'discount_value.numeric' => 'Giá trị giảm phải là số.',
+            'discount_value.min' => 'Giá trị giảm không thể nhỏ hơn 0.',
+            'start_date.required' => 'Ngày bắt đầu không được để trống.',
+            'start_date.after_or_equal' => 'Ngày bắt đầu phải từ hôm nay trở đi.',
+            'end_date.required' => 'Ngày kết thúc không được để trống.',
+            'end_date.after' => 'Ngày kết thúc phải sau ngày bắt đầu.',
+            'usage_limit.required' => 'Số lượng không được để trống.',
+            'usage_limit.integer' => 'Số lượng phải là số nguyên.',
+            'usage_limit.min' => 'Số lượng ít nhất là 1.',
+            'usage_per_user.required' => 'Số lần sử dụng mỗi người không được để trống.',
+            'usage_per_user.integer' => 'Số lần sử dụng phải là số nguyên.',
+            'usage_per_user.min' => 'Số lần sử dụng phải ít nhất là 1.',
+            'status.required' => 'Trạng thái không được để trống.',
+            'status.in' => 'Trạng thái không hợp lệ.',
+            'max_discount_amount.integer' => 'Mức giảm tối đa phải là số nguyên.',
+            'max_discount_amount.min' => 'Mức giảm tối đa không thể nhỏ hơn 0.',
+            'user_voucher_limit.required' => 'Giới hạn người dùng không được để trống.',
+            'user_voucher_limit.in' => 'Giới hạn người dùng không hợp lệ.',
+            'selected_users.array' => 'Danh sách người dùng không hợp lệ.',
         ]);
 
         // Tạo coupon mới
@@ -76,7 +102,33 @@ class CouponController extends Controller
             'max_discount_amount' => 'nullable|integer|min:0',
             'user_voucher_limit' => 'required|integer|in:1,2,3', // 1: Tất cả, 2: Người cụ thể, 3: Giới tính
             'selected_users' => 'nullable|array',  // Danh sách ID người dùng (chỉ khi chọn "Người dùng cụ thể")
-            'title' => 'required|string|max:255'
+            'title' => 'nullable|string|max:255'
+        ],[
+            'code.required' => 'Mã giảm giá không được để trống.',
+            'code.max' => 'Mã giảm giá không được vượt quá 255 ký tự.',
+            'code.unique' => 'Mã giảm giá đã tồn tại.',
+            'discount_type.required' => 'Vui lòng nhập loại giảm giá.',
+            'discount_type.in' => 'Loại giảm giá không hợp lệ.',
+            'discount_value.required' => 'Giá trị giảm không được để trống.',
+            'discount_value.numeric' => 'Giá trị giảm phải là số.',
+            'discount_value.min' => 'Giá trị giảm không thể nhỏ hơn 0.',
+            'start_date.required' => 'Ngày bắt đầu không được để trống.',
+            'start_date.after_or_equal' => 'Ngày bắt đầu phải từ hôm nay trở đi.',
+            'end_date.required' => 'Ngày kết thúc không được để trống.',
+            'end_date.after' => 'Ngày kết thúc phải sau ngày bắt đầu.',
+            'usage_limit.required' => 'Số lượng không được để trống.',
+            'usage_limit.integer' => 'Số lượng phải là số nguyên.',
+            'usage_limit.min' => 'Số lượng ít nhất là 1.',
+            'usage_per_user.required' => 'Số lần sử dụng mỗi người không được để trống.',
+            'usage_per_user.integer' => 'Số lần sử dụng phải là số nguyên.',
+            'usage_per_user.min' => 'Số lần sử dụng phải ít nhất là 1.',
+            'status.required' => 'Trạng thái không được để trống.',
+            'status.in' => 'Trạng thái không hợp lệ.',
+            'max_discount_amount.integer' => 'Mức giảm tối đa phải là số nguyên.',
+            'max_discount_amount.min' => 'Mức giảm tối đa không thể nhỏ hơn 0.',
+            'user_voucher_limit.required' => 'Giới hạn người dùng không được để trống.',
+            'user_voucher_limit.in' => 'Giới hạn người dùng không hợp lệ.',
+            'selected_users.array' => 'Danh sách người dùng không hợp lệ.',
         ]);
 
         // Cập nhật dữ liệu
