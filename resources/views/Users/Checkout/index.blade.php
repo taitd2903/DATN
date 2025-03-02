@@ -82,16 +82,19 @@
             <!-- Nhập mã giảm giá -->
             <h4>Nhập mã giảm giá</h4>
             <input type="text" id="coupon_code" name="coupon_code" class="form-control" placeholder="Mã giảm giá">
-        <button type="button" id="apply_coupon_btn" class="btn btn-primary mt-2">Áp dụng</button>
-        <div id="coupon_message" class="mt-2"></div>
-
-        <div class="price-summary mt-4">
-            <p>Tổng tiền trước giảm: <span id="total_price">{{ number_format($totalPrice, 0, ',', '.') }} VNĐ</span></p>
-            <p>Số tiền giảm: <span id="discount_amount">0 VNĐ</span></p>
-            <h4>Thành tiền: <span id="final_price">{{ number_format($totalPrice, 0, ',', '.') }} VNĐ</span></h4>
-        </div>
-        <!-- Hidden input để lưu finalPrice cho form thanh toán -->
-        <input type="hidden" name="final_price" id="hidden_final_price" value="{{ $totalPrice }}">
+            <button type="button" id="apply_coupon_btn" class="btn btn-primary mt-2">Áp dụng</button>
+            <div id="applied_coupons" class="mt-2">
+                {{-- List mã giảm giá --}}
+            </div>
+            <div id="coupon_message" class="mt-2"></div>
+            <div class="price-summary mt-4">
+                <p>Tổng tiền trước giảm: <span id="total_price">{{ number_format($totalPrice, 0, ',', '.') }} VNĐ</span>
+                </p>
+                <p>Số tiền giảm: <span id="discount_amount">0 VNĐ</span></p>
+                <h4>Thành tiền: <span id="final_price">{{ number_format($totalPrice, 0, ',', '.') }} VNĐ</span></h4>
+            </div>
+            <!-- Hidden input để lưu finalPrice cho form thanh toán -->
+            <input type="hidden" name="final_price" id="hidden_final_price" value="{{ $totalPrice }}">
 
             <h4>Chọn phương thức thanh toán:</h4>
             <input type="radio" name="payment_method" value="cod" checked> Thanh toán khi nhận hàng (COD)
@@ -100,52 +103,162 @@
             <button type="submit" class="btn btn-success">Thanh toán</button>
 
         </form>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const applyCouponBtn = document.getElementById('apply_coupon_btn');
-        const couponCodeInput = document.getElementById('coupon_code');
-        const couponMessage = document.getElementById('coupon_message');
-        const totalPriceElement = document.getElementById('total_price');
-        const discountAmountElement = document.getElementById('discount_amount');
-        const finalPriceElement = document.getElementById('final_price');
-        const hiddenFinalPrice = document.getElementById('hidden_final_price');
+        <style>
+            #applied_coupons {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                /* Cho phép wrap nếu danh sách dài */
+                gap: 10px;
+                /* Khoảng cách giữa các mã */
+            }
 
-        let totalPrice = {{ $totalPrice }}; // Tổng tiền trước giảm từ server
+            .applied-coupon {
+                display: flex;
+                align-items: center;
+            }
 
-        applyCouponBtn.addEventListener('click', function () {
-            const couponCode = couponCodeInput.value.trim();
+            .applied-coupon .badge {
+                font-size: 14px;
+            }
 
-            // Gửi yêu cầu Ajax
-            fetch('{{ route("checkout.applyCoupon") }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({ coupon_code: couponCode })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Cập nhật giao diện khi áp dụng mã thành công
-                    couponMessage.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
-                    discountAmountElement.textContent = `${data.discount_amount.toLocaleString('vi-VN')} VNĐ`;
-                    finalPriceElement.textContent = `${data.final_price.toLocaleString('vi-VN')} VNĐ`;
-                    hiddenFinalPrice.value = data.final_price; // Cập nhật giá trị để gửi form
-                } else {
-                    // Hiển thị thông báo lỗi
-                    couponMessage.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
-                    discountAmountElement.textContent = '0 VNĐ';
-                    finalPriceElement.textContent = `${totalPrice.toLocaleString('vi-VN')} VNĐ`;
-                    hiddenFinalPrice.value = totalPrice;
+            .remove-coupon {
+                cursor: pointer;
+            }
+        </style>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const applyCouponBtn = document.getElementById('apply_coupon_btn');
+                const couponCodeInput = document.getElementById('coupon_code');
+                const couponMessage = document.getElementById('coupon_message');
+                const appliedCouponsDiv = document.getElementById('applied_coupons');
+                const totalPriceElement = document.getElementById('total_price');
+                const discountAmountElement = document.getElementById('discount_amount');
+                const finalPriceElement = document.getElementById('final_price');
+                const hiddenFinalPrice = document.getElementById('hidden_final_price');
+
+                let totalPrice = {{ $totalPrice }}; // Tổng tiền trước giảm từ server
+
+                // Hàm hiển thị danh sách mã đã áp dụng
+                function displayAppliedCoupons(coupons) {
+                    appliedCouponsDiv.innerHTML = '';
+                    if (coupons.length > 0) {
+                        coupons.forEach(coupon => {
+                            const couponDiv = document.createElement('div');
+                            couponDiv.classList.add('applied-coupon', 'd-flex', 'align-items-center', 'mb-1');
+                            couponDiv.innerHTML = `
+                    <span class="badge bg-success me-2">${coupon.code}</span>
+                    <button type="button" class="btn btn-danger btn-sm remove-coupon" data-code="${coupon.code}">X</button>
+                `;
+                            appliedCouponsDiv.appendChild(couponDiv);
+                        });
+
+                        // Thêm sự kiện click cho các nút "X"
+                        document.querySelectorAll('.remove-coupon').forEach(button => {
+                            button.addEventListener('click', function() {
+                                const code = this.getAttribute('data-code');
+                                removeCoupon(code);
+                            });
+                        });
+                    }
                 }
-            })
-            .catch(error => {
-                couponMessage.innerHTML = `<div class="alert alert-danger">Đã có lỗi xảy ra. Vui lòng thử lại.</div>`;
+
+                // Hàm lấy danh sách mã đã áp dụng khi trang được tải
+                function loadAppliedCoupons() {
+                    fetch('{{ route('checkout.getAppliedCoupons') }}', {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                totalPrice = data.total_price;
+                                discountAmountElement.textContent =
+                                    `${data.discount_amount.toLocaleString('vi-VN')} VNĐ`;
+                                finalPriceElement.textContent = `${data.final_price.toLocaleString('vi-VN')} VNĐ`;
+                                hiddenFinalPrice.value = data.final_price;
+                                displayAppliedCoupons(data.applied_coupons);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Lỗi khi lấy danh sách mã giảm giá:', error);
+                        });
+                }
+
+                // Gọi hàm loadAppliedCoupons ngay khi trang được tải
+                loadAppliedCoupons();
+
+                // Sự kiện áp dụng mã giảm giá
+                applyCouponBtn.addEventListener('click', function() {
+                    const couponCode = couponCodeInput.value.trim();
+
+                    fetch('{{ route('checkout.applyCoupon') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({
+                                coupon_code: couponCode
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                couponMessage.innerHTML =
+                                    `<div class="alert alert-success">${data.message}</div>`;
+                                discountAmountElement.textContent =
+                                    `${data.discount_amount.toLocaleString('vi-VN')} VNĐ`;
+                                finalPriceElement.textContent =
+                                    `${data.final_price.toLocaleString('vi-VN')} VNĐ`;
+                                hiddenFinalPrice.value = data.final_price;
+                                displayAppliedCoupons(data.applied_coupons);
+                            } else {
+                                couponMessage.innerHTML =
+                                    `<div class="alert alert-danger">${data.message}</div>`;
+                            }
+                        })
+                        .catch(error => {
+                            couponMessage.innerHTML =
+                                `<div class="alert alert-danger">Đã có lỗi xảy ra. Vui lòng thử lại.</div>`;
+                        });
+                });
+
+                // Hàm xóa mã giảm giá
+                function removeCoupon(couponCode) {
+                    fetch('{{ route('checkout.removeCoupon') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({
+                                coupon_code: couponCode
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                couponMessage.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+                                discountAmountElement.textContent =
+                                    `${data.discount_amount.toLocaleString('vi-VN')} VNĐ`;
+                                finalPriceElement.textContent = `${data.final_price.toLocaleString('vi-VN')} VNĐ`;
+                                hiddenFinalPrice.value = data.final_price;
+                                displayAppliedCoupons(data.applied_coupons);
+                            } else {
+                                couponMessage.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
+                            }
+                        })
+                        .catch(error => {
+                            couponMessage.innerHTML =
+                                `<div class="alert alert-danger">Đã có lỗi xảy ra. Vui lòng thử lại.</div>`;
+                        });
+                }
             });
-        });
-    });
-</script>
+        </script>
 
         {{-- Đổ dữ liệu API về tỉnh ,thành phố, xã --}}
         <script>

@@ -35,11 +35,11 @@ Route::middleware(['auth', 'role:admin'])->get('/switch-to-user', [AuthControlle
 
 // ========================= QUẢN TRỊ VIÊN (ADMIN) =========================
 Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->group(function () {
-    Route::get('/', fn () => view('admin.dashboard'))->name('dashboard');
+    Route::get('/', fn() => view('admin.dashboard'))->name('dashboard');
     Route::resource('categories', CategoryController::class)->except(['show']);
     Route::resource('products', ProductController::class);
     Route::delete('products/{product}/variants/{variant}', [ProductVariantController::class, 'destroy'])->name('products.variants.destroy');
-// HEAD
+    // HEAD
 
     Route::get('products/{id}', [ProductController::class, 'show'])->name('admin.products.show');
 
@@ -53,12 +53,12 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
 
 // ========================= NGƯỜI DÙNG (USER) =========================
 Route::middleware(['auth'])->group(function () {
-    Route::get('/user', fn () => view('users.dashboard'))->name('users.dashboard');
+    Route::get('/user', fn() => view('users.dashboard'))->name('users.dashboard');
 });
 Route::prefix('user/profile')->name('user.profile.')->middleware('auth')->group(function () {
     Route::get('/edit', [UserController::class, 'editProfile'])->name('edit'); // Chỉnh sửa profile
     Route::put('/update', [UserController::class, 'updateProfile'])->name('update'); // Cập nhật profile
-    
+
 });
 
 Route::get('/profile/edit', [UserController::class, 'editProfile'])->name('users.profile.edit');
@@ -106,6 +106,8 @@ Route::get('/vnpay/payment_return', [VnPayController::class, 'paymentReturn'])->
 //checkout
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
 Route::post('/checkout/apply-coupon', [CheckoutController::class, 'applyCoupon'])->name('checkout.applyCoupon')->middleware('auth');
+Route::get('/checkout/get-applied-coupons', [CheckoutController::class, 'getAppliedCoupons'])->name('checkout.getAppliedCoupons')->middleware('auth');
+Route::post('/checkout/remove-coupon', [CheckoutController::class, 'removeCoupon'])->name('checkout.removeCoupon')->middleware('auth');
 Route::post('/checkout/place-order', [CheckoutController::class, 'placeOrder'])->name('checkout.placeOrder');
 Route::get('/checkout/invoice/{id}', [CheckoutController::class, 'invoice'])->name('checkout.invoice');
 
@@ -114,8 +116,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/orders', [CheckoutController::class, 'orderList'])->name('orders.index');
     Route::get('/orders/{order}/edit-status', [CheckoutController::class, 'editStatus'])->name('orders.editStatus');
     Route::put('/orders/{order}/update-status', [CheckoutController::class, 'updateStatus'])->name('orders.updateStatus');
-   // Route::delete('/orders/{id}', [CheckoutController::class, 'destroy'])->name('orders.destroy'); //xoá ở phần amin
-    
+    // Route::delete('/orders/{id}', [CheckoutController::class, 'destroy'])->name('orders.destroy'); //xoá ở phần amin
+
 });
 Route::middleware(['auth'])->group(function () {
     Route::get('users/tracking/order_tracking', [CheckoutController::class, 'orderTracking'])->name('order.tracking');

@@ -102,7 +102,7 @@
 
                 <div id="userSelection" class="col-md-6 mb-3" style="display: none;">
                     <label for="selected_users" class="form-label">Chọn người dùng:</label>
-                    <select class="form-control" name="selected_users[]" id="selected_users" multiple>
+                    <select class="form-control" name="selected_users[]" id="selected_users" multiple style="height: 200px">
                         @foreach ($users as $user)
                             <option value="{{ $user->id }}"
                                 {{ in_array($user->id, old('selected_users', $coupon->users->pluck('id')->toArray())) ? 'selected' : '' }}>

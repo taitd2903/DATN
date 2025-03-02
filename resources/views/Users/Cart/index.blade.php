@@ -70,7 +70,7 @@
                 </tbody>
             </table>
 
-            <h4 class="text-right">Tổng tiền: <span id="total-price">{{ number_format($total, 0, ',', '.') }}</span> đ</h4>
+            <h5 class="text-right">Tổng tiền: <span id="total-price">{{ number_format($total, 0, ',', '.') }}</span> đ</h5>
             <div class="cart-actions">
                 <a href="{{ route('products.index') }}" class="btn btn-secondary">Tiếp tục mua hàng</a>
                 <a href="{{ route('checkout') }}" class="btn btn-success">Thanh toán</a>
