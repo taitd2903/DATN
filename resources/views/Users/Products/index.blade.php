@@ -180,110 +180,147 @@
       <button class="prev-btn">❮</button>
       <button class="next-btn">❯</button>
   </section>
-
-
-
-  <!-- SP MOI -->
-    <section class="sale-section">
+     <section class="sale-section">
       <div class="sale-header">
-          <h2 class="sale-title">SẢN PHẨM MỚI</h2>
+          <h2 class="sale-title">SAN PHAM MOI</h2>
           <a href="#" class="view-more">Xem thêm →</a>
       </div>
   
       <div class="sale-slider">
-        
+
           <div class="sale-item">
               <div class="sale-image">
-                  <img src="../assets/img/anh3.jpg" alt="Set nỉ thể thao thu đông">
+              @foreach($products as $product)
+              @if($product->image)
+                        <img src="{{ asset('storage/' . $product->image) }}" class="card-img-top product-img" alt="{{ $product->name }}">
+                    @else
+                        <div class="p-3 text-center text-muted">Chưa có hình ảnh</div>
+                    @endif
                   <div class="overlay">
-                      <p class="buy-now">Xem chi tiết <i class="bi bi-bag-plus"></i></p>
+                      <p class="buy-now"> <a href="{{ route('products.show', $product->id) }}">Xem chi tiết</a> <i class="bi bi-bag-plus"></i></p>
                   </div>
               </div>
               <div class="sale-info">
-                  <h3>Set nỉ thể thao thu đông</h3>
+              <h5 class="card-title text-primary">{{ $product->name }}</h5>
+              <p class="text-success fw-bold">Tổng số lượng đã bán: {{ $product->total_sold_quantity }}</p>
+              <p class="fw-bold">Giới tính: <span class="text-dark">{{ ucfirst($product->gender) }}</span></p>
                   <p class="price"><del>999.000</del> <span>666.000</span></p>
               </div>
+              @endforeach
           </div>
-  
+
           <div class="sale-item">
               <div class="sale-image">
-                  <img src="../assets/img/anh3.jpg" alt="Áo khoác thể thao">
+              @foreach($products as $product)
+              @if($product->image)
+                        <img src="{{ asset('storage/' . $product->image) }}" class="card-img-top product-img" alt="{{ $product->name }}">
+                    @else
+                        <div class="p-3 text-center text-muted">Chưa có hình ảnh</div>
+                    @endif
                   <div class="overlay">
-                      <p class="buy-now">Xem chi tiết <i class="bi bi-bag-plus"></i></p>
+                      <p class="buy-now"> <a href="{{ route('products.show', $product->id) }}">Xem chi tiết</a> <i class="bi bi-bag-plus"></i></p>
                   </div>
               </div>
               <div class="sale-info">
-                  <h3>Áo khoác thể thao</h3>
+              <h5 class="card-title text-primary">{{ $product->name }}</h5>
+              <p class="text-success fw-bold">Tổng số lượng đã bán: {{ $product->total_sold_quantity }}</p>
+              <p class="fw-bold">Giới tính: <span class="text-dark">{{ ucfirst($product->gender) }}</span></p>
                   <p class="price"><del>999.000</del> <span>666.000</span></p>
               </div>
+              @endforeach
           </div>
-  
+
           <div class="sale-item">
               <div class="sale-image">
-                  <img src="../assets/img/anh3.jpg" alt="Giày thể thao sọc xanh">
+              @foreach($products as $product)
+              @if($product->image)
+                        <img src="{{ asset('storage/' . $product->image) }}" class="card-img-top product-img" alt="{{ $product->name }}">
+                    @else
+                        <div class="p-3 text-center text-muted">Chưa có hình ảnh</div>
+                    @endif
                   <div class="overlay">
-                      <p class="buy-now">Xem chi tiết <i class="bi bi-bag-plus"></i></p>
+                      <p class="buy-now"> <a href="{{ route('products.show', $product->id) }}">Xem chi tiết</a> <i class="bi bi-bag-plus"></i></p>
                   </div>
               </div>
               <div class="sale-info">
-                  <h3>Giày thể thao sọc xanh</h3>
+              <h5 class="card-title text-primary">{{ $product->name }}</h5>
+              <p class="text-success fw-bold">Tổng số lượng đã bán: {{ $product->total_sold_quantity }}</p>
+              <p class="fw-bold">Giới tính: <span class="text-dark">{{ ucfirst($product->gender) }}</span></p>
                   <p class="price"><del>999.000</del> <span>666.000</span></p>
               </div>
+              @endforeach
           </div>
-  
+
           <div class="sale-item">
               <div class="sale-image">
-                  <img src="../assets/img/anh3.jpg" alt="Áo khoác thể thao">
+              @foreach($products as $product)
+              @if($product->image)
+                        <img src="{{ asset('storage/' . $product->image) }}" class="card-img-top product-img" alt="{{ $product->name }}">
+                    @else
+                        <div class="p-3 text-center text-muted">Chưa có hình ảnh</div>
+                    @endif
                   <div class="overlay">
-                      <p class="buy-now">Xem chi tiết <i class="bi bi-bag-plus"></i></p>
+                      <p class="buy-now"> <a href="{{ route('products.show', $product->id) }}">Xem chi tiết</a> <i class="bi bi-bag-plus"></i></p>
                   </div>
               </div>
               <div class="sale-info">
-                  <h3>Áo khoác thể thao</h3>
+              <h5 class="card-title text-primary">{{ $product->name }}</h5>
+              <p class="text-success fw-bold">Tổng số lượng đã bán: {{ $product->total_sold_quantity }}</p>
+              <p class="fw-bold">Giới tính: <span class="text-dark">{{ ucfirst($product->gender) }}</span></p>
                   <p class="price"><del>999.000</del> <span>666.000</span></p>
               </div>
+              @endforeach
           </div>
+          
           <div class="sale-item">
               <div class="sale-image">
-                  <img src="../assets/img/anh3.jpg" alt="Áo khoác thể thao">
+              @foreach($products as $product)
+              @if($product->image)
+                        <img src="{{ asset('storage/' . $product->image) }}" class="card-img-top product-img" alt="{{ $product->name }}">
+                    @else
+                        <div class="p-3 text-center text-muted">Chưa có hình ảnh</div>
+                    @endif
                   <div class="overlay">
-                      <p class="buy-now">Xem chi tiết <i class="bi bi-bag-plus"></i></p>
+                      <p class="buy-now"> <a href="{{ route('products.show', $product->id) }}">Xem chi tiết</a> <i class="bi bi-bag-plus"></i></p>
                   </div>
               </div>
               <div class="sale-info">
-                  <h3>Áo khoác thể thao</h3>
+              <h5 class="card-title text-primary">{{ $product->name }}</h5>
+              <p class="text-success fw-bold">Tổng số lượng đã bán: {{ $product->total_sold_quantity }}</p>
+              <p class="fw-bold">Giới tính: <span class="text-dark">{{ ucfirst($product->gender) }}</span></p>
                   <p class="price"><del>999.000</del> <span>666.000</span></p>
               </div>
+              @endforeach
           </div>
+
+<!--   
           <div class="sale-item">
               <div class="sale-image">
-                  <img src="../assets/img/anh3.jpg" alt="Áo khoác thể thao">
+                
+              @if($product->image)
+                        <img src="{{ asset('storage/' . $product->image) }}" class="card-img-top product-img" alt="{{ $product->name }}">
+                    @else
+                        <div class="p-3 text-center text-muted">Chưa có hình ảnh</div>
+                    @endif
                   <div class="overlay">
-                      <p class="buy-now">Xem chi tiết <i class="bi bi-bag-plus"></i></p>
+                      <p class="buy-now"> <a href="{{ route('products.show', $product->id) }}">Xem chi tiết</a> <i class="bi bi-bag-plus"></i></p>
                   </div>
               </div>
               <div class="sale-info">
-                  <h3>Áo khoác thể thao</h3>
+              <h5 class="card-title text-primary">{{ $product->name }}</h5>
+              <p class="text-success fw-bold">Tổng số lượng đã bán: {{ $product->total_sold_quantity }}</p>
+              <p class="fw-bold">Giới tính: <span class="text-dark">{{ ucfirst($product->gender) }}</span></p>
                   <p class="price"><del>999.000</del> <span>666.000</span></p>
               </div>
+              
           </div>
-          <div class="sale-item">
-              <div class="sale-image">
-                  <img src="../assets/img/anh3.jpg" alt="Áo khoác thể thao">
-                  <div class="overlay">
-                      <p class="buy-now">Xem chi tiết <i class="bi bi-bag-plus"></i></p>
-                  </div>
-              </div>
-              <div class="sale-info">
-                  <h3>Áo khoác thể thao</h3>
-                  <p class="price"><del>999.000</del> <span>666.000</span></p>
-              </div>
-          </div>
-      </div>
+   -->
+
   
       <button class="prev-btn">❮</button>
       <button class="next-btn">❯</button>
   </section>
+
 
    
 
@@ -366,78 +403,10 @@
         @endforeach
     </div>
 </div>
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
-        @foreach($products as $product)
-            <div class="col d-flex">
-                <div class="card h-100 shadow-sm border-0 rounded-lg w-100">
-                    @if($product->image)
-                        <img src="{{ asset('storage/' . $product->image) }}" class="card-img-top product-img" alt="{{ $product->name }}">
-                    @else
-                        <div class="p-3 text-center text-muted">Chưa có hình ảnh</div>
-                    @endif
-
-                    <div class="card-body text-center">
-                        <h5 class="card-title text-primary">{{ $product->name }}</h5>
-                        <p class="card-text text-muted small">{{ Str::limit($product->description, 100) }}</p>
-                        <p class="fw-bold">Danh mục: <span class="text-dark">{{ $product->category ? $product->category->name : 'Chưa có danh mục' }}</span></p>
-                        <p class="text-success fw-bold">Tổng số lượng đã bán: {{ $product->total_sold_quantity }}</p>
-                        <p class="fw-bold">Giới tính: <span class="text-dark">{{ ucfirst($product->gender) }}</span></p>
-
-                        <h6 class="mt-3">Biến thể:</h6>
-                        <ul class="list-unstyled d-flex justify-content-center gap-2 flex-wrap">
-                            @foreach($product->variants as $variant)
-                                <li>
-                                    @if(!empty($variant->size))
-                                        <span class="badge bg-primary">Size: {{ $variant->size }}</span>
-                                    @endif
-                                    <span class="badge bg-secondary">Màu: {{ $variant->color }}</span>
-                                </li>
-                            @endforeach
-                        </ul>
-
-                        <a href="{{ route('products.show', $product->id) }}" class="btn btn-outline-primary mt-3 w-75">Xem chi tiết</a>
-                    </div>
-                </div>
-            </div>
-        @endforeach
-    </div>
+ 
 </div>
 
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
-        @foreach($products as $product)
-            <div class="col d-flex">
-                <div class="card h-100 shadow-sm border-0 rounded-lg w-100">
-                    @if($product->image)
-                        <img src="{{ asset('storage/' . $product->image) }}" class="card-img-top product-img" alt="{{ $product->name }}">
-                    @else
-                        <div class="p-3 text-center text-muted">Chưa có hình ảnh</div>
-                    @endif
-
-                    <div class="card-body text-center">
-                        <h5 class="card-title text-primary">{{ $product->name }}</h5>
-                        <p class="card-text text-muted small">{{ Str::limit($product->description, 100) }}</p>
-                        <p class="fw-bold">Danh mục: <span class="text-dark">{{ $product->category ? $product->category->name : 'Chưa có danh mục' }}</span></p>
-                        <p class="text-success fw-bold">Tổng số lượng đã bán: {{ $product->total_sold_quantity }}</p>
-                        <p class="fw-bold">Giới tính: <span class="text-dark">{{ ucfirst($product->gender) }}</span></p>
-
-                        <h6 class="mt-3">Biến thể:</h6>
-                        <ul class="list-unstyled d-flex justify-content-center gap-2 flex-wrap">
-                            @foreach($product->variants as $variant)
-                                <li>
-                                    @if(!empty($variant->size))
-                                        <span class="badge bg-primary">Size: {{ $variant->size }}</span>
-                                    @endif
-                                    <span class="badge bg-secondary">Màu: {{ $variant->color }}</span>
-                                </li>
-                            @endforeach
-                        </ul>
-
-                        <a href="{{ route('products.show', $product->id) }}" class="btn btn-outline-primary mt-3 w-75">Xem chi tiết</a>
-                    </div>
-                </div>
-            </div>
-        @endforeach
-    </div>
+   
 </div>
 
 @endsection
