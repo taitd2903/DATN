@@ -1,28 +1,49 @@
+<!-- Chi tiet sp -->
 @extends('layouts.app')
 
 @section('content')
-    <h1>{{ $product->name }}</h1>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/styles.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/chitietsp.css') }}">
+    <!-- <link rel="stylesheet" href="{{ asset('assets/css/menu.css') }}"> -->
+<hr>
+    
+<div class="container">
+  
+
     @if($product->image)
-    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" width="200">
+    <div class="row">
+
+    <div class="col-md-6">
+    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" width="600px" height="60%" margin-left="500px" class="img-fluid">
+     <div class="mt-3 d-flex" style="margin-left: 120px;">
+                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="img-thumbnail me-2" width="20%" height="20%">
+                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="img-thumbnail me-2" width="20%" height="20%">
+                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="img-thumbnail" width="20%" height="20%">
+     </div>
+    </div>
 @else
     <p>Chưa có hình ảnh</p>
 @endif
-    <p>{{ $product->description }}</p>
+ 
+<div class="col-md-6">
+<h1>{{ $product->name }}</h1>
     <p>Danh mục: {{ $product->category ? $product->category->name : 'Chưa có danh mục' }}</p>
-
+    <!-- <p> Mo ta: {{ $product->description }}</p> -->
+<!-- 
     <div>
         <img id="product-image" src="{{ $product->image }}" alt="{{ $product->name }}"
             style="max-width: 300px; display: block;">
-    </div>
+    </div> -->
 
+    <p><strong>Giá: </strong>
+        <span id="base-price">{{ number_format($product->base_price,0, ',', '.') }} VNĐ</span>
+        <span id="variant-price" style="font-weight: bold; margin-left: 10px; color: red;"></span>
+    </p>
  
     <p><strong>Tồn kho: </strong> <span id="stock-info">{{ $product->variants->sum('stock_quantity') }}</span></p>
 
-
-    <p><strong>Giá: </strong>
-        <span id="base-price">{{ number_format($product->base_price, 0, ',', '.') }} VNĐ</span>
-        <span id="variant-price" style="font-weight: bold; margin-left: 10px; color: red;"></span>
-    </p>
 
     <form action="{{ route('cart.add') }}" method="POST" id="addToCartForm">
         @csrf
@@ -32,7 +53,7 @@
     
         @if($product->variants->whereNotNull('size')->count() > 0) 
         <div>
-            <label>Chọn Size:</label>
+        <p class="mt-3"><strong>SIZE</strong></p>
             <div id="size-options">
                 @foreach ($product->variants->groupBy('size') as $size => $variants)
                     <button type="button" class="size-btn" data-size="{{ $size }}">{{ $size }}</button>
@@ -41,53 +62,87 @@
         </div>
         @endif
 
-      
+      <br>
         <div>
-            <label>Chọn Màu:</label>
+        <p><strong>MÀU SẮC</strong></p>
+        <div class="d-flex">
             <div id="color-options">
                 @foreach ($product->variants->unique('color') as $variant)
                     <button type="button" class="color-btn"
                         data-color="{{ $variant->color }}">{{ $variant->color }}</button>
                 @endforeach
+                </div>
+            </div>
+        </div>
+        <div class="mt-3">
+                    <a href="#" class="text-primary">Hướng dẫn chọn size</a> | 
+                    <a href="#" class="text-primary">Thông số sản phẩm</a>
+                </div>
+     
+        <label for="quantity">Số lượng:</label>
+        <input type="number" name="quantity" class="form-control w-25 me-2" min="1" value="1" required>
+
+    <br>
+    <div class="mt-3 d-flex">
+                    <button type="submit" id="addToCartButton" disabled class="btn btn-danger">Thêm vào giỏ hàng</button>
+                </div>
+                <br>
+                <p> Mo ta: {{ $product->description }}</p>
+</div>
+
+
+</div>
+
+    </form>
+    </div>
+
+    <a href="{{ route('products.index') }}">Quay lại danh sách sản phẩm</a>
+
+      <!-- Đánh giá sản phẩm -->
+      <h4 class="mt-4">Đánh giá sản phẩm</h4>
+        <div class="rating-box">
+            <div >
+
+               <div><span>5⭐ ---------------------- 0% | 0 đánh giá</span></div> 
+               <div><span>4⭐ 0% | 0 đánh giá</span></div> 
+               <div><span>3⭐ 0% | 0 đánh giá</span></div> 
+               <div><span>2⭐ 0% | 0 đánh giá</span></div> 
+               <div><span>1⭐ 0% | 0 đánh giá</span></div> 
+               
+                <button class="btn btn-dark btn-sm" >Đánh giá ngay</button>
             </div>
         </div>
 
-     
-        <label for="quantity">Số lượng:</label>
-        <input type="number" name="quantity" min="1" value="1" required>
+        <hr>
 
-    
-        <button type="submit" id="addToCartButton" disabled>Thêm vào giỏ hàng</button>
-    </form>
+        <!-- Bình luận -->
+        <h4 class="mt-4">Bình luận</h4>
+        <textarea class="form-control" placeholder="Bình luận ngay..." rows="3"></textarea>
+        <div class="mt-2 d-flex align-items-center">
+            <input type="radio" name="gender" id="male" checked> <label for="male" class="ms-2 me-3">Anh</label>
+            <input type="radio" name="gender" id="female"> <label for="female" class="ms-2">Chị</label>
+        </div>
+        <div class="mt-2 d-flex">
+            <input type="text" class="form-control me-2" placeholder="Họ và tên">
+            <input type="email" class="form-control me-2" placeholder="Email">
+            <button class="btn btn-danger">Gửi</button>
+        </div>
+    </div>
+<br>
+<hr>
 
 
-    <style>
-        .size-btn,
-        .color-btn {
-            padding: 8px 16px;
-            margin: 5px;
-            border: 1px solid #ddd;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
 
-        .size-btn:hover,
-        .color-btn:hover {
-            background-color: #f0f0f0;
-        }
 
-        .size-btn.active,
-        .color-btn.active {
-            background-color: #007bff;
-            color: white;
-            border-color: #007bff;
-        }
 
-        .color-btn:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-    </style>
+
+
+
+
+
+
+
+
 
     <!-- JavaScript -->
     <script>
@@ -189,5 +244,5 @@
 
     </script>
 
-    <a href="{{ route('products.index') }}">Quay lại danh sách sản phẩm</a>
+   
 @endsection

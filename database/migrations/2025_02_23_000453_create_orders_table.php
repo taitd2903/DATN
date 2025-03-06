@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->unsignedBigInteger('user_id');
             $table->text('note')->nullable();
             $table->decimal('total_price', 10, 2);
+            $table->string('coupon_code')->nullable();
             $table->enum('payment_method', ['cod', 'vnpay']);
             $table->enum('status', ['Chờ xác nhận', 'Đang giao', 'Hoàn thành', 'Hủy'])->default('Chờ xác nhận'); // Trạng thái đơn hàng
             $table->enum('payment_status', ['Chưa thanh toán', 'Đã thanh toán', 'Hoàn tiền'])->default('Chưa thanh toán'); // Trạng thái thanh toán

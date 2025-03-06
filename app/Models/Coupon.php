@@ -24,7 +24,8 @@ class Coupon extends Model
         'status', // Trạng thái (1: Hoạt động, 2: Dừng hoạt động)
         'max_discount_amount', // Số tiền giảm tối đa (nếu là %)
         'user_voucher_limit', // Loại người dùng được áp dụng (1: Tất cả, 2: Người cụ thể, 3: Giới tính)
-        'title' // Tiêu đề coupon
+        'title', // Tiêu đề coupon
+        'gender'
     ];
 
     // Ép kiểu dữ liệu cho các cột để sử dụng thuận tiện hơn
@@ -55,31 +56,35 @@ class Coupon extends Model
     /**
      * Quan hệ nhiều-nhiều với bảng users để xác định người dùng cụ thể có thể sử dụng coupon
      */
-    public function users(): BelongsToMany
+    public function users()
     {
-        return $this->belongsToMany(User::class, 'coupon_user');
+        return $this->belongsToMany(User::class, 'coupon_user', 'coupon_id', 'user_id')
+                    ->withTimestamps();
     }
-
+    public function couponUsages()
+    {
+        return $this->hasMany(CouponUsage::class);
+    }
     /**
      * Kiểm tra xem một user có thể sử dụng coupon hay không
      * @param User $user
      * @return bool
      */
-    public function isValidForUser(User $user): bool
-    {
-        if ($this->user_voucher_limit == 1) {
-            return true; // Áp dụng cho tất cả người dùng
-        }
+    // public function isValidForUser(User $user): bool
+    // {
+    //     if ($this->user_voucher_limit == 1) {
+    //         return true; // Áp dụng cho tất cả người dùng
+    //     }
 
-        if ($this->user_voucher_limit == 2) {
-            return $this->users->contains($user->id); // Chỉ áp dụng cho user được chọn
-        }
+    //     if ($this->user_voucher_limit == 2) {
+    //         return $this->users->contains($user->id); // Chỉ áp dụng cho user được chọn
+    //     }
 
-        if ($this->user_voucher_limit == 3) {
-            // Kiểm tra nếu user có giới tính hợp lệ
-            return in_array($user->gender, ['male', 'female']);
-        }
+    //     if ($this->user_voucher_limit == 3) {
+    //         // Kiểm tra nếu user có giới tính hợp lệ
+    //         return in_array($user->gender, ['male', 'female']);
+    //     }
 
-        return false;
-    }
+    //     return false;
+    // }
 }

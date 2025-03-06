@@ -62,7 +62,7 @@
                                     <small>{{ $user->name }} ({{ $user->email }})</small><br>
                                 @endforeach
                             @elseif ($coupon->user_voucher_limit == 3)
-                                <span>Giới tính: {{ $coupon->gender == 'male' ? 'Nam' : 'Nữ' }}</span>
+                                <span>Giới tính: {{ $coupon->gender === 'male' ? 'Nam' : ($coupon->gender === 'female' ? 'Nữ' : 'Unisex') }}</span>
                             @endif
                         </td>
 
