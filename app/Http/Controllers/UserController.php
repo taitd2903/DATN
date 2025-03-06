@@ -56,7 +56,11 @@ class UserController extends Controller
         $user->password = $validated['password'];
         $user->phone = $validated['phone'];
         $user->image = $imagePath; // Lưu đường dẫn ảnh vào database
-        $user->address = $validated['address'];
+        $user->house_number = $validated['house_number'];
+        $user->street = $validated['street'];
+        $user->ward = $validated['ward'];
+        $user->district = $validated['district'];
+        $user->city = $validated['district'];
         $user->role = $validated['role'] ?? 'user';
         $user->save(); // Lưu vào DB
 
@@ -79,7 +83,12 @@ class UserController extends Controller
         'email' => 'required|email|unique:users,email,' . $id,
         'phone' => 'nullable|string|max:15',
         'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        'address' => 'nullable|string',
+        'house_number' => 'nullable|string',
+        'street' => 'nullable|string',
+        'ward' => 'nullable|string',
+        'district' => 'nullable|string',
+        'city' => 'nullable|string',
+    
         'role' => 'required|in:user,admin',
     ]);
 
@@ -89,7 +98,11 @@ class UserController extends Controller
     $user->name = $request->name;
     $user->email = $request->email;
     $user->phone = $request->phone;
-    $user->address = $request->address;
+    $user->house_number = $request->house_number;
+    $user->street = $request->street;
+    $user->ward = $request->ward;
+    $user->district = $request->district;
+    $user->city = $request->city;
     $user->role = $request->role;
 
     // Xử lý ảnh mới
@@ -115,24 +128,33 @@ class UserController extends Controller
  
      // Xóa user
      public function destroy($id)
-{
-    // Tìm người dùng theo ID
-    $user = User::findOrFail($id);
-
-    // Nếu người dùng có ảnh, xóa ảnh khỏi thư mục lưu trữ
-    if ($user->image) {
-        $imagePath = public_path('storage/' . $user->image);
-        if (file_exists($imagePath)) {
-            unlink($imagePath); // Xóa file ảnh
-        }
-    }
-
-    // Xóa người dùng khỏi cơ sở dữ liệu
-    $user->delete();
-
-    // Chuyển hướng lại trang danh sách với thông báo thành công
-    return redirect()->route('admin.users.index')->with('success', 'User deleted successfully.');
-}
+     {
+         // Tìm người dùng theo ID
+         $user = User::findOrFail($id);
+     
+         // Đếm số lượng admin hiện có
+         $adminCount = User::where('role', 'admin')->count();
+     
+         // Nếu chỉ còn 1 admin và user này là admin, không cho xóa
+         if ($adminCount <= 1 && $user->role === 'admin') {
+             return redirect()->back()->with('error', 'Không thể xóa tài khoản này vì đây là admin duy nhất.');
+         }
+     
+         // Nếu người dùng có ảnh, xóa ảnh khỏi thư mục lưu trữ
+         if ($user->image) {
+             $imagePath = public_path('storage/' . $user->image);
+             if (file_exists($imagePath)) {
+                 unlink($imagePath); // Xóa file ảnh
+             }
+         }
+     
+         // Xóa người dùng khỏi cơ sở dữ liệu
+         $user->delete();
+     
+         // Chuyển hướng lại trang danh sách với thông báo thành công
+         return redirect()->route('admin.users.index')->with('success', 'xóa người dùng thành công');
+     }
+     
 
 
 public function editProfile()
@@ -150,14 +172,22 @@ public function updateProfile(Request $request)
         'email' => 'required|email|unique:users,email,' . $user->id,
         'phone' => 'nullable|string|max:15',
         'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        'address' => 'nullable|string',
+        'house_number' => 'nullable|string',
+        'street' => 'nullable|string',
+        'ward' => 'nullable|string',
+        'district' => 'nullable|string',
+        'city' => 'nullable|string',
     ]);
 
     // Cập nhật thông tin
     $user->name = $request->name;
     $user->email = $request->email;
     $user->phone = $request->phone;
-    $user->address = $request->address;
+    $user->house_number = $request->house_number;
+    $user->street = $request->street;
+    $user->ward = $request->ward;
+    $user->district = $request->district;
+    $user->city = $request->city;
 
     // Xử lý ảnh mới
     if ($request->hasFile('image')) {
@@ -176,6 +206,40 @@ public function updateProfile(Request $request)
 
     return redirect('/')->with('success', 'Profile updated successfully.');
 
+}
+public function getDistricts($city)
+{
+    $districts = Location::where('city', $city)->pluck('name');
+    return response()->json($districts);
+}
+
+public function transferAdmin(Request $request)
+{
+    $newAdminId = $request->input('new_admin_id');
+
+    // Kiểm tra user mới có tồn tại không
+    $newAdmin = User::find($newAdminId);
+    if (!$newAdmin) {
+        return redirect()->back()->with('error', 'Người dùng không hợp lệ.');
+    }
+
+    // Chuyển quyền admin cho user mới
+    $newAdmin->role = 'admin';
+    $newAdmin->save();
+
+    return redirect()->route('admin.users.index')->with('success', 'Chuyển quyền admin thành công.');
+}
+
+public function toggleStatus($id)
+{
+    $user = User::findOrFail($id);
+    if (auth()->user()->id === $user->id) {
+        return redirect()->back()->with('error', 'Bạn không thể tự khóa chính mình.');
+    }
+    $user->status = $user->status === 'active' ? 'banned' : 'active';
+    $user->save();
+
+    return redirect()->back()->with('success', 'Cập nhật trạng thái tài khoản thành công.');
 }
 
 }

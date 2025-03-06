@@ -19,4 +19,8 @@
     </form>
 
     <p>Chưa có tài khoản? <a href="{{ route('register') }}">Đăng ký</a></p>
+    <p>
+        <a href="{{ route('password.request') }}">Quên mật khẩu?</a>
+    </p>
+    
 @endsection

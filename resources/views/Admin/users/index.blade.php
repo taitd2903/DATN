@@ -1,6 +1,23 @@
  @extends('layouts.layout')
 
 @section('content') 
+@if(session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+        <form action="{{ route('users.transferAdmin') }}" method="POST">
+            @csrf
+            <select name="new_admin_id">
+                @foreach($users as $user)
+                    @if($user->role !== 'admin')
+                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                    @endif
+                @endforeach
+            </select>
+            <button type="submit">Chuyển quyền admin</button>
+        </form>
+    </div>
+@endif
+
 <div class="container">
     <h2>Quản lý tài khoản</h2>
     <a href="{{ route('admin.users.create') }}">Create User</a>
@@ -22,6 +39,7 @@
                 <th>Image</th>
                 <th>Address</th>
                 <th>Role</th>
+                <th>STATUS</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -44,7 +62,19 @@
 
                     <td>{{ $user->address }}</td>
                     <td>{{ $user->role }}</td>
-                    <td> 
+                    <td>
+                        @if ($user->status === 'active')
+                            <span class="badge bg-success">Hoạt động</span>
+                        @else
+                            <span class="badge bg-danger">Bị khóa</span>
+                        @endif
+                    </td>
+                    <td>
+                        <a href="{{ route('admin.users.toggleStatus', $user->id) }}" class="btn btn-warning">
+                            {{ $user->status === 'active' ? 'Khóa' : 'Mở khóa' }}
+                        </a>
+                      
+                  
 
                     <!-- Actions: Edit, Delete -->
                     

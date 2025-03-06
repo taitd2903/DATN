@@ -13,6 +13,9 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\VnPayController;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -62,6 +65,8 @@ Route::prefix('user/profile')->name('user.profile.')->middleware('auth')->group(
 });
 
 Route::get('/profile/edit', [UserController::class, 'editProfile'])->name('users.profile.edit');
+Route::get('/get-districts/{city}', [UserController::class, 'getDistricts']);
+
 
 // ========================= GIỎ HÀNG (CART) =========================
 Route::middleware('auth')->prefix('cart')->name('cart.')->group(function () {
@@ -121,3 +126,22 @@ Route::middleware(['auth'])->group(function () {
     Route::get('users/tracking/order_tracking', [CheckoutController::class, 'orderTracking'])->name('order.tracking');
     Route::post('users/tracking/order_tracking/cancel/{order}', [CheckoutController::class, 'cancelOrder'])->name('order.cancel');
 });
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+// ========================= Quên mật khẩu =========================
+
+
+Route::get('/forgot-password', [ForgotPasswordController::class, 'showForgotPasswordForm'])->name('password.request');
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink'])->name('password.email');
+
+Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetPasswordForm'])->name('password.reset');
+Route::post('/reset-password', [ResetPasswordController::class, 'resetPassword'])->name('password.update');
+
+// chuyển quyền admin
+Route::post('/admin/users/transfer-admin', [UserController::class, 'transferAdmin'])
+    ->name('users.transferAdmin');
+//khóa tài khoản
+Route::get('/admin/users/{id}/toggle-status', [UserController::class, 'toggleStatus'])->name('admin.users.toggleStatus');

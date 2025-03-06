@@ -13,6 +13,14 @@
         <input type="email" name="email" placeholder="Email" required>
         <input type="password" name="password" placeholder="Mật khẩu" required>
         <input type="password" name="password_confirmation" placeholder="Nhập lại mật khẩu" required>
+        <div class="form-group">
+            <label for="gender">Giới tính:</label>
+            <select name="gender" id="gender" class="form-control" required>
+                <option value="male">Nam</option>
+                <option value="female">Nữ</option>
+            </select>
+        </div>
+        
         <button type="submit">Đăng ký</button>
     </form>
 
