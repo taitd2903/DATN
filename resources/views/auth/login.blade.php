@@ -17,13 +17,13 @@
             <p style="color: red;">{{ $errors->first() }}</p>
         @endif
 
-<<<<<<< HEAD
-    <p>Chưa có tài khoản? <a href="{{ route('register') }}">Đăng ký</a></p>
+
+   
     <p>
-        <a href="{{ route('password.request') }}">Quên mật khẩu?</a>
+       
     </p>
     
-=======
+
         <form method="POST" action="{{ route('login') }}">
             @csrf
             <!-- Tài khoản -->
@@ -41,7 +41,7 @@
             <!-- Ghi nhớ & Quên mật khẩu -->
             <div class="options">
                 <label><input type="checkbox" name="remember"> Ghi Nhớ</label>
-                <a href="#">Quên Mật Khẩu?</a>
+                <a href="{{ route('password.request') }}">Quên Mật Khẩu?</a>
             </div>
 
             <!-- Nút Đăng nhập -->
@@ -52,7 +52,7 @@
         </form>
     </div>
 </div>
->>>>>>> aa63f0433bd208e287f7269be5d34f1a677e83e4
+
 @endsection
 
 {{-- kjhsdjshjksdho --}}
