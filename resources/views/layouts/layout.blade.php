@@ -21,7 +21,7 @@
     <link rel="icon" type="image/png" href="{{ asset('assets/img/Logo.svg') }}">
 
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <title>Quản  trị Ocean Sports</title>
+    <title>Quản trị Ocean Sports</title>
     <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no'
         name='viewport' />
     <!--     Fonts and icons     -->
@@ -94,6 +94,14 @@
                         </a>
                     </li>
                     <li>
+                        <a class="nav-link" href="{{ route('admin.orders.index') }}">
+                            <i class="nc-icon nc-cart-simple"></i> <!-- Đổi icon thành giỏ hàng -->
+                            <p>Quản lý đơn hàng</p>
+                        </a>
+                    </li>
+
+
+                    <li>
                         <a class="nav-link" href="./notifications.html">
                             <i class="nc-icon nc-cart-simple"></i>
                             <p>Combo</p>
@@ -162,7 +170,8 @@
                                     <span class="no-icon">{{ Auth::user()->name }}</span>
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                <a class="dropdown-item" href="{{ route('admin.dashboard') }}">Thông tin tài khoản</a>
+                                    <a class="dropdown-item" href="{{ route('admin.dashboard') }}">Thông tin tài
+                                        khoản</a>
 
 
                                     <div class="divider"></div>
