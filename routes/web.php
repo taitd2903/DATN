@@ -125,6 +125,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Route::delete('/orders/{id}', [CheckoutController::class, 'destroy'])->name('orders.destroy'); //xoá ở phần amin
 
 });
+// phần user người mua show ra
 Route::middleware(['auth'])->group(function () {
     Route::get('users/tracking/order_tracking', [CheckoutController::class, 'orderTracking'])->name('order.tracking');
     Route::post('users/tracking/order_tracking/cancel/{order}', [CheckoutController::class, 'cancelOrder'])->name('order.cancel');

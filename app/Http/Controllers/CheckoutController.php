@@ -203,10 +203,16 @@ class CheckoutController extends Controller
             'status' => 'required|in:Chờ xác nhận,Đang giao,Hoàn thành,Hủy',
         ]);
 
+        // Nếu đơn hàng đã bị huỷ thì không cho phép cập nhật nữa
+        if ($order->status === 'Hủy') {
+            return redirect()->route('admin.orders.index')->with('error', 'Đơn hàng đã bị huỷ và không thể cập nhật trạng thái!');
+        }
+
         $order->update(['status' => $request->status]);
 
         return redirect()->route('admin.orders.index')->with('success', 'Cập nhật trạng thái thành công!');
     }
+
 
     public function orderTracking()
     {
@@ -230,6 +236,7 @@ class CheckoutController extends Controller
                 $variant = $item->variant;
                 if ($variant) {
                     $variant->stock_quantity += $item->quantity;
+                    $variant->sold_quantity -= $item->quantity;
                     $variant->save();
                 } else {
                     $product = $item->product;
