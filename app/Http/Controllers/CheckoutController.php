@@ -85,7 +85,7 @@ class CheckoutController extends Controller
             return redirect()->route('cart.index')->with('error', 'Tổng giá trị đơn hàng không hợp lệ.');
         }
 
-        $note = "Địa chỉ: {$validated['address']}, {$request->ward_name}, {$request->district_name}, {$request->province_name}";
+        $note = " {$validated['address']}, {$request->ward_name}, {$request->district_name}, {$request->province_name}";
 
         // Lưu danh sách mã giảm giá vào cột coupon_code (dạng JSON hoặc chuỗi)
         $couponCodes = array_column($appliedCoupons, 'code');
@@ -217,6 +217,7 @@ class CheckoutController extends Controller
     public function orderTracking()
     {
         $orders = Order::where('user_id', Auth::id())->with('orderItems.product')->get();
+        
         return view('users.tracking.order_tracking', compact('orders'));
     }
 

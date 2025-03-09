@@ -20,11 +20,13 @@
             </thead>
             <tbody>
                 @foreach ($orders as $order)
+                
                     <tr>
                         <td>{{ $order->id }}</td>
                         <td>
                             <ul>
                                 @foreach ($order->orderItems as $item)
+                                    
                                     <li>{{ $item->product->name }} (x{{ $item->quantity }})</li>
                                     <li>{{ $item->variant->size }} - {{ $item->variant->color }}</li>
                                 @endforeach

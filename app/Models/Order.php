@@ -19,7 +19,8 @@ class Order extends Model
         'customer_phone',
         'customer_address',
         'payment_status',
-        'note'
+        'note',
+        'vnp_txn_ref'
     ];
 
     public function orderItems()

@@ -22,6 +22,7 @@
                 <td>{{ $order->customer_name }}</td>
                 <td>{{ $order->customer_phone }}</td>
                 <td>{{ $order->note }}</td>
+                
                 <td>{{ number_format($order->total_price, 0, ',', '.') }} đ</td>
                 <td>
                     <span class="badge

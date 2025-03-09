@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CartItem;
+use App\Models\Order;
+use App\Models\OrderItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class VnPayController extends Controller
@@ -15,8 +19,7 @@ class VnPayController extends Controller
             'bankCode' => 'nullable|string',
         ]);
 
-       
-        $vnp_TxnRef = time(); 
+        $vnp_TxnRef = time();
         $vnp_Amount = $request->input('amount') * 100;
         $vnp_Locale = $request->input('language', 'vn');
         $vnp_BankCode = $request->input('bankCode');
@@ -30,7 +33,76 @@ class VnPayController extends Controller
         $vnp_CreateDate = now()->format('YmdHis');
         $vnp_ExpireDate = now()->addMinutes(30)->format('YmdHis');
 
-       
+        // Tạo địa chỉ đầy đủ
+        $note = $request->input('address') . ', ' . $request->input('ward') . ', ' . 
+                           $request->input('district') . ', ' . $request->input('city');
+
+        // Lưu đơn hàng vào bảng orders
+        
+        $order = Order::create([
+            'customer_name' => $request->input('name'),
+            'customer_phone' => $request->input('phone'),
+            'customer_address' => $request->input('address'),
+            'user_id' => Auth::id(),
+            'note' => $note,
+            'total_price' => $request->input('amount'),
+            'coupon_code' => $request->input('coupon_code'),
+            'payment_method' => 'vnpay',
+            'status' => 'Chờ xác nhận',
+            'payment_status' => 'Đã thanh toán',
+            'vnp_txn_ref' => $vnp_TxnRef,
+        ]);
+
+        $cartItems = CartItem::with(['product', 'variant'])->where('user_id', auth()->id())->get();
+        foreach ($cartItems as $item) {
+            OrderItem::create([
+                'order_id' => $order->id,
+                'product_id' => $item->product_id,
+                'variant_id' => $item->variant_id, // Nếu có biến thể
+                'quantity' => $item->quantity,
+                'price' => $item->price,
+            ]);
+
+            // Cập nhật tồn kho
+            if ($item->variant) {
+                $variant = $item->variant;
+
+                if ($variant->stock_quantity < $item->quantity) {
+                    return redirect()->route('cart.index')->with('error', 'Biến thể "' . $variant->name . '" không đủ số lượng trong kho.');
+                }
+
+                $variant->stock_quantity -= $item->quantity;
+                $variant->sold_quantity += $item->quantity;
+
+                if ($variant->stock_quantity <= 0) {
+                    $variant->stock_quantity = 0;
+                }
+
+                $variant->save();
+            } else {
+                $product = $item->product;
+
+                if ($product->stock_quantity < $item->quantity) {
+                    return redirect()->route('cart.index')->with('error', 'Sản phẩm "' . $product->name . '" không đủ số lượng trong kho.');
+                }
+
+                $product->stock_quantity -= $item->quantity;
+                $product->sold_quantity += $item->quantity;
+
+                if ($product->stock_quantity <= 0) {
+                    $product->stock_quantity = 0;
+                }
+
+                $product->save();
+            }
+        }
+
+        // Kiểm tra xem đơn hàng đã được lưu chưa
+        if (!$order) {
+            Log::error('Failed to create order', $request->all());
+            return response()->json(['success' => false, 'message' => 'Không thể tạo đơn hàng'], 500);
+        }
+
         $inputData = [
             "vnp_Version" => "2.1.0",
             "vnp_TmnCode" => $vnp_TmnCode,
@@ -51,10 +123,8 @@ class VnPayController extends Controller
             $inputData['vnp_BankCode'] = $vnp_BankCode;
         }
 
-       
         ksort($inputData);
 
-       
         $hashdata = '';
         $i = 0;
         foreach ($inputData as $key => $value) {
@@ -66,13 +136,14 @@ class VnPayController extends Controller
             }
         }
 
-        // Tạo Secure Hash
         $vnp_SecureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);
         $paymentUrl = $vnp_Url . '?' . http_build_query($inputData) . '&vnp_SecureHash=' . $vnp_SecureHash;
 
-
-
-        return redirect()->away($paymentUrl);
+        // Trả về JSON thay vì redirect
+        return response()->json([
+            'success' => true,
+            'payment_url' => $paymentUrl
+        ]);
     }
 
     public function response(Request $request)
@@ -110,7 +181,7 @@ class VnPayController extends Controller
         $inputData = $request->except(['vnp_SecureHash']);
         ksort($inputData);
 
-      
+
         $hashdata = '';
         $i = 0;
         foreach ($inputData as $key => $value) {
