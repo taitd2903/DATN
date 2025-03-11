@@ -20,7 +20,7 @@
 
 <div class="container">
     <h2>Quản lý tài khoản</h2>
-    <a href="{{ route('admin.users.create') }}">Create User</a>
+
 
     <!-- Nếu có thông báo thành công -->
     @if (session('success'))
