@@ -16,7 +16,7 @@
         <div class="billing-info">
             <h2>THÔNG TIN THANH TOÁN</h2>
 
-            <<form id="checkoutForm" action="{{ route('checkout.placeOrder') }}" method="POST">
+            <form id="checkoutForm" action="{{ route('checkout.placeOrder') }}" method="POST">
                 @csrf
 
                 <div class="form-group">

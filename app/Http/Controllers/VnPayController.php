@@ -34,11 +34,11 @@ class VnPayController extends Controller
         $vnp_ExpireDate = now()->addMinutes(30)->format('YmdHis');
 
         // Tạo địa chỉ đầy đủ
-        $note = $request->input('address') . ', ' . $request->input('ward') . ', ' . 
-                           $request->input('district') . ', ' . $request->input('city');
+        $note = $request->input('address') . ', ' . $request->input('ward') . ', ' .
+            $request->input('district') . ', ' . $request->input('city');
 
         // Lưu đơn hàng vào bảng orders
-        
+
         $order = Order::create([
             'customer_name' => $request->input('name'),
             'customer_phone' => $request->input('phone'),
@@ -96,6 +96,8 @@ class VnPayController extends Controller
                 $product->save();
             }
         }
+        // Xóa giỏ hàng sau khi tạo đơn hàng thành công
+        CartItem::where('user_id', Auth::id())->delete();
 
         // Kiểm tra xem đơn hàng đã được lưu chưa
         if (!$order) {
@@ -181,7 +183,6 @@ class VnPayController extends Controller
         $inputData = $request->except(['vnp_SecureHash']);
         ksort($inputData);
 
-
         $hashdata = '';
         $i = 0;
         foreach ($inputData as $key => $value) {
@@ -197,17 +198,31 @@ class VnPayController extends Controller
         $secureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);
         $isValidSignature = ($secureHash === $request->query('vnp_SecureHash'));
 
-        if ($isValidSignature) {
-            $status = $request->query('vnp_ResponseCode') == '00' ? 'Thành công' : 'Thất bại';
-            return view('vnpay.payment_return', [
-                'status' => $status,
-                'data' => $request->all(),
-            ]);
-        } else {
-            return view('vnpay.payment_return', [
-                'status' => 'Lỗi xác thực chữ ký',
-                'data' => $request->all(),
-            ]);
+        // Lấy mã giao dịch từ VNPAY
+        $txnRef = $request->query('vnp_TxnRef');
+
+        // Tìm đơn hàng dựa vào mã giao dịch
+        $order = Order::where('vnp_txn_ref', $txnRef)->with('orderItems.product', 'orderItems.variant', 'user')->first();
+
+        if (!$order) {
+            return redirect()->route('home')->with('error', 'Không tìm thấy đơn hàng.');
         }
+
+        $status = $request->query('vnp_ResponseCode') == '00' ? 'Thành công' : 'Thất bại';
+
+        return view('Users.Checkout.invoice', compact('order', 'status'));
     }
+
+    public function updateStatus(Request $request, Order $order)
+{
+    // Nếu đơn hàng thanh toán bằng VNPay thì không cho phép cập nhật thành "Hủy"
+    if ($order->payment_method == 'vnpay' && $request->status == 'Hủy') {
+        return redirect()->back()->with('error', 'Không thể hủy đơn hàng đã thanh toán bằng VNPay.');
+    }
+
+    $order->update(['status' => $request->status]);
+
+    return redirect()->route('admin.orders.index')->with('success', 'Cập nhật trạng thái thành công.');
+}
+
 }

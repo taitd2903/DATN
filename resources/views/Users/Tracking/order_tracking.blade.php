@@ -14,6 +14,8 @@
                     <th>#</th>
                     <th>Sản phẩm</th>
                     <th>Ngày đặt</th>
+                    <th>Phương thức thanh toán</th>
+                    <th>Địa chỉ giao hàng</th>
                     <th>Trạng thái</th>
                     <th>Hành động</th>
                 </tr>
@@ -33,6 +35,8 @@
                             </ul>
                         </td>
                         <td>{{ $order->created_at }}</td>
+                        <td class="text-center">{{ $order->payment_method }}</td> 
+                        <td>{{ $order->note }}</td>
                         <td>
                             @php
                                 $statusColors = [
@@ -48,7 +52,7 @@
                             </span>
                         </td>
                         <td>
-                            @if ($order->status == 'Chờ xác nhận')
+                            @if ($order->status == 'Chờ xác nhận' && $order->payment_status != 'Đã thanh toán')
                                 <form action="{{ route('order.cancel', $order->id) }}" method="POST">
                                     @csrf
                                     <button type="submit" class="btn btn-danger btn-sm">Hủy</button>
