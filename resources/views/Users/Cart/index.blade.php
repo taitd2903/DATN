@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
+<link rel="stylesheet" href="{{ asset('assets/css/cart.css') }}">
+<meta name="viewport" content="width=device-width, initial-scale=1">
     <div class="cart-container">
         <h2>Giỏ hàng của bạn</h2>
 

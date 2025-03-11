@@ -4,6 +4,7 @@
 
 @section('content')
 <link rel="stylesheet" href="{{ asset('assets/css/login.css') }}">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <div class="login-container">
     <div class="login-box">

@@ -2,7 +2,7 @@
 body {
     font-family: Arial, sans-serif;
     margin: 0;
-    padding: 20px;
+    padding:0 0 20px;
     background-color: #f8f9fa;
 }
 
@@ -12,9 +12,11 @@ body {
     margin: auto;
     background: white;
     padding: 20px;
-    border-radius: 10px;
+    /* border-radius: 10px; */
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
+    gap: 20px;
 }
 
 /* Thông tin thanh toán */
@@ -29,18 +31,19 @@ body {
 /* Input form */
 .form-group {
     display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
+    flex-wrap: wrap;
+    gap: 15px; /* Tăng khoảng cách giữa các ô input */
 }
 
 .form-group input, 
 .form-group select, 
 .textarea-group textarea {
-    width: 48%;
-    padding: 10px;
+    width: 100%;
+    padding: 12px; /* Tăng padding để input rộng rãi hơn */
     border: 1px solid #ddd;
     border-radius: 5px;
     font-size: 14px;
+    margin-bottom: 12px; /* Tăng khoảng cách giữa các ô */
 }
 
 .textarea-group {
@@ -78,38 +81,6 @@ body {
     border-top: 2px solid black;
 }
 
-/* Thanh toán */
-.payment-methods {
-    margin-top: 15px;
-}
-
-.payment-methods input {
-    margin-right: 5px;
-}
-
-.payment-methods label {
-    font-size: 14px;
-}
-
-.payment-icons {
-    display: flex;
-    gap: 10px;
-    margin-top: 5px;
-}
-
-.payment-icons img {
-    width: 40px;
-}
-
-/* Checkbox điều khoản */
-.terms {
-    margin-top: 10px;
-}
-
-.terms label {
-    font-size: 14px;
-}
-
 /* Nút đặt hàng */
 .checkout-btn {
     width: 100%;
@@ -127,17 +98,39 @@ body {
     background: #c9302c;
 }
 
-/* Liên kết đăng nhập & mã giảm giá */
-.additional-links {
-    font-size: 14px;
-    margin-bottom: 15px;
+/* MEDIA QUERY */
+/* Tablet */
+@media (max-width: 1024px) {
+    .checkout-container {
+        flex-direction: column;
+        padding: 15px;
+        gap: 10px;
+    }
+    .billing-info, .order-summary {
+        width: 100%;
+    }
 }
 
-.additional-links a {
-    color: #d9534f;
-    text-decoration: none;
-}
-
-.additional-links a:hover {
-    text-decoration: underline;
+/* Mobile */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    .checkout-container {
+        padding: 10px;
+        gap: 10px;
+    }
+    .order-summary {
+        padding: 10px;
+    }
+    .checkout-btn {
+        font-size: 14px;
+        padding: 10px;
+    }
+    .form-group {
+        flex-direction: column;
+    }
+    .form-group input, .form-group select {
+        width: 100%;
+    }
 }
