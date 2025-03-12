@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\Coupons\CouponController;
+use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
@@ -26,8 +27,12 @@ use Illuminate\Support\Facades\Auth;
 
 
 // ========================= XÁC THỰC (AUTH) =========================
+Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+
+
+
 Route::controller(AuthController::class)->group(function () {
-    Route::get('/register', 'showRegisterForm')->name('register');
+    // Route::get('/register', 'showRegisterForm')->name('register');
     Route::post('/register', 'register');
     Route::get('/login', 'showLoginForm')->name('login');
     Route::post('/login', 'login');

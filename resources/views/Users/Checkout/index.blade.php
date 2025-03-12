@@ -2,6 +2,7 @@
 
 @section('content')
     <link rel="stylesheet" href="{{ asset('assets/css/thanhtoan.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <div class="checkout-container">
         @if ($errors->any())
@@ -14,7 +15,7 @@
             </div>
         @endif
         <div class="billing-info">
-            <h2>THÔNG TIN THANH TOÁN</h2>
+            <h2 style="text-align: center">THÔNG TIN THANH TOÁN</h2>
 
             <form id="checkoutForm" action="{{ route('checkout.placeOrder') }}" method="POST">
                 @csrf
@@ -76,7 +77,7 @@
 
 
         <div class="order-summary">
-            <h3>ĐƠN HÀNG CỦA BẠN</h3>
+            <h3 style="text-align: center">ĐƠN HÀNG CỦA BẠN</h3>
 
             @foreach ($cartItems as $item)
                 <div class="order-item">

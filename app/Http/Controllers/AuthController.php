@@ -10,36 +10,7 @@ use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
-    // Hiển thị form đăng ký
-    public function showRegisterForm()
-    {
-        return view('auth.register');
-    }
-
-    // Xử lý đăng ký
-    public function register(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-            'gender' => 'required|in:male,female',
-        ]);
     
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'gender' => $request->gender,
-            'role' => $request->role ?? 'user', // Mặc định là user
-        ]);
-    
-        // Tạo token và lưu vào session
-        $token = $user->createToken('auth_token')->plainTextToken;
-        session(['auth_token' => $token]);
-    
-        return redirect()->route('login')->with('success', 'Đăng ký thành công! Vui lòng đăng nhập.');
-    }
     
     
 
