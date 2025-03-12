@@ -4,25 +4,12 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Register Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles the registration of new users as well as their
-    | validation and creation. By default this controller uses a trait to
-    | provide this functionality without requiring any additional code.
-    |
-    */
-
-    use RegistersUsers;
-
     /**
      * Where to redirect users after registration.
      *
@@ -41,32 +28,49 @@ class RegisterController extends Controller
     }
 
     /**
-     * Get a validator for an incoming registration request.
+     * Handle a registration request.
      *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
      */
-    protected function validator(array $data)
+    public function showRegistrationForm()
     {
-        return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
+        return view('auth.register');
     }
-
-    /**
-     * Create a new user instance after a valid registration.
-     *
-     * @param  array  $data
-     * @return \App\Models\User
-     */
-    protected function create(array $data)
+    public function register(Request $request)
     {
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
+        $validatedData = $request->validate([
+            'name' => 'required|string|min:3|max:55|regex:/^[a-zA-ZÀ-Ỹà-ỹ0-9\s]+$/u',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:6|max:20|confirmed|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/',
+            'gender' => 'required|in:male,female',
+        ], [
+            'name.required' => 'Họ tên không được để trống.',
+            'name.min' => 'Họ tên phải có ít nhất 3 ký tự.',
+            'name.max' => 'Họ tên không được quá 55 ký tự.',
+            'name.regex' => 'Tên chỉ được chứa chữ cái, số và khoảng trắng, không được có ký tự đặc biệt.',
+            'email.required' => 'Email không được để trống.',
+            'email.email' => 'Email không đúng định dạng.',
+            'email.unique' => 'Email đã tồn tại.',
+            'password.required' => 'Mật khẩu không được để trống.',
+            'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự.',
+            'password.max' => 'Mật khẩu không được quá 20 ký tự.',
+            'password.regex' => 'Mật khẩu phải có chữ hoa, chữ thường, số và ký tự đặc biệt.',
+            'password.confirmed' => 'Mật khẩu xác nhận không khớp.',
+            'gender.in' => 'Giới tính không hợp lệ.'
         ]);
+
+        $user = User::create([
+            'name' => $validatedData['name'],
+            'email' => $validatedData['email'],
+            'password' => Hash::make($validatedData['password']),
+            'gender' => $validatedData['gender'],
+            'role' => $request->role ?? 'user',
+        ]);
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+        session(['auth_token' => $token]);
+
+        return redirect()->route('login')->with('success', 'Đăng ký thành công! Vui lòng đăng nhập.');
     }
 }
