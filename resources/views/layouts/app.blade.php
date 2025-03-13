@@ -170,9 +170,20 @@
                 <li class="user-dropdown">
     @if(Auth::check())
         <div class="user-info">
-            <img src="{{ asset(auth()->user()->img) }}" alt="Avatar" class="user-avatar">
+            @if (!empty(Auth::user()->image) && file_exists(public_path('storage/' . Auth::user()->image)))
+            <img src="{{ asset('storage/' . Auth::user()->image) }}" alt="Avatar" class="user-avatar">
+                  
             <span class="user-name">{{ Auth::user()->name }}</span>
             <i class="fas fa-chevron-down"></i>
+        @else
+               
+        <span class="user-name">{{ Auth::user()->name }}</span>
+        <i class="fas fa-chevron-down"></i>
+        @endif
+        
+        
+
+
         </div>
 
         <ul class="dropdown-menu">
