@@ -8,6 +8,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\Categories\CategoryController;
 use App\Http\Controllers\Admin\Products\ProductController;
 use App\Http\Controllers\Users\ProductController as UserProductController;
+use App\Http\Controllers\Users\ProductFilterController;
 use App\Http\Controllers\Admin\Products\ProductVariantController;
 use App\Http\Controllers\Admin\Statistics\StatisticsController;
 use App\Http\Controllers\CartController;
@@ -85,7 +86,7 @@ Route::middleware('auth')->prefix('cart')->name('cart.')->group(function () {
 });
 
 // ========================= SẢN PHẨM (PRODUCTS) =========================
-Route::get('/categories', [CategoryController::class, 'showCategories'])->name('categories.show');
+Route::get('/categories', [ProductFilterController::class, 'index'])->name('categories.show');
 Route::get('/', [UserProductController::class, 'index'])->name('index');
 Route::prefix('products')->name('products.')->group(function () {
     Route::get('/', [UserProductController::class, 'index'])->name('index');
