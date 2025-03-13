@@ -51,21 +51,25 @@
 
  <!-- Start Main Top -->
  <header class="main-header">
-
         <!-- Start Navigation -->
         <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-default bootsnav">
             <div class="container">
                 <!-- Start Header Navigation -->
                 <div class="navbar-header">
+                  
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbars-rs-food" aria-expanded="false" aria-label="Toggle navigation">
                     <i class="fa fa-bars"></i>
                 </button>
-                    <a class="navbar-brand" href="index.html"><img style="margin-left: 50px;width: 250px; height: 90px" src="../assets/img/logo.png" class="logo" alt=""></a>
+
+                <a href="index.html" class="logo d-flex align-items-center me-auto me-xl-0">
+        <h1 class="sitename">OceanSport</h1>
+        <span>.</span>
+      </a>
                 </div>
                 <!-- End Header Navigation -->
 
                 <!-- Collect the nav links, forms, and other content for toggling -->
-                <div class="collapse navbar-collapse" id="navbar-menu" style="margin-left: 400px;">
+                <div class="collapse navbar-collapse" id="navbar-menu" >
                     <ul class="nav navbar-nav ml-auto" data-in="fadeInDown" data-out="fadeOutUp">
                         <li class="nav-item active"><a class="nav-link" href="index.html">Home</a></li>
                         <li class="nav-item"><a class="nav-link" href="about.html">About Us</a></li>
@@ -163,8 +167,41 @@
                     </ul>
                 </div>
                 <!-- /.navbar-collapse -->
+                <li class="user-dropdown">
+    @if(Auth::check())
+        <div class="user-info">
+            <img src="{{ asset(auth()->user()->img) }}" alt="Avatar" class="user-avatar">
+            <span class="user-name">{{ Auth::user()->name }}</span>
+            <i class="fas fa-chevron-down"></i>
+        </div>
 
-               
+        <ul class="dropdown-menu">
+            @if(auth()->user()->role === 'admin')
+                <li>
+                    <a href="{{ route('admin.dashboard') }}">
+                        <i class="fas fa-user-shield"></i> Chuyển sang Admin
+                    </a>
+                </li>
+            @endif
+            <li>
+                <a href="#">
+                    <i class="fas fa-user-edit"></i> Cập nhật tài khoản
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('logout') }}"
+                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                </a>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                    @csrf
+                </form>
+            </li>
+        </ul>
+    @else
+        <a href="{{ route('login') }}" class="btn-login">Đăng nhập</a>
+    @endif
+</li>
             </div>
         </nav>
         <!-- End Navigation -->
@@ -181,9 +218,6 @@
     <!-- End Top Search -->
    
     </header>
-
-
-
     <!-- End Main Top -->
 
 
@@ -259,22 +293,21 @@
 
     <a href="#" id="back-to-top" title="Back to top" style="display: none;">&uarr;</a>
 
-    <!-- ALL JS FILES -->
-    <script src="js/jquery-3.2.1.min.js"></script>
-    <script src="js/popper.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <!-- ALL PLUGINS -->
-    <script src="js/jquery.superslides.min.js"></script>
-    <script src="js/bootstrap-select.js"></script>
-    <script src="js/inewsticker.js"></script>
-    <script src="js/bootsnav.js."></script>
-    <script src="js/images-loded.min.js"></script>
-    <script src="js/isotope.min.js"></script>
-    <script src="js/owl.carousel.min.js"></script>
-    <script src="js/baguetteBox.min.js"></script>
-    <script src="js/form-validator.min.js"></script>
-    <script src="js/contact-form-script.js"></script>
-    <script src="js/custom.js"></script>
+  <!-- ALL JS FILES -->
+ <script src="{{ asset('assets/js/owl.carousel.min.js') }}"></script>
+ <script src="{{ asset('assets/js/jquery-3.2.1.min.js') }}"></script>
+ <script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
+
+ <script src="{{ asset('assets/js/popper.min.js') }}"></script>
+ <script src="{{ asset('assets/js/jquery.superslides.min.js') }}"></script>
+ <script src="{{ asset('assets/js/bootstrap-select.js') }}"></script>
+ <script src="{{ asset('assets/js/inewsticker.js') }}"></script>
+ <script src="{{ asset('assets/js/bootsnav.js.') }}"></script>
+ <script src="{{ asset('assets/js/images-loded.min.js') }}"></script>
+ <script src="{{ asset('assets/js/isotope.min.js') }}"></script>
+ <script src="{{ asset('assets/js/baguetteBox.min.js') }}"></script>
+ <script src="{{ asset('assets/js/form-validator.min.js') }}"></script>
+ <script src="{{ asset('assets/js/custom.js') }}"></script>
 </body>
 
 </html>
