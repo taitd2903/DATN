@@ -24,9 +24,29 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|string|min:6',
+            'email' => [
+                'required',
+                'email',
+                'exists:users,email' // Đảm bảo email có trong DB
+            ],
+            'password' => [
+            'required',
+            'string',
+            'min:6',
+            'max:20',
+            'confirmed',
+            'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,20}$/'
+            ]
+
+        ], [
+            'email.required' => 'Email không được để trống.',
+            'email.email' => 'Email không đúng định dạng.',
+            'email.exists' => 'Email không tồn tại trong hệ thống.',
+            'password.required' => 'Mật khẩu không được để trống.',
+            'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự.',
+            'password.regex' => 'Mật khẩu phải chứa ít nhất 1 chữ hoa, 1 chữ thường, 1 số và 1 ký tự đặc biệt.'
         ]);
+    
     
         if (!Auth::attempt($request->only('email', 'password'))) {
             return back()->withErrors(['email' => 'Email hoặc mật khẩu không đúng.']);

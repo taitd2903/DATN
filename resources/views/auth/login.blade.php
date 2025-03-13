@@ -13,9 +13,9 @@
             <p style="color: green;">{{ session('success') }}</p>
         @endif
 
-        @if($errors->any())
+        {{-- @if($errors->any())
             <p style="color: red;">{{ $errors->first() }}</p>
-        @endif
+        @endif --}}
 
 
    
@@ -29,13 +29,19 @@
             <!-- Tài khoản -->
             <div class="input-box">
                 <i class="fa fa-user"></i>
-                <input type="email" name="email" placeholder="Email" value="{{ old('email') }}" required>
+                <input type="email" name="email" placeholder="Email" value="{{ old('email') }}" >
+                @error('email')
+                <span class="text-red-500">{{ $message }}</span>
+            @enderror
             </div>
 
             <!-- Mật khẩu -->
             <div class="input-box">
                  <i class="fa fa-lock"></i>
-                <input type="password" name="password" placeholder="Mật khẩu" required>
+                <input type="password" name="password" placeholder="Mật khẩu" >
+                @error('password')
+                <span class="text-red-500">{{ $message }}</span>
+            @enderror
             </div>
 
             <!-- Ghi nhớ & Quên mật khẩu -->
