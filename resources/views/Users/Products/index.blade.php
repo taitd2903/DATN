@@ -1,7 +1,16 @@
 <!-- SP -->
 @extends('layouts.app')
 @section('content')
- 
+
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+ </head>
+ <body>
+    
 <!-- Favicons -->
 <link rel="icon" href="{{ asset('assets/img/favicon.png') }}">
     <link rel="apple-touch-icon" href="{{ asset('assets/img/apple-touch-icon.png') }}">
@@ -23,7 +32,6 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
-    
     <!-- Bộ lọc sản phẩm -->
     <!-- <form method="GET" action="{{ route('products.index') }}" class="mb-4">
         <div class="row g-3 align-items-center">
@@ -54,6 +62,49 @@
         </div>
     </form> -->
 
+ <!-- Start Slider -->
+ <div id="slides-shop" class="cover-slides">
+        <ul class="slides-container">
+            <li class="text-left">
+                <img src="../assets/img/banner-01.jpg" alt="">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h1 class="m-b-20"><strong>Welcome To <br> Thewayshop</strong></h1>
+                            <p class="m-b-40">See how your users experience your website in realtime or view <br> trends to see any changes in performance over time.</p>
+                            <p><a class="btn hvr-hover" href="#">Shop New</a></p>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="text-center">
+                <img src="../assets/img/banner-02.jpg" alt="">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h1 class="m-b-20"><strong>Welcome To <br> Thewayshop</strong></h1>
+                            <p class="m-b-40">See how your users experience your website in realtime or view <br> trends to see any changes in performance over time.</p>
+                            <p><a class="btn hvr-hover" href="#">Shop New</a></p>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="text-right">
+                <img src="../assets/img/banner-03.jpg" alt="">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h1 class="m-b-20"><strong>Welcome To <br> Thewayshop</strong></h1>
+                            <p class="m-b-40">See how your users experience your website in realtime or view <br> trends to see any changes in performance over time.</p>
+                            <p><a class="btn hvr-hover" href="#">Shop New</a></p>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+        
+    </div>
+    <!-- End Slider -->
 
   
     <!-- SAN PHAM -->
@@ -98,11 +149,188 @@
 </div>
  
 </div>
-
-   
 </div>
 
-@endsection
+<!-- BST -->
+<div class="latest-blog">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="title-all text-center">
+                        <h1>Bộ sưu tập</h1>
+                        <p>Bộ sưu tập của chúng tôi.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 col-lg-4 col-xl-4">
+                    <div class="blog-box">
+                        <div class="blog-img">
+                            <img src="{{ asset('storage/' . $product->image) }}" class="img-fluid" alt="{{ $product->name }}">
+
+                        </div>
+                        <div class="blog-content">
+                            <div class="title-blog">
+                                <h3>Fusce in augue non nisi fringilla</h3>
+                                <p>Nulla ut urna egestas, porta libero id, suscipit orci. Quisque in lectus sit amet urna dignissim feugiat. Mauris molestie egestas pharetra. Ut finibus cursus nunc sed mollis. Praesent laoreet lacinia elit id lobortis.</p>
+                            </div>
+                            <ul class="option-blog">
+                                <li><a href="#" data-toggle="tooltip" data-placement="right" title="Likes"><i class="far fa-heart"></i></a></li>
+                                <li><a href="#" data-toggle="tooltip" data-placement="right" title="Views"><i class="fas fa-eye"></i></a></li>
+                                <li><a href="#" data-toggle="tooltip" data-placement="right" title="Comments"><i class="far fa-comments"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4 col-xl-4">
+                    <div class="blog-box">
+                        <div class="blog-img">
+                        <img src="{{ asset('storage/' . $product->image) }}" class="img-fluid" alt="{{ $product->name }}">
+
+                        </div>
+                        <div class="blog-content">
+                            <div class="title-blog">
+                                <h3>Fusce in augue non nisi fringilla</h3>
+                                <p>Nulla ut urna egestas, porta libero id, suscipit orci. Quisque in lectus sit amet urna dignissim feugiat. Mauris molestie egestas pharetra. Ut finibus cursus nunc sed mollis. Praesent laoreet lacinia elit id lobortis.</p>
+                            </div>
+                            <ul class="option-blog">
+                                <li><a href="#" data-toggle="tooltip" data-placement="right" title="Likes"><i class="far fa-heart"></i></a></li>
+                                <li><a href="#" data-toggle="tooltip" data-placement="right" title="Views"><i class="fas fa-eye"></i></a></li>
+                                <li><a href="#" data-toggle="tooltip" data-placement="right" title="Comments"><i class="far fa-comments"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4 col-xl-4">
+                    <div class="blog-box">
+                        <div class="blog-img">
+                        <img src="{{ asset('storage/' . $product->image) }}" class="img-fluid" alt="{{ $product->name }}">
+
+                        </div>
+                        <div class="blog-content">
+                            <div class="title-blog">
+                                <h3>Fusce in augue non nisi fringilla</h3>
+                                <p>Nulla ut urna egestas, porta libero id, suscipit orci. Quisque in lectus sit amet urna dignissim feugiat. Mauris molestie egestas pharetra. Ut finibus cursus nunc sed mollis. Praesent laoreet lacinia elit id lobortis.</p>
+                            </div>
+                            <ul class="option-blog">
+                                <li><a href="#" data-toggle="tooltip" data-placement="right" title="Likes"><i class="far fa-heart"></i></a></li>
+                                <li><a href="#" data-toggle="tooltip" data-placement="right" title="Views"><i class="fas fa-eye"></i></a></li>
+                                <li><a href="#" data-toggle="tooltip" data-placement="right" title="Comments"><i class="far fa-comments"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Blog  -->
+
+     <!-- about section start -->
+  <section class="about">
+    <div class="about-container">
+        <div class="about-text">
+            <h2>Thời trang phong cách</h2>
+            <p>Full cleaning and housekeeping services for companies and households.</p>
+            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text.</p>
+            <a href="#" class="btn">Xem thêm Thời trang</a>
+            <!-- CHỖ NÀY CHUYỂN HƯỚNG SANG TRANG SẢN PHẨM -->
+        </div>
+        <div class="about-image">
+            <img src="../assets/img/hi.jpg" alt="Coffee and Book">
+        </div>
+    </div>
+</section>
+ <!-- about section end -->
+
+ <!-- Start Instagram Feed  -->
+ <div class="instagram-box">
+        <div class="main-instagram owl-carousel owl-theme">
+            <div class="item">
+                <div class="ins-inner-box">
+                    <img src="../assets/img/instagram-img-05.jpg" alt="" />
+                    <div class="hov-in">
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="item">
+                <div class="ins-inner-box">
+                    <img src="../assets/img/instagram-img-05.jpg" alt="" />
+                    <div class="hov-in">
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="item">
+                <div class="ins-inner-box">
+                    <img src="../assets/img/instagram-img-05.jpg" alt="" />
+                    <div class="hov-in">
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="item">
+                <div class="ins-inner-box">
+                    <img src="../assets/img/instagram-img-05.jpg" alt="" />
+                    <div class="hov-in">
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="item">
+                <div class="ins-inner-box">
+                    <img src="../assets/img/instagram-img-05.jpg" alt="" />
+                    <div class="hov-in">
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="item">
+                <div class="ins-inner-box">
+                    <img src="../assets/img/instagram-img-05.jpg" alt="" />
+                    <div class="hov-in">
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="item">
+                <div class="ins-inner-box">
+                    <img src="../assets/img/instagram-img-05.jpg" alt="" />
+                    <div class="hov-in">
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="item">
+                <div class="ins-inner-box">
+                    <img src="../assets/img/instagram-img-05.jpg" alt="" />
+                    <div class="hov-in">
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="item">
+                <div class="ins-inner-box">
+                    <img src="../assets/img/instagram-img-05.jpg" alt="" />
+                    <div class="hov-in">
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="item">
+                <div class="ins-inner-box">
+                    <img src="../assets/img/instagram-img-05.jpg" alt="" />
+                    <div class="hov-in">
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Instagram Feed  -->
+    
+
+
 
 <style>
     .product-img {
@@ -133,3 +361,23 @@
         display: flex;
     }
 </style>
+
+</body>
+ <!-- ALL JS FILES -->
+ <script src="{{ asset('assets/js/owl.carousel.min.js') }}"></script>
+ <script src="{{ asset('assets/js/jquery-3.2.1.min.js') }}"></script>
+ <script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
+
+ <script src="{{ asset('assets/js/popper.min.js') }}"></script>
+ <script src="{{ asset('assets/js/jquery.superslides.min.js') }}"></script>
+ <script src="{{ asset('assets/js/bootstrap-select.js') }}"></script>
+ <script src="{{ asset('assets/js/inewsticker.js') }}"></script>
+ <script src="{{ asset('assets/js/bootsnav.js.') }}"></script>
+ <script src="{{ asset('assets/js/images-loded.min.js') }}"></script>
+ <script src="{{ asset('assets/js/isotope.min.js') }}"></script>
+ <script src="{{ asset('assets/js/baguetteBox.min.js') }}"></script>
+ <script src="{{ asset('assets/js/form-validator.min.js') }}"></script>
+ <script src="{{ asset('assets/js/custom.js') }}"></script>
+
+ </html>
+ @endsection
