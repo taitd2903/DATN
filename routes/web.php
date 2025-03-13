@@ -8,6 +8,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\Categories\CategoryController;
 use App\Http\Controllers\Admin\Products\ProductController;
 use App\Http\Controllers\Users\ProductController as UserProductController;
+use App\Http\Controllers\Users\ProductFilterController;
 use App\Http\Controllers\Admin\Products\ProductVariantController;
 use App\Http\Controllers\Admin\Statistics\StatisticsController;
 use App\Http\Controllers\CartController;
@@ -17,6 +18,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\Admin\Reviews\AdminReviewController;
 
 /*
 |--------------------------------------------------------------------------
@@ -83,7 +86,7 @@ Route::middleware('auth')->prefix('cart')->name('cart.')->group(function () {
 });
 
 // ========================= SẢN PHẨM (PRODUCTS) =========================
-Route::get('/categories', [CategoryController::class, 'showCategories'])->name('categories.show');
+Route::get('/categories', [ProductFilterController::class, 'index'])->name('categories.show');
 Route::get('/', [UserProductController::class, 'index'])->name('index');
 Route::prefix('products')->name('products.')->group(function () {
     Route::get('/', [UserProductController::class, 'index'])->name('index');
@@ -129,6 +132,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::put('/orders/{order}/update-status', [CheckoutController::class, 'updateStatus'])->name('orders.updateStatus');
     // Route::delete('/orders/{id}', [CheckoutController::class, 'destroy'])->name('orders.destroy'); //xoá ở phần amin
 
+    // check reviews
+    Route::get('/check_reviews', [AdminReviewController::class, 'index'])->name('reviews.index');
+    Route::get('/reviews/approved', [AdminReviewController::class, 'approved'])->name('reviews.approved'); // hien thi danh gia da duyet
+    Route::post('/reviews/{id}/approve', [AdminReviewController::class, 'approve'])->name('reviews.approve');
+    Route::delete('/reviews/{id}', [AdminReviewController::class, 'destroy'])->name('reviews.destroy');
 });
 // phần user người mua show ra
 Route::middleware(['auth'])->group(function () {
@@ -154,3 +162,16 @@ Route::post('/admin/users/transfer-admin', [UserController::class, 'transferAdmi
     ->name('users.transferAdmin');
 //khóa tài khoản
 Route::get('/admin/users/{id}/toggle-status', [UserController::class, 'toggleStatus'])->name('admin.users.toggleStatus');
+
+
+
+
+// danh gia
+Route::get('/product/{id}/review', [ReviewController::class, 'create'])->name('product.review');
+Route::post('/product/{id}/review', [ReviewController::class, 'store'])->name('product.review.store');
+
+
+
+
+
+

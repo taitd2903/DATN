@@ -11,12 +11,15 @@
             <label for="status">Trạng thái:</label>
             <select name="status" class="form-control">
                 @foreach ($statusOptions as $status)
-                    <option value="{{ $status }}" {{ $order->status == $status ? 'selected' : '' }}>
-                        {{ $status }}
-                    </option>
+                    @if (!($order->payment_method == 'vnpay' && $status == 'Hủy')) 
+                        <option value="{{ $status }}" {{ $order->status == $status ? 'selected' : '' }}>
+                            {{ $status }}
+                        </option>
+                    @endif
                 @endforeach
             </select>
         </div>
+        
     
         <button type="submit" class="btn btn-primary mt-3">Cập nhật</button>
         <a href="{{ route('admin.orders.index') }}" class="btn btn-secondary mt-3">Quay lại</a>

@@ -81,13 +81,13 @@
 
             @foreach ($cartItems as $item)
                 <div class="order-item">
-                    <p> {{ $item->product->name }}</p>
-                    <p> Giá: {{ number_format($item->price, 0, ',', '.') }} VND</p>
+                    <p style="color: red"> <b> Sản phẩm: {{ $item->product->name }}</b></p>
+                    <p> <b>Giá: </b> {{ number_format($item->price, 0, ',', '.') }} VND</p>
                 </div>
 
-                <p>Số lượng: {{ $item->quantity }} </p>
-                <p> Size: {{ $item->variant->size ?? 'Không có' }} </p>
-                <p> Màu sắc: {{ $item->variant->color ?? 'Không có' }} </p>
+                <p><b>Số lượng:</b> {{ $item->quantity }} </p>
+                <p> <b>Size:</b> {{ $item->variant->size ?? 'Không có' }} </p>
+                <p><b>Màu sắc:</b>  {{ $item->variant->color ?? 'Không có' }} </p>
                 <hr>
             @endforeach
 

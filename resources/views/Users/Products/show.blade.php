@@ -2,8 +2,6 @@
 @extends('layouts.app')
 
 @section('content')
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{{ asset('assets/css/chitietsp.css') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- <link rel="stylesheet" href="{{ asset('assets/css/menu.css') }}"> -->
@@ -14,18 +12,35 @@
 
     @if($product->image)
     <div class="row">
+        <div class="col-md-6">
+            <!-- Ảnh chính ban đầu là ảnh của sản phẩm -->
+            <div class="mt-3 d-flex " id="variant-thumbnails" style="margin-left: 120px;">
+                <img id="variant-image" src="{{ asset('storage/' . $product->image) }}" 
+                     alt="{{ $product->name }}" class="img-fluid" width="600px" height="60%">
+            </div>
 
-    <div class="col-md-6">
-    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" width="600px" height="60%" margin-left="500px" class="img-fluid">
-     <div class="mt-3 d-flex" style="margin-left: 120px;">
-                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="img-thumbnail me-2" width="20%" height="20%">
-                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="img-thumbnail me-2" width="20%" height="20%">
-                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="img-thumbnail" width="20%" height="20%">
-     </div>
-    </div>
+            <!-- Ảnh nhỏ: Gồm ảnh sản phẩm chung + ảnh của các biến thể -->
+            <div class="mt-3 d-flex" style="margin-left: 120px;">
+             
+
+                    <div class="mt-3 d-flex" id="variant-thumbnails">
+                        @foreach ($product->variants as $variant)
+                            <img src="{{ asset('storage/' . $variant->image) }}" 
+                                 alt="{{ $variant->color }} - {{ $variant->size }}" 
+                                 class="img-thumbnail me-2 variant-thumbnail"
+                                 width="20%" height="20%"
+                                 data-variant-id="{{ $variant->id }}"
+                                 data-size="{{ $variant->size }}"
+                                 data-color="{{ $variant->color }}">
+                        @endforeach
+                    </div>
+            </div>
+        </div>
 @else
     <p>Chưa có hình ảnh</p>
 @endif
+
+
  
 <div class="col-md-6">
 <h1>{{ $product->name }}</h1>
@@ -73,7 +88,7 @@
                 @endforeach
                 </div>
             </div>
-        </div>
+        </div><p><strong>Đang chọn: </strong> <span id="selected-variant-info">Chưa chọn</span></p>
         <div class="mt-3">
                     <a href="#" class="text-primary">Hướng dẫn chọn size</a> | 
                     <a href="#" class="text-primary">Thông số sản phẩm</a>
@@ -89,6 +104,8 @@
                 <br>
                 <p> Mo ta: {{ $product->description }}</p>
 </div>
+
+
 
 
 </div>
@@ -137,7 +154,36 @@
 
 
 
+<style>
+    .size-btn.active, .color-btn.active {
+    background-color: #dc3545 !important; /* Màu đỏ nổi bật */
+    color: #fff !important;
+    font-weight: bold;
+    border: 2px solid #b22222;
+    box-shadow: 0 0 5px rgba(220, 53, 69, 0.5);
+}
 
+.size-btn, .color-btn {
+    border: 1px solid #ccc;
+    background-color: #f8f9fa;
+    padding: 8px 12px;
+    margin: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.size-btn:hover, .color-btn:hover {
+    background-color: #e0e0e0;
+}
+
+/* Hiệu ứng khi disabled */
+.color-btn:disabled {
+    background-color: #ddd;
+    color: #999;
+    cursor: not-allowed;
+    border: 1px solid #bbb;
+}
+</style>
 
 
 
@@ -146,103 +192,123 @@
 
     <!-- JavaScript -->
     <script>
-   document.addEventListener("DOMContentLoaded", function() {
-    let variants = @json($product->variants);
-    let selectedSize = null;
-    let selectedColor = null;
-    let selectedVariant = null;
-
-    // Khi chọn size
-    document.querySelectorAll(".size-btn").forEach(button => {
-        button.addEventListener("click", function() {
-            // Nếu nút đã được chọn rồi thì bỏ chọn
-            if (this.classList.contains("active")) {
-                selectedSize = null;
-                this.classList.remove("active");
-
-                // Reset các tùy chọn màu sắc và biến thể
-                selectedColor = null;
-                selectedVariant = null;
-                document.querySelectorAll(".color-btn").forEach(btn => {
-                    btn.classList.remove("active");
-                    btn.disabled = true;
-                });
-
-                // Cập nhật giao diện
-                document.getElementById("variant_id").value = "";
-                document.getElementById("stock-info").textContent = "";
-                document.getElementById("variant-price").textContent = "";
-                document.getElementById("addToCartButton").disabled = true;
-            } else {
-                // Chọn size mới
-                selectedSize = this.getAttribute("data-size");
-                document.querySelectorAll(".size-btn").forEach(btn => btn.classList.remove("active"));
-                this.classList.add("active");
-
-                // Reset màu sắc và biến thể
-                selectedColor = null;
-                selectedVariant = null;
-                document.querySelectorAll(".color-btn").forEach(btn => {
-                    btn.classList.remove("active");
-                    btn.disabled = true;
-                });
-
-                // Lọc danh sách màu theo size đã chọn
-                let availableColors = variants.filter(v => v.size === selectedSize).map(v => v.color);
-                document.querySelectorAll(".color-btn").forEach(btn => {
-                    if (availableColors.includes(btn.getAttribute("data-color"))) {
-                        btn.disabled = false;
-                    }
-                });
-
-                // Cập nhật giao diện
-                document.getElementById("variant_id").value = "";
-                document.getElementById("stock-info").textContent = "";
-                document.getElementById("variant-price").textContent = "";
-                document.getElementById("addToCartButton").disabled = true;
-            }
-        });
-    });
-
-    // Khi chọn màu sắc
-    document.querySelectorAll(".color-btn").forEach(button => {
-        button.addEventListener("click", function() {
-            if (this.disabled) return;
-
-            // Nếu màu đã được chọn, bỏ chọn
-            if (this.classList.contains("active")) {
-                selectedColor = null;
-                this.classList.remove("active");
-
-                // Reset biến thể
-                selectedVariant = null;
-                document.getElementById("variant_id").value = "";
-                document.getElementById("stock-info").textContent = "";
-                document.getElementById("variant-price").textContent = "";
-                document.getElementById("addToCartButton").disabled = true;
-            } else {
-                // Chọn màu mới
-                selectedColor = this.getAttribute("data-color");
-                document.querySelectorAll(".color-btn").forEach(btn => btn.classList.remove("active"));
-                this.classList.add("active");
-
-                // Tìm biến thể phù hợp
-                selectedVariant = variants.find(v => v.size === selectedSize && v.color === selectedColor);
-
-                if (selectedVariant) {
-                    document.getElementById("variant_id").value = selectedVariant.id;
-                    document.getElementById("stock-info").textContent = selectedVariant.stock_quantity + " sản phẩm có sẵn";
+        document.addEventListener("DOMContentLoaded", function() {
+            let variants = @json($product->variants);
+            let selectedSize = null;
+            let selectedColor = null;
+            let selectedVariant = null;
+        
+            let defaultImage = document.getElementById("variant-image").getAttribute("src");
+            let variantImageElement = document.getElementById("variant-image");
+            let selectedVariantInfo = document.getElementById("selected-variant-info");
+        
+            function updateVariant(variant) {
+                if (variant) {
+                    document.getElementById("variant_id").value = variant.id;
+                    document.getElementById("stock-info").textContent = variant.stock_quantity + " sản phẩm có sẵn";
                     document.getElementById("variant-price").textContent =
-                        new Intl.NumberFormat('vi-VN').format(selectedVariant.price) + " VNĐ";
-
+                        new Intl.NumberFormat('vi-VN').format(variant.price) + " VNĐ";
                     document.getElementById("addToCartButton").disabled = false;
+        
+                    // Cập nhật ảnh biến thể
+                    variantImageElement.src = "/storage/" + variant.image;
+        
+                    // Cập nhật thông tin "Đang chọn"
+                    selectedVariantInfo.textContent = `Size ${variant.size} - Màu ${variant.color}`;
+        
+                    // Tự động chọn size
+                    selectedSize = variant.size;
+                    document.querySelectorAll(".size-btn").forEach(btn => {
+                        btn.classList.toggle("active", btn.getAttribute("data-size") === selectedSize);
+                    });
+        
+                    // Tự động chọn màu
+                    selectedColor = variant.color;
+                    document.querySelectorAll(".color-btn").forEach(btn => {
+                        btn.classList.toggle("active", btn.getAttribute("data-color") === selectedColor);
+                    });
+                } else {
+                    // Reset nếu không có biến thể
+                    document.getElementById("variant_id").value = "";
+                    document.getElementById("stock-info").textContent = "";
+                    document.getElementById("variant-price").textContent = "";
+                    document.getElementById("addToCartButton").disabled = true;
+                    variantImageElement.src = defaultImage;
+                    selectedVariantInfo.textContent = "Chưa chọn";
                 }
             }
+        
+            // Xử lý chọn ảnh biến thể
+            document.querySelectorAll(".variant-thumbnail").forEach(img => {
+                img.addEventListener("click", function() {
+                    let variantId = this.getAttribute("data-variant-id");
+                    let variant = variants.find(v => v.id == variantId);
+                    updateVariant(variant);
+                });
+            });
+        
+            // Khi chọn size
+            document.querySelectorAll(".size-btn").forEach(button => {
+                button.addEventListener("click", function() {
+                    if (this.classList.contains("active")) {
+                        selectedSize = null;
+                        this.classList.remove("active");
+        
+                        selectedColor = null;
+                        selectedVariant = null;
+                        document.querySelectorAll(".color-btn").forEach(btn => {
+                            btn.classList.remove("active");
+                            btn.disabled = true;
+                        });
+        
+                        updateVariant(null);
+                    } else {
+                        selectedSize = this.getAttribute("data-size");
+                        document.querySelectorAll(".size-btn").forEach(btn => btn.classList.remove("active"));
+                        this.classList.add("active");
+        
+                        selectedColor = null;
+                        selectedVariant = null;
+                        document.querySelectorAll(".color-btn").forEach(btn => {
+                            btn.classList.remove("active");
+                            btn.disabled = true;
+                        });
+        
+                        let availableColors = variants.filter(v => v.size === selectedSize).map(v => v.color);
+                        document.querySelectorAll(".color-btn").forEach(btn => {
+                            if (availableColors.includes(btn.getAttribute("data-color"))) {
+                                btn.disabled = false;
+                            }
+                        });
+        
+                        updateVariant(null);
+                    }
+                });
+            });
+        
+            // Khi chọn màu sắc
+            document.querySelectorAll(".color-btn").forEach(button => {
+                button.addEventListener("click", function() {
+                    if (this.disabled) return;
+        
+                    if (this.classList.contains("active")) {
+                        selectedColor = null;
+                        this.classList.remove("active");
+                        updateVariant(null);
+                    } else {
+                        selectedColor = this.getAttribute("data-color");
+                        document.querySelectorAll(".color-btn").forEach(btn => btn.classList.remove("active"));
+                        this.classList.add("active");
+        
+                        selectedVariant = variants.find(v => v.size === selectedSize && v.color === selectedColor);
+                        updateVariant(selectedVariant);
+                    }
+                });
+            });
         });
-    });
-});
+        </script>
+        
 
-    </script>
 
    
 @endsection

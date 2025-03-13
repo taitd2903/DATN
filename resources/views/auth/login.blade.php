@@ -7,7 +7,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <div class="login-container">
-    <div class="login-box">
         <h2 class="title">ĐĂNG NHẬP</h2>
 
         @if(session('success'))
@@ -28,15 +27,15 @@
         <form method="POST" action="{{ route('login') }}">
             @csrf
             <!-- Tài khoản -->
-            <div class="input-group">
+            <div class="input-box">
+                <i class="fa fa-user"></i>
                 <input type="email" name="email" placeholder="Email" value="{{ old('email') }}" required>
-                <span class="icon"><i class="bi bi-person"></i></span>
             </div>
 
             <!-- Mật khẩu -->
-            <div class="input-group">
+            <div class="input-box">
+                 <i class="fa fa-lock"></i>
                 <input type="password" name="password" placeholder="Mật khẩu" required>
-                <span class="icon"><i class="bi bi-lock"></i></span>
             </div>
 
             <!-- Ghi nhớ & Quên mật khẩu -->
@@ -46,10 +45,10 @@
             </div>
 
             <!-- Nút Đăng nhập -->
-            <button type="submit" class="login-btn">Đăng nhập</button>
+            <button type="submit" class="btn">Đăng nhập</button>
 
             <!-- Đăng ký -->
-            <p class="register">Chưa có tài khoản? <a href="{{ route('register') }}">Đăng ký</a></p>
+            <p>Chưa có tài khoản? <a href="{{ route('register') }}">Đăng ký</a></p>
         </form>
     </div>
 </div>
