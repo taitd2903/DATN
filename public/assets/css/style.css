@@ -163,11 +163,10 @@
 /*------------------------------------------------------------------ HEADER -------------------------------------------------------------------*/
  .main-top{
      background: #010101;
-     padding: 10px 0px;
+     padding: 0px 0px;
 }
  .custom-select-box{
      float: right;
-     width: 95px;
      margin-left: 20px;
 }
  .custom-select-box .form-control{
@@ -682,7 +681,10 @@
      color: #ffffff;
 }
 /*------------------------------------------------------------------ Slider -------------------------------------------------------------------*/
- .cover-slides{
+.owl-carousel {
+    display: block !important;
+}
+.cover-slides{
      height: 100vh;
 }
  .slides-navigation a {
