@@ -19,9 +19,33 @@ class ResetPasswordController extends Controller
     {
         $request->validate([
             'token' => 'required',
-            'email' => 'required|email',
-            'password' => 'required|min:8|confirmed',
-        ]);
+            'email' => [
+                'required',
+                'email',
+                'exists:users,email',
+            ],
+            'password' => [
+        'required',
+        'string',
+        'min:6',
+        'max:20',
+        'confirmed',
+        'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/',
+    ],
+
+],
+    [
+        'password.required' => 'Mật khẩu không được để trống.',
+        'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự.',
+        'password.max' => 'Mật khẩu không được quá 20 ký tự.',
+        'password.confirmed' => 'Mật khẩu xác nhận không khớp.',
+        'password.regex' => 'Mật khẩu phải có chữ hoa, chữ thường, số và ký tự đặc biệt.',
+        'email.required' => 'Email không được để trống.',
+        'email.email' => 'Email phải đúng định dạng.',
+        'email.exists' => 'Email không tồn tại trong hệ thống.',
+    ]
+
+    );
 
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
