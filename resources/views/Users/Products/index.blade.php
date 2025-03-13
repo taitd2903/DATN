@@ -1,9 +1,28 @@
 <!-- SP -->
 @extends('layouts.app')
 @section('content')
-<img src="../assets/img/bia.jpg" alt="Banner" class="img-fluid" width="100%"4>
-<div class="container mt-4">
-    <h1 class="text-center mb-4">Danh sách sản phẩm</h1>
+ 
+<!-- Favicons -->
+<link rel="icon" href="{{ asset('assets/img/favicon.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('assets/img/apple-touch-icon.png') }}">
+
+    <!-- Bootstrap 5 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+
+    <!-- Vendor CSS Files -->
+    <link rel="stylesheet" href="{{ asset('assets/vendor/bootstrap-icons/bootstrap-icons.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/aos/aos.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/glightbox/css/glightbox.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/swiper/swiper-bundle.min.css') }}">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/custom.css') }}">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
     
     <!-- Bộ lọc sản phẩm -->
     <!-- <form method="GET" action="{{ route('products.index') }}" class="mb-4">
@@ -36,88 +55,46 @@
     </form> -->
 
 
-    <!-- SAN PHAM O TRANG CHU -->
-
-
-
-    <!-- PHẦN NEW COLLECTION -->
-    <section class="new-collection container my-5">
-      <h2 class="text-center fw-bold mb-4">NEW COLLECTION</h2>
-      <div class="row align-items-center" style="margin-left: 50px; ">
-          <!-- Ảnh lớn bên trái -->
-          <div class="col-lg-7 position-relative mb-4 mb-lg-0">
-              <img 
-                  src="../assets/img/bia1.jpg" 
-                  alt="Chevron Jacket" 
-                  class="img-fluid w-100 rounded-3 main-image"
-              />
-          </div>
   
-          <!-- 3 ảnh nhỏ bên phải -->
-          <div class="col-lg-5">
-              <div class="row g-3 small-images">
-                  <div class="col-12">
-                      <img 
-                          src="../assets/img/hiii.jpg" 
-                          alt="Sub Collection 1" 
-                          class="img-fluid rounded-3"
-                      />
-                  </div>
-                  <div class="col-12">
-                      <img 
-                          src="../assets/img/hii.jpg" 
-                          alt="Sub Collection 2" 
-                          class="img-fluid rounded-3"
-                      />
-                  </div>
-                  <div class="col-12">
-                      <img 
-                          src="../assets/img/hi.jpg" 
-                          alt="Sub Collection 3" 
-                          class="img-fluid rounded-3"
-                      />
-                  </div>
-              </div>
-          </div>
-      </div>
-  </section>
-  <hr>
     <!-- SAN PHAM -->
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
-        @foreach($products as $product)
-            <div class="col d-flex">
-                <div class="card h-100 shadow-sm border-0 rounded-lg w-100">
-                    @if($product->image)
-                        <img src="{{ asset('storage/' . $product->image) }}" class="card-img-top product-img" alt="{{ $product->name }}">
-                    @else
-                        <div class="p-3 text-center text-muted">Chưa có hình ảnh</div>
-                    @endif
-
-                    <div class="card-body text-center">
-                        <h5 class="card-title text-primary">{{ $product->name }}</h5>
-                        <p class="card-text text-muted small">{{ Str::limit($product->description, 100) }}</p>
-                        <p class="fw-bold">Danh mục: <span class="text-dark">{{ $product->category ? $product->category->name : 'Chưa có danh mục' }}</span></p>
-                        <p class="text-success fw-bold">Tổng số lượng đã bán: {{ $product->total_sold_quantity }}</p>
-                        <p class="fw-bold">Giới tính: <span class="text-dark">{{ ucfirst($product->gender) }}</span></p>
-
-                        <h6 class="mt-3">Biến thể:</h6>
-                        <ul class="list-unstyled d-flex justify-content-center gap-2 flex-wrap">
-                            @foreach($product->variants as $variant)
-                                <li>
-                                    @if(!empty($variant->size))
-                                        <span class="badge bg-primary">Size: {{ $variant->size }}</span>
-                                    @endif
-                                    <span class="badge bg-secondary">Màu: {{ $variant->color }}</span>
-                                </li>
-                            @endforeach
-                        </ul>
-
-                        <a href="{{ route('products.show', $product->id) }}" class="btn btn-outline-primary mt-3 w-75">Xem chi tiết</a>
+    <div class="products-box">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="title-all text-center">
+                        <h1>Sản phẩm của chúng tôi</h1>
                     </div>
                 </div>
             </div>
-        @endforeach
-    </div>
+    <div class="row special-list">
+    @foreach($products as $product)
+        <div class="col-lg-3 col-md-6 special-grid best-seller">
+            <div class="products-single fix">
+                <div class="box-img-hover">
+                    <div class="type-lb">
+                        <p class="sale">Sale</p>
+                    </div>
+                    @if($product->image)
+                        <img src="{{ asset('storage/' . $product->image) }}" class="img-fluid" alt="{{ $product->name }}">
+                    @else
+                        <div class="p-3 text-center text-muted">Chưa có hình ảnh</div>
+                    @endif
+                    <div class="mask-icon">
+                        <ul>
+                            <li><a href="#" data-toggle="tooltip" data-placement="right" title="View"><i class="fas fa-eye"></i></a></li>
+                            <li><a href="#" data-toggle="tooltip" data-placement="right" title="Compare"><i class="fas fa-sync-alt"></i></a></li>
+                            <li><a href="#" data-toggle="tooltip" data-placement="right" title="Add to Wishlist"><i class="far fa-heart"></i></a></li>
+                        </ul>
+                        <a href="{{ route('products.show', $product->id) }}" class="cart">Xem chi tiết</a>
+                    </div>
+                </div>
+                <div class="why-text">
+                    <h4>{{ $product->name }}</h4>
+                    <h5> $7.79</h5>
+                </div>
+            </div>
+        </div>
+    @endforeach
 </div>
  
 </div>
