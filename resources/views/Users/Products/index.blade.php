@@ -118,7 +118,7 @@
                 </div>
             </div>
     <div class="row special-list">
-    @foreach($products as $product)
+        @foreach($products as $product)
         <div class="col-lg-3 col-md-6 special-grid best-seller">
             <div class="products-single fix">
                 <div class="box-img-hover">
@@ -141,11 +141,20 @@
                 </div>
                 <div class="why-text">
                     <h4>{{ $product->name }}</h4>
-                    <h5> {{ $product->name }}</h5>
+                    
+                    @php
+                        $minPrice = $product->variants->min('price') ?? 0;
+                        $maxPrice = $product->variants->max('price') ?? 0;
+                    @endphp
+    
+                    <h5 class="text-danger fw-bold">
+                        {{ number_format($minPrice, 0, ',', '.') }} VND - {{ number_format($maxPrice, 0, ',', '.') }} VND
+                    </h5>
                 </div>
             </div>
         </div>
     @endforeach
+    
 </div>
  
 </div>

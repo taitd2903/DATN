@@ -40,22 +40,29 @@
             <h2 class="mb-3">Products</h2>
             <div class="row">
                 @foreach($products as $product)
-                    <div class="col-md-4 mb-4">
-                        <div class="card product-card shadow-sm">
-                          <img src="{{ $product->image ? asset('storage/' . $product->image) : asset('default-image.jpg') }}" 
-                          class="card-img-top product-img" alt="{{ $product->name }}">
-                                                 <div class="card-body text-center">
-                                <h5 class="card-title">{{ $product->name }}</h5>
-                                <p class="text-muted">Giới tính: {{ ucfirst($product->gender) }}</p>
-                                <p class="text-danger fw-bold">
-                                    {{ number_format($product->variants->first()->price ?? 0, 0, ',', '.') }} VND
-                                </p>
-                                <a href="{{ route('products.show', $product->id) }}" class="btn btn-success">Xem chi tiết</a>
-
-                            </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card product-card shadow-sm">
+                        <img src="{{ $product->image ? asset('storage/' . $product->image) : asset('default-image.jpg') }}" 
+                        class="card-img-top product-img" alt="{{ $product->name }}">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">{{ $product->name }}</h5>
+                            <p class="text-muted">Giới tính: {{ ucfirst($product->gender) }}</p>
+                            
+                            @php
+                                $minPrice = $product->variants->min('price') ?? 0;
+                                $maxPrice = $product->variants->max('price') ?? 0;
+                            @endphp
+            
+                            <p class="text-danger fw-bold">
+                                {{ number_format($minPrice, 0, ',', '.') }}VND - {{ number_format($maxPrice, 0, ',', '.') }} VND
+                            </p>
+            
+                            <a href="{{ route('products.show', $product->id) }}" class="btn btn-success">Xem chi tiết</a>
                         </div>
                     </div>
-                @endforeach
+                </div>
+            @endforeach
+            
             </div>
 
             <!-- Phân trang -->
