@@ -141,7 +141,7 @@
                 </div>
                 <div class="why-text">
                     <h4>{{ $product->name }}</h4>
-                    <h5> $7.79</h5>
+                    <h5> {{ $product->name }}</h5>
                 </div>
             </div>
         </div>

@@ -42,8 +42,9 @@
                 @foreach($products as $product)
                     <div class="col-md-4 mb-4">
                         <div class="card product-card shadow-sm">
-                            <img src="{{ $product->image ?? 'default-image.jpg' }}" class="card-img-top product-img" alt="{{ $product->name }}">
-                            <div class="card-body text-center">
+                          <img src="{{ $product->image ? asset('storage/' . $product->image) : asset('default-image.jpg') }}" 
+                          class="card-img-top product-img" alt="{{ $product->name }}">
+                                                 <div class="card-body text-center">
                                 <h5 class="card-title">{{ $product->name }}</h5>
                                 <p class="text-muted">Giới tính: {{ ucfirst($product->gender) }}</p>
                                 <p class="text-danger fw-bold">
