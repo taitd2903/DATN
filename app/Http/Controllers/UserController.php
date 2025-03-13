@@ -56,11 +56,11 @@ class UserController extends Controller
         $user->password = $validated['password'];
         $user->phone = $validated['phone'];
         $user->image = $imagePath; // Lưu đường dẫn ảnh vào database
-        $user->house_number = $validated['house_number'];
-        $user->street = $validated['street'];
+        $user->address = $validated['address'];
+        
         $user->ward = $validated['ward'];
         $user->district = $validated['district'];
-        $user->city = $validated['district'];
+        $user->city = $validated['city'];
         $user->role = $validated['role'] ?? 'user';
         $user->save(); // Lưu vào DB
 
@@ -79,17 +79,38 @@ class UserController extends Controller
      public function update(Request $request, $id)
 {
     $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|unique:users,email,' . $id,
-        'phone' => 'nullable|string|max:15',
-        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        'house_number' => 'nullable|string',
-        'street' => 'nullable|string',
-        'ward' => 'nullable|string',
-        'district' => 'nullable|string',
-        'city' => 'nullable|string',
-    
+        'name' => 'required|string|min:3|max:55|regex:/^[a-zA-ZÀ-Ỹà-ỹ0-9\s]+$/u',
+        'email' => [
+            'required',
+            'email',
+           
+            'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/'
+        ],
+        'phone' => [
+            'nullable',
+            'regex:/^(0|\+84)[1-9][0-9]{8}$/',
+            'max:15',
+        ],
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        'address' => 'nullable|string|max:50',
+        
+        'ward' => 'nullable|string|max:100',
+        'district' => 'nullable|string|max:100',
+        'city' => 'nullable|string|max:100',
         'role' => 'required|in:user,admin',
+    ], [
+        'name.required' => 'Tên không được để trống.',
+        'name.min' => 'Tên phải có ít nhất 3 ký tự.',
+        'name.max' => 'Tên không được vượt quá 55 ký tự.',
+        'name.regex' => 'Tên chỉ được chứa chữ cái, số và dấu cách.',
+        'email.required' => 'Email không được để trống.',
+        'email.email' => 'Email không đúng định dạng.',
+        'email.unique' => 'Email đã tồn tại, vui lòng chọn email khác.',
+        'email.regex' => 'Email không hợp lệ, vui lòng kiểm tra lại.',
+        'phone.regex' => 'Số điện thoại phải bắt đầu bằng 0 hoặc +84 và có 10 chữ số.',
+        'image.image' => 'File phải là hình ảnh.',
+        'image.mimes' => 'Ảnh phải là định dạng: jpeg, png, jpg, gif, svg.',
+        'image.max' => 'Ảnh không được vượt quá 2MB.',
     ]);
 
     $user = User::findOrFail($id);
@@ -98,8 +119,8 @@ class UserController extends Controller
     $user->name = $request->name;
     $user->email = $request->email;
     $user->phone = $request->phone;
-    $user->house_number = $request->house_number;
-    $user->street = $request->street;
+    $user->address = $request->address;
+   
     $user->ward = $request->ward;
     $user->district = $request->district;
     $user->city = $request->city;
@@ -168,23 +189,46 @@ public function updateProfile(Request $request)
     $user = Auth::user(); // Lấy thông tin người dùng đang đăng nhập
 
     $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|unique:users,email,' . $user->id,
-        'phone' => 'nullable|string|max:15',
-        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        'house_number' => 'nullable|string',
-        'street' => 'nullable|string',
-        'ward' => 'nullable|string',
-        'district' => 'nullable|string',
-        'city' => 'nullable|string',
+        'name' => 'required|string|min:3|max:55|regex:/^[a-zA-ZÀ-Ỹà-ỹ0-9\s]+$/u',
+        'email' => [
+            'required',
+            'email',
+            'unique:users,email,' . $user->id,
+            'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/'
+        ],
+        'phone' => [
+            'nullable',
+            'regex:/^(0|\+84)[1-9][0-9]{8}$/',
+            'max:15',
+        ],
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        'address' => 'nullable|string|max:50',
+        
+        'ward' => 'nullable|string|max:100',
+        'district' => 'nullable|string|max:100',
+        'city' => 'nullable|string|max:100',
+    ], [
+        'name.required' => 'Tên không được để trống.',
+        'name.min' => 'Tên phải có ít nhất 3 ký tự.',
+        'name.max' => 'Tên không được vượt quá 55 ký tự.',
+        'name.regex' => 'Tên chỉ được chứa chữ cái, số và dấu cách.',
+        'email.required' => 'Email không được để trống.',
+        'email.email' => 'Email không đúng định dạng.',
+        'email.unique' => 'Email đã tồn tại, vui lòng chọn email khác.',
+        'email.regex' => 'Email không hợp lệ, vui lòng kiểm tra lại.',
+        'phone.regex' => 'Số điện thoại phải bắt đầu bằng 0 hoặc +84 và có 10 chữ số.',
+        'image.image' => 'File phải là hình ảnh.',
+        'image.mimes' => 'Ảnh phải là định dạng: jpeg, png, jpg, gif, svg.',
+        'image.max' => 'Ảnh không được vượt quá 2MB.',
     ]);
+    
 
     // Cập nhật thông tin
     $user->name = $request->name;
     $user->email = $request->email;
     $user->phone = $request->phone;
-    $user->house_number = $request->house_number;
-    $user->street = $request->street;
+    $user->address = $request->address;
+    
     $user->ward = $request->ward;
     $user->district = $request->district;
     $user->city = $request->city;

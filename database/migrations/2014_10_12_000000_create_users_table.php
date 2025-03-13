@@ -19,8 +19,8 @@ return new class extends Migration
             $table->string('phone', 15)->nullable();
             $table->string('image', 512)->nullable();
             $table->enum('gender', ['male', 'female'])->nullable();
-            $table->string('house_number')->nullable(); 
-            $table->string('street')->nullable(); 
+            $table->string('address')->nullable(); 
+            
             $table->string('ward')->nullable(); 
             $table->string('district')->nullable(); 
             $table->string('city')->nullable(); 
