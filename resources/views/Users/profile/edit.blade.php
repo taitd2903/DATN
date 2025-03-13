@@ -97,53 +97,87 @@
     
     {{-- ================== --}}
     <script>
-    document.addEventListener("DOMContentLoaded", function () {
+   document.addEventListener("DOMContentLoaded", function () {
     const userCity = "{{ $user->city }}";
     const userDistrict = "{{ $user->district }}";
     const userWard = "{{ $user->ward }}";
 
+    const provinceSelect = document.getElementById("province");
+    const districtSelect = document.getElementById("district");
+    const wardSelect = document.getElementById("ward");
+
     fetch("https://provinces.open-api.vn/api/p/")
         .then(response => response.json())
         .then(data => {
-            let provinceSelect = document.getElementById("province");
             data.forEach(province => {
                 let option = new Option(province.name, province.code);
                 provinceSelect.add(option);
-                if (province.code == userCity) option.selected = true;
+                if (province.code == userCity) {
+                    option.selected = true;
+                }
             });
             if (userCity) loadDistricts(userCity);
         });
 
-    function loadDistricts(cityCode) {
+    window.loadDistricts = function (cityCode) {
         fetch(`https://provinces.open-api.vn/api/p/${cityCode}?depth=2`)
             .then(response => response.json())
             .then(data => {
-                let districtSelect = document.getElementById("district");
                 districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
+                wardSelect.innerHTML = '<option value="">Chọn xã/phường</option>'; // Reset xã/phường khi chọn tỉnh mới
+
                 data.districts.forEach(district => {
                     let option = new Option(district.name, district.code);
                     districtSelect.add(option);
-                    if (district.code == userDistrict) option.selected = true;
+                    if (district.code == userDistrict) {
+                        option.selected = true;
+                    }
                 });
+
+                document.getElementById("province_name").value = provinceSelect.options[provinceSelect.selectedIndex].text;
+
                 if (userDistrict) loadWards(userDistrict);
             });
-    }
+    };
 
-    function loadWards(districtCode) {
+    window.loadWards = function (districtCode) {
         fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`)
             .then(response => response.json())
             .then(data => {
-                let wardSelect = document.getElementById("ward");
                 wardSelect.innerHTML = '<option value="">Chọn xã/phường</option>';
                 data.wards.forEach(ward => {
                     let option = new Option(ward.name, ward.code);
                     wardSelect.add(option);
-                    if (ward.code == userWard) option.selected = true;
+                    if (ward.code == userWard) {
+                        option.selected = true;
+                    }
                 });
-            });
-    }
-});
 
+                document.getElementById("district_name").value = districtSelect.options[districtSelect.selectedIndex].text;
+            });
+    };
+
+    provinceSelect.addEventListener("change", function () {
+        let cityCode = this.value;
+        document.getElementById("province_name").value = this.options[this.selectedIndex].text;
+        if (cityCode) {
+            loadDistricts(cityCode);
+        }
+    });
+
+    districtSelect.addEventListener("change", function () {
+        let districtCode = this.value;
+        document.getElementById("district_name").value = this.options[this.selectedIndex].text;
+        if (districtCode) {
+            loadWards(districtCode);
+        }
+    });
+
+    wardSelect.addEventListener("change", function () {
+        document.getElementById("ward_name").value = this.options[this.selectedIndex].text;
+    });
+});
+    
 
 </script></div>
 @endsection
