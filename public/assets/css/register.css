@@ -4,10 +4,10 @@ body {
     align-items: center;
     height: 100vh;
     background: #f8f8f8;
-    font-family: 'Arial', sans-serif;
+    font-family: Arial, sans-serif;
 }
 
-.container {
+.auth-container {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -15,7 +15,7 @@ body {
     padding: 20px;
 }
 
-.login-wrapper {
+.auth-box {
     display: flex;
     width: 800px;
     height: 450px;
@@ -25,76 +25,8 @@ body {
     overflow: hidden;
 }
 
-/* Bên trái - Sign In */
-.login-box {
-    width: 50%;
-    background: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 30px;
-}
-
-.login-box h2 {
-    font-size: 24px;
-    margin-bottom: 10px;
-}
-
-/* Icon mạng xã hội */
-.social-icons {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin: 15px 0;
-}
-
-.circle {
-    width: 35px;
-    height: 35px;
-    background: #ddd;
-    border-radius: 50%;
-}
-
-/* Ô input */
-.login-box input {
-    width: 80%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 25px;
-    text-align: center;
-}
-
-/* Link quên mật khẩu */
-.forgot-password {
-    font-size: 12px;
-    color: #777;
-    text-decoration: none;
-    margin-bottom: 15px;
-}
-
-.forgot-password:hover {
-    color: #ff4b2b;
-}
-
-/* Nút đăng nhập */
-.btn {
-    background: #ff4b2b;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 25px;
-    cursor: pointer;
-}
-
-.btn:hover {
-    background: #ff3b1b;
-}
-
-/* Bên phải - Đăng Ký */
-.signup-box {
+/* Bên trái - Welcome Back */
+.auth-left {
     width: 50%;
     background: linear-gradient(to right, #ff416c, #ff4b2b);
     color: white;
@@ -106,17 +38,16 @@ body {
     padding: 30px;
 }
 
-.signup-box h2 {
+.auth-left h2 {
     font-size: 24px;
     margin-bottom: 10px;
 }
 
-.signup-box p {
+.auth-left p {
     font-size: 14px;
     margin-bottom: 20px;
 }
 
-/* Nút SIGN UP */
 .btn-outline {
     padding: 10px 20px;
     border: 2px solid white;
@@ -130,32 +61,83 @@ body {
     color: #ff416c;
 }
 
-/* Hiển thị lỗi */
+/* Bên phải - Create Account */
+.auth-right {
+    width: 50%;
+    background: white;
+    padding: 30px;
+    text-align: center;
+}
+
+.auth-right h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.auth-right .social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.circle {
+    width: 35px;
+    height: 35px;
+    background: #ddd;
+    border-radius: 50%;
+}
+
+.auth-right p {
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+/* Input */
+.auth-right input {
+    width: 80%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 25px;
+    text-align: center;
+}
+
+/* Nút SIGN UP */
+.btn {
+    background: #ff4b2b;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background: #ff3b1b;
+}
+
+/* Lỗi */
 .error {
     color: red;
     font-size: 12px;
 }
 
-.success-message {
-    color: green;
-    font-size: 14px;
-}
-
 /* Responsive */
 @media (max-width: 768px) {
-    .login-wrapper {
+    .auth-box {
         flex-direction: column;
         width: 90%;
         height: auto;
     }
 
-    .login-box,
-    .signup-box {
+    .auth-left,
+    .auth-right {
         width: 100%;
         padding: 20px;
     }
 
-    .signup-box {
+    .auth-left {
         border-radius: 10px 10px 0 0;
     }
 }

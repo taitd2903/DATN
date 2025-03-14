@@ -23,7 +23,6 @@
 
 
 
-
 </head>
 <body>
 
@@ -60,7 +59,7 @@
                       <span>.</span>
                  </a>
                 </div>
-             <div class="navbar-header">
+         <div class="navbar-header">
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbars-rs-food" aria-expanded="false" aria-label="Toggle navigation">
                     <i class="fa fa-bars"></i>
                 </button>
@@ -198,7 +197,7 @@
                 </li>
             @endif
             <li>
-                <a href="#">
+                <a href="{{ route('users.profile.edit') }}">
                     <i class="fas fa-user-edit"></i> Cập nhật tài khoản
                 </a>
             </li>
