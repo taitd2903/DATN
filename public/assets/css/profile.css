@@ -15,7 +15,7 @@ body {
     padding: 20px;
 }
 
-.forgot-wrapper {
+.profile-wrapper {
     width: 400px;
     background: white;
     padding: 30px;
@@ -25,19 +25,12 @@ body {
 }
 
 /* Tiêu đề */
-.forgot-box h2 {
+.profile-box h2 {
     font-size: 24px;
     margin-bottom: 10px;
 }
 
-/* Mô tả */
-.forgot-box p {
-    font-size: 14px;
-    color: #777;
-    margin-bottom: 20px;
-}
-
-/* Ô nhập email */
+/* Ô nhập thông tin */
 .input-box {
     text-align: left;
     margin-bottom: 15px;
@@ -57,10 +50,10 @@ body {
     border-radius: 5px;
 }
 
-/* Nút gửi yêu cầu */
+/* Nút cập nhật */
 .btn {
     width: 100%;
-    background: #ff4b2b;
+    background: #007bff;
     color: white;
     border: none;
     padding: 10px;
@@ -70,7 +63,7 @@ body {
 }
 
 .btn:hover {
-    background: #ff3b1b;
+    background: #0056b3;
 }
 
 /* Hiển thị lỗi */
@@ -88,24 +81,16 @@ body {
 
 /* Thông báo thành công */
 .success-message {
+    background: #e6ffed;
     color: green;
-    font-size: 14px;
-}
-
-/* Link đăng nhập */
-.forgot-box p a {
-    color: #ff4b2b;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-.forgot-box p a:hover {
-    text-decoration: underline;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
 }
 
 /* Responsive */
 @media (max-width: 480px) {
-    .forgot-wrapper {
+    .profile-wrapper {
         width: 90%;
     }
 }

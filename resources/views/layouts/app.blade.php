@@ -3,29 +3,27 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ocean Sports</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ocean Sports</title>
 
-    <!-- Favicons -->
-    <link rel="icon" href="{{ asset('assets/img/favicon.png') }}">
-    <link rel="apple-touch-icon" href="{{ asset('assets/img/apple-touch-icon.png') }}">
+<!-- Favicons -->
+<link rel="icon" href="{{ asset('assets/img/favicon.png') }}">
+<link rel="apple-touch-icon" href="{{ asset('assets/img/apple-touch-icon.png') }}">\
 
-    <!-- Bootstrap 5 CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+<!-- Bootstrap 5 CSS (nếu cần) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 
-    <!-- Vendor CSS Files -->
-    <link rel="stylesheet" href="{{ asset('assets/vendor/bootstrap-icons/bootstrap-icons.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/vendor/aos/aos.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/vendor/glightbox/css/glightbox.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/vendor/swiper/swiper-bundle.min.css') }}">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/custom.css') }}">
+<!-- Custom CSS -->
+<link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/custom.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/cart.css') }}">
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+
 </head>
 <body>
 
@@ -50,21 +48,23 @@
 <body>
 
  <!-- Start Main Top -->
- <header class="main-header">
+ <header class="main-header" style="margin-top: -50px">
         <!-- Start Navigation -->
         <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-default bootsnav">
             <div class="container">
                 <!-- Start Header Navigation -->
-                <div class="navbar-header">
-                  
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbars-rs-food" aria-expanded="false" aria-label="Toggle navigation">
+
+                <div class="navbar-header" style="margin-right:150px">
+                <a href="" class="logo d-flex align-items-center me-auto me-xl-0">
+                     <h1 class="sitename">OceanSport</h1>
+                      <span>.</span>
+                 </a>
+                </div>
+         <div class="navbar-header">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbars-rs-food" aria-expanded="false" aria-label="Toggle navigation">
                     <i class="fa fa-bars"></i>
                 </button>
 
-                <a href="index.html" class="logo d-flex align-items-center me-auto me-xl-0">
-        <h1 class="sitename">OceanSport</h1>
-        <span>.</span>
-      </a>
                 </div>
                 <!-- End Header Navigation -->
 
@@ -130,6 +130,8 @@
                                 </li>
                             </ul>
                         </li>
+                        <li class="nav-item"><a class="nav-link" href="service.html">Our Service</a></li>
+                        <li class="nav-item"><a class="nav-link" href="contact-us.html">Contact Us</a></li>
                         <li class="dropdown">
                             <a href="#" class="nav-link dropdown-toggle arrow" data-toggle="dropdown">SHOP</a>
                             <ul class="dropdown-menu">
@@ -162,11 +164,12 @@
                               
                             </ul>
                         </li>
-                        <li class="nav-item"><a class="nav-link" href="service.html">Our Service</a></li>
-                        <li class="nav-item"><a class="nav-link" href="contact-us.html">Contact Us</a></li>
+                      
                     </ul>
                 </div>
                 <!-- /.navbar-collapse -->
+
+               
                 <li class="user-dropdown">
     @if(Auth::check())
         <div class="user-info">
@@ -195,7 +198,7 @@
                 </li>
             @endif
             <li>
-                <a href="#">
+                <a href="{{ route('users.profile.edit') }}">
                     <i class="fas fa-user-edit"></i> Cập nhật tài khoản
                 </a>
             </li>
@@ -233,8 +236,6 @@
 
 
 
-
-    
 
     <main>
         @yield('content')

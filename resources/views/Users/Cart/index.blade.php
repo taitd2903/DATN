@@ -1,111 +1,111 @@
 @extends('layouts.app')
 
 @section('content')
-<link rel="stylesheet" href="{{ asset('assets/css/cart.css') }}">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-    <div class="cart-container">
-        <h2>Giỏ hàng của bạn</h2>
 
-        @if (session('success'))
-            <div class="alert alert-success" id="success-message">
-                {{ session('success') }}
-            </div>
-            <script>
-                setTimeout(function () {
-                    document.getElementById('success-message').style.display = 'none';
-                }, 3000);
-            </script>
-        @endif
+<div class="cart-container">
+    <h2 style="text-align:center">GIỎ HÀNG CỦA BẠN</h2>
+    <br>
 
-        @if ($cartItems->count() > 0)
-    <link rel="stylesheet" href="{{ asset('assets/css/cart.css') }}">
-            <table class="cart-table">
-                <thead>
+    @if (session('success'))
+        <div class="alert alert-success" id="success-message">
+            {{ session('success') }}
+        </div>
+        <script>
+            setTimeout(function () {
+                document.getElementById('success-message').style.display = 'none';
+            }, 3000);
+        </script>
+    @endif
+
+    @if ($cartItems->count() > 0)
+        <table class="cart-table">
+            <thead>
+                <tr>
+                    <th>Images</th>
+                    <th>Product Name</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>Remove</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php $total = 0; @endphp
+                @foreach ($cartItems as $item)
+                    @php
+                        $subtotal = $item->quantity * $item->price;
+                        $total += $subtotal;
+                    @endphp
                     <tr>
-                        <th>Sản phẩm</th>
-                        <th>Hình ảnh</th>
-                        <th>Biến thể</th>
-                        <th>Giá</th>
-                        <th>Số lượng</th>
-                        <th>Thành tiền</th>
-                        <th>Hành động</th>
+                        <td><img src="{{ asset('storage/' . $item->variant->image) }}" class="cart-image"></td>
+                        <td>{{ $item->product->name }}</td>
+                        <td>{{ number_format($item->price, 0, ',', '.') }} đ</td>
+                        <td>
+                            <form action="{{ route('cart.update', $item->id) }}" method="POST" class="update-form">
+                                @csrf
+                                @method('PATCH')
+                                <div class="quantity-container">
+                                    <button type="button" class="btn decrement" data-id="{{ $item->id }}">-</button>
+                                    <input type="number" name="quantity" value="{{ $item->quantity }}" min="1"
+                                        max="{{ $item->variant->stock_quantity }}" class="quantity-input"
+                                        data-id="{{ $item->id }}">
+                                    <button type="button" class="btn increment" data-id="{{ $item->id }}">+</button>
+                                </div>
+                            </form>
+                        </td>
+                        <td>{{ number_format($subtotal, 0, ',', '.') }} đ</td>
+                        <td>
+                            <form action="{{ route('cart.remove', $item->id) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger">×</button>
+                            </form>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    @php $total = 0; @endphp
-                    @foreach ($cartItems as $item)
-                        @php
-                            $subtotal = $item->quantity * $item->price;
-                            $total += $subtotal;
-                        @endphp
-                        <tr>
-                            <td>{{ $item->product->name }}</td>
-                            
-                            <td><img src="{{ asset('storage/' . $item->variant->image) }}" style="width: 80px; height: 80px;" ></td>
-                            <td>{{ $item->variant->size }} / {{ $item->variant->color }}</td>
-                            <td>{{ number_format($item->price, 0, ',', '.') }} đ</td>
-                            <td>
-                                <form action="{{ route('cart.update', $item->id) }}" method="POST" class="update-form">
-                                    @csrf
-                                    @method('PATCH')
-                                    <div class="quantity-container">
-                                        <button type="button" class="btn decrement" data-id="{{ $item->id }}">-</button>
-                                        <input type="number" name="quantity" value="{{ $item->quantity }}" min="1"
-                                            max="{{ $item->variant->stock_quantity }}" class="quantity-input"
-                                            data-id="{{ $item->id }}">
-                                        <button type="button" class="btn increment" data-id="{{ $item->id }}">+</button>
-                                    </div>
-                                </form>
-                            </td>
-                            <td>{{ number_format($subtotal, 0, ',', '.') }} đ</td>
-                            <td>
-                                <form action="{{ route('cart.remove', $item->id) }}" method="POST">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger">Xóa</button>
-                                </form>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                @endforeach
+            </tbody>
+        </table>
 
-            <h5 class="text-right">Tổng tiền: <span id="total-price">{{ number_format($total, 0, ',', '.') }}</span> đ</h5>
+        <div class="cart-summary">
+            <h3>Order Summary</h3>
+            <p>Sub Total: <span>{{ number_format($total, 0, ',', '.') }} đ</span></p>
+            <p>Shipping Cost: <span>Free</span></p>
+            <p class="grand-total">Grand Total: <span>{{ number_format($total - 40 - 10 + 2, 0, ',', '.') }} đ</span></p>
             <div class="cart-actions">
-                <a href="{{ route('products.index') }}" class="btn btn-secondary">Tiếp tục mua hàng</a>
-                <a href="{{ route('checkout') }}" class="btn btn-success">Thanh toán</a>
-            </div>
-        @else
-            <p>Giỏ hàng của bạn đang trống.</p>
-        @endif
-    </div>
+            <a href="{{ route('checkout') }}" class="btn btn-checkout">Checkout</a>
+        </div>
+        </div>
 
-     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Đăng ký sự kiện click cho các nút tăng và giảm số lượng
-            document.querySelectorAll(".increment, .decrement").forEach(button => {
-                button.addEventListener("click", function() {
-                    let id = this.getAttribute("data-id"); // Lấy id của sản phẩm
-                    let input = document.querySelector(`.quantity-input[data-id='${id}']`); // Tìm input số lượng tương ứng
-                    let max = parseInt(input.getAttribute("max")); // Số lượng tối đa
-                    let min = parseInt(input.getAttribute("min")); // Số lượng tối thiểu
-                    let currentValue = parseInt(input.value); // Lấy giá trị hiện tại của input số lượng
+        <div class="cart-actions">
+            <a href="{{ route('products.index') }}" class="btn btn-secondary">Tiếp tục mua hàng</a>
+        </div>
+        
+    @else
+        <p>Giỏ hàng của bạn đang trống.</p>
+    @endif
+</div>
 
-                    // Kiểm tra xem có phải là nút tăng số lượng hay không và tăng nếu chưa đạt số lượng tối đa
-                    if (this.classList.contains("increment") && currentValue < max) {
-                        input.value = currentValue + 1;
-                    } 
-                    // Kiểm tra xem có phải là nút giảm số lượng hay không và giảm nếu chưa đạt số lượng tối thiểu
-                    else if (this.classList.contains("decrement") && currentValue > min) {
-                        input.value = currentValue - 1;
-                    }
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll(".increment, .decrement").forEach(button => {
+            button.addEventListener("click", function() {
+                let id = this.getAttribute("data-id");
+                let input = document.querySelector(`.quantity-input[data-id='${id}']`);
+                let max = parseInt(input.getAttribute("max"));
+                let min = parseInt(input.getAttribute("min"));
+                let currentValue = parseInt(input.value);
 
-                    // Tự động gửi form để cập nhật số lượng giỏ hàng
-                    input.closest(".update-form").submit();
-                });
+                if (this.classList.contains("increment") && currentValue < max) {
+                    input.value = currentValue + 1;
+                } else if (this.classList.contains("decrement") && currentValue > min) {
+                    input.value = currentValue - 1;
+                }
+
+                input.closest(".update-form").submit();
             });
         });
-    </script>
-
+    });
+</script>
 
 @endsection

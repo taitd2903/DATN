@@ -15,7 +15,7 @@ body {
     padding: 20px;
 }
 
-.forgot-wrapper {
+.reset-wrapper {
     width: 400px;
     background: white;
     padding: 30px;
@@ -25,19 +25,19 @@ body {
 }
 
 /* Tiêu đề */
-.forgot-box h2 {
+.reset-box h2 {
     font-size: 24px;
     margin-bottom: 10px;
 }
 
 /* Mô tả */
-.forgot-box p {
+.reset-box p {
     font-size: 14px;
     color: #777;
     margin-bottom: 20px;
 }
 
-/* Ô nhập email */
+/* Ô nhập thông tin */
 .input-box {
     text-align: left;
     margin-bottom: 15px;
@@ -57,7 +57,7 @@ body {
     border-radius: 5px;
 }
 
-/* Nút gửi yêu cầu */
+/* Nút đặt lại mật khẩu */
 .btn {
     width: 100%;
     background: #ff4b2b;
@@ -93,19 +93,19 @@ body {
 }
 
 /* Link đăng nhập */
-.forgot-box p a {
+.reset-box p a {
     color: #ff4b2b;
     text-decoration: none;
     font-weight: bold;
 }
 
-.forgot-box p a:hover {
+.reset-box p a:hover {
     text-decoration: underline;
 }
 
 /* Responsive */
 @media (max-width: 480px) {
-    .forgot-wrapper {
+    .reset-wrapper {
         width: 90%;
     }
 }
