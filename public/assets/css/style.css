@@ -458,7 +458,9 @@
  nav.navbar-inverse.navbar-full .navbar-toggle{
      background-color: #222 !important;
      color: #6f6f6f;
+     display: flex;
 }
+
  nav.navbar.bootsnav ul.nav > li > a{
      position: relative;
      font-weight: 700;
@@ -949,15 +951,41 @@
 }
 .special-list {
     display: flex;
-    flex-wrap: nowrap;  /* Không cho sản phẩm xuống dòng */
-    overflow-x: auto;  /* Thanh cuộn ngang nếu có quá nhiều sản phẩm */
-    gap: 15px; /* Khoảng cách giữa các sản phẩm */
+    flex-wrap: wrap; /* Đảm bảo sản phẩm xuống dòng khi không đủ chỗ */
+    justify-content: center; /* Căn giữa sản phẩm */
+    gap: 20px; /* Khoảng cách giữa các sản phẩm */
     padding-bottom: 10px;
 }
 
+/* Định dạng từng sản phẩm */
 .special-grid {
-    flex: 0 0 auto;  /* Giữ nguyên kích thước, không bị co giãn */
-    width: 250px;  /* Đặt chiều rộng cố định cho mỗi sản phẩm */
+    flex: 0 1 calc(25% - 20px); /* Hiển thị 4 sản phẩm trên mỗi hàng, trừ khoảng cách */
+    max-width: 250px; /* Giới hạn chiều rộng sản phẩm */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+    border-radius: 8px; /* Bo góc sản phẩm */
+    background: white;
+}
+
+
+/* Responsive: 3 sản phẩm trên mỗi hàng (màn hình tablet) */
+@media (max-width: 992px) {
+    .special-grid {
+        flex: 0 1 calc(33.333% - 20px); /* Hiển thị 3 sản phẩm trên mỗi hàng */
+    }
+}
+
+/* Responsive: 2 sản phẩm trên mỗi hàng (màn hình mobile) */
+@media (max-width: 768px) {
+    .special-grid {
+        flex: 0 1 calc(50% - 20px); /* Hiển thị 2 sản phẩm trên mỗi hàng */
+    }
+}
+
+/* Responsive: 1 sản phẩm trên mỗi hàng (màn hình rất nhỏ) */
+@media (max-width: 480px) {
+    .special-grid {
+        flex: 0 1 100%; /* Hiển thị 1 sản phẩm trên mỗi hàng */
+    }
 }
  @keyframes bounceY {
      0% {
@@ -2673,4 +2701,5 @@ body {
         font-size: 18px;
     }
 }
+
 
