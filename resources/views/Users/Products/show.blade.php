@@ -43,7 +43,9 @@
 
  
 <div class="col-md-6">
-<h1>{{ $product->name }}</h1>
+    <br>
+    <h1>
+    <b> Sản phẩm{{ $product->name }}</b> </h1>
     <p>Danh mục: {{ $product->category ? $product->category->name : 'Chưa có danh mục' }}</p>
     <!-- <p> Mo ta: {{ $product->description }}</p> -->
 <!-- 
