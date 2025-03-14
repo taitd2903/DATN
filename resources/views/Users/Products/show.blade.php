@@ -148,48 +148,6 @@
 <br>
 <hr>
 
-
-
-
-
-
-
-<style>
-    .size-btn.active, .color-btn.active {
-    background-color: #dc3545 !important; /* Màu đỏ nổi bật */
-    color: #fff !important;
-    font-weight: bold;
-    border: 2px solid #b22222;
-    box-shadow: 0 0 5px rgba(220, 53, 69, 0.5);
-}
-
-.size-btn, .color-btn {
-    border: 1px solid #ccc;
-    background-color: #f8f9fa;
-    padding: 8px 12px;
-    margin: 5px;
-    cursor: pointer;
-    transition: all 0.3s ease-in-out;
-}
-
-.size-btn:hover, .color-btn:hover {
-    background-color: #e0e0e0;
-}
-
-/* Hiệu ứng khi disabled */
-.color-btn:disabled {
-    background-color: #ddd;
-    color: #999;
-    cursor: not-allowed;
-    border: 1px solid #bbb;
-}
-</style>
-
-
-
-
-
-
     <!-- JavaScript -->
     <script>
         document.addEventListener("DOMContentLoaded", function() {
