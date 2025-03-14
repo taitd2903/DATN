@@ -27,7 +27,7 @@ class AuthController extends Controller
             'email' => [
                 'required',
                 'email',
-                'exists:users,email' // Đảm bảo email có trong DB
+                'exists:users,email' 
             ],
             'password' => [
             'required',
@@ -57,13 +57,11 @@ class AuthController extends Controller
         // Tạo token và lưu vào session
         $token = $user->createToken('auth_token')->plainTextToken;
         session(['auth_token' => $token]);
-        // Log::info('User role: ' . $user->role);
+        
     
-        if ($user->role === 'admin') {
-            return redirect()->route('admin.dashboard')->with('success', 'Đăng nhập thành công (Admin)');
-        }
-    
-        return redirect()->route('users.dashboard')->with('success', 'Đăng nhập thành công (User)');
+        return redirect()->intended(route('Users.Products.index'))->with('success', 'Đăng nhập thành công!');
+
+
     }
     
     

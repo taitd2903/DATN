@@ -13,11 +13,12 @@
             <p style="color: green;">{{ session('success') }}</p>
         @endif
 
-        {{-- @if($errors->any())
-            <p style="color: red;">{{ $errors->first() }}</p>
-        @endif --}}
-
-
+        @if(session('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+    @endif
+    
    
     <p>
        
