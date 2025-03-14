@@ -458,9 +458,7 @@
  nav.navbar-inverse.navbar-full .navbar-toggle{
      background-color: #222 !important;
      color: #6f6f6f;
-     display: flex;
 }
-
  nav.navbar.bootsnav ul.nav > li > a{
      position: relative;
      font-weight: 700;
