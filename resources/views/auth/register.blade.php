@@ -29,6 +29,15 @@
                 <input type="password" name="password" placeholder="Password">
              <br>   @error('password') <span class="error">{{ $message }}</span> @enderror
 
+                <input type="password" name="password_confirmation" placeholder="Confirm Password">
+
+                <label for="gender"><i class="fa-solid fa-venus-mars"></i> Gender</label>
+            <select name="gender" id="gender" class="form-control" 1>
+                <option value="">-- Chọn giới tính --</option>
+                <option value="male">Nam</option>
+                <option value="female">Nữ</option>
+            </select>
+
             <br>    <button type="submit" class="btn">SIGN UP</button>
             </form>
         </div>

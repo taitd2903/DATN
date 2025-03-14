@@ -33,7 +33,7 @@
     </form> -->
 
  <!-- Start Slider -->
- <div id="slides-shop" class="cover-slides">
+ <!-- <div id="slides-shop" class="cover-slides">
         <ul class="slides-container">
             <li class="text-left">
                 <img src="../assets/img/banner-01.jpg" alt="">
@@ -73,10 +73,36 @@
             </li>
         </ul>
         
-    </div>
+    </div> -->
     <!-- End Slider -->
+    <div id="slides-shop" class="cover-slides">
+    <ul class="slides-container">
+        @foreach ($banners as $key => $banner)
+            @if ($banner->is_active)
+                <li class="{{ $key == 0 ? 'text-left' : ($key == 1 ? 'text-center' : 'text-right') }}">
+                    <img src="{{ asset('storage/' . $banner->image) }}" alt="Banner {{ $key + 1 }}">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h1 class="m-b-20"><strong>{{ $banner->title }}</strong></h1>
+                                <p class="m-b-40">{{ $banner->description }}</p>
+                                @if ($banner->link)
+                                    <p><a class="btn hvr-hover" href="{{ $banner->link }}">Shop Now</a></p>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            @endif
+        @endforeach
+    </ul>
+</div>
+    <!-- @foreach ($banners as $banner)
+    @if ($banner->is_active)
+        <img src="{{ asset('storage/' . $banner->image) }}" width="120" height="60" style="object-fit: cover;">
+    @endif
+@endforeach -->
 
-  
     <!-- SAN PHAM -->
     <div class="products-box">
     <div class="container">

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\Banners\BannerController;
 use App\Http\Controllers\Admin\Coupons\CouponController;
 use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Support\Facades\Route;
@@ -47,6 +48,7 @@ Route::middleware(['auth', 'role:admin'])->get('/switch-to-user', [AuthControlle
 
 // ========================= QUẢN TRỊ VIÊN (ADMIN) =========================
 Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->group(function () {
+    Route::resource('banners', BannerController::class);
     Route::get('/', fn() => view('admin.dashboard'))->name('dashboard');
     Route::resource('categories', CategoryController::class)->except(['show']);
     Route::resource('products', ProductController::class);
@@ -169,8 +171,6 @@ Route::get('/admin/users/{id}/toggle-status', [UserController::class, 'toggleSta
 // danh gia
 Route::get('/product/{id}/review', [ReviewController::class, 'create'])->name('product.review');
 Route::post('/product/{id}/review', [ReviewController::class, 'store'])->name('product.review.store');
-
-
 
 
 

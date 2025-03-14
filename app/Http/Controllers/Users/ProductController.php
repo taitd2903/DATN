@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers\Users;
 
+use App\Models\Banner;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -12,6 +13,7 @@ class ProductController extends Controller {
     public function index(Request $request) {
         $categories = Category::all(); // Lấy danh sách danh mục
         $products = Product::with('category', 'variants');
+        $banners = Banner::all();
 
         // Lọc theo tên sản phẩm
         if ($request->has('name') && $request->name != '') {
@@ -41,7 +43,7 @@ class ProductController extends Controller {
             $product->max_price = $prices->max() ?? 0;
         }
 
-        return view('users.products.index', compact('products', 'categories'));
+        return view('users.products.index', compact('products', 'categories', 'banners'));
     }
 
     // Hiển thị chi tiết sản phẩm
