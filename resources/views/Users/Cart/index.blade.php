@@ -162,7 +162,7 @@
                 formData.set('quantity', quantity); // Cập nhật số lượng mới trong form data
 
                 fetch(form.action, {
-                        method: 'POST', // Gửi request POST (PATCH được xử lý qua @method trong form)
+                        method: 'POST',
                         headers: {
                             'X-CSRF-TOKEN': '{{ csrf_token() }}',
                             'Accept': 'application/json'
