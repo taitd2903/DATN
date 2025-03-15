@@ -122,16 +122,20 @@
                         </span>
                     </td>
                     <td>
-                        @if ($order->status == 'Hoàn thành')
-                            @foreach ($order->orderItems as $item)
-                                <a href="{{ route('product.review', $item->product->id) }}" class="btn btn-primary btn-sm mt-1">
-                                    Đánh giá {{ $item->product->name }}
-                                </a>
-                            @endforeach
+                        @if ($order->status == 'Chờ xác nhận' && $order->payment_status != 'Đã thanh toán')
+                            @if ($order->payment_method == 'cod')
+                                <form action="{{ route('order.cancel', $order->id) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="btn btn-danger btn-sm">Hủy</button>
+                                </form>
+                            @else
+                                <span class="text-muted">Không thể hủy</span>
+                            @endif
                         @else
-                            <span class="text-muted">Không thể đánh giá</span>
+                            <span class="text-muted">Không thể hủy</span>
                         @endif
                     </td>
+                    
                 </tr>
             @endforeach
         </tbody>

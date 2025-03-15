@@ -15,25 +15,29 @@ use Illuminate\Support\Facades\DB;
 class CheckoutController extends Controller
 {
     public function index()
-    {
-        $cartItems = CartItem::with(['product', 'variant'])->get();
+{
+    // Lấy sản phẩm trong giỏ hàng chỉ của user hiện tại
+    $cartItems = CartItem::with(['product', 'variant'])
+                ->where('user_id', auth()->id())
+                ->get();
 
-        if ($cartItems->isEmpty()) {
-            return redirect('/cart')->with('error', 'Giỏ hàng của bạn đang trống.');
-        }
-
-        $totalPrice = $cartItems->sum(fn($item) => $item->price * $item->quantity);
-        $discount = session('discount', 0);
-        $finalPrice = $totalPrice - $discount;
-
-        // Lưu totalPrice vào session để sử dụng trong applyCoupon
-        session(['total_price' => $totalPrice]);
-
-        // Lấy thông tin người dùng nếu đã đăng nhập
-        $user = auth()->user();
-
-        return view('Users.Checkout.index', compact('cartItems', 'totalPrice', 'finalPrice', 'discount', 'user'));
+    if ($cartItems->isEmpty()) {
+        return redirect('/cart')->with('error', 'Giỏ hàng của bạn đang trống.');
     }
+
+    $totalPrice = $cartItems->sum(fn($item) => $item->price * $item->quantity);
+    $discount = session('discount', 0);
+    $finalPrice = $totalPrice - $discount;
+
+    // Lưu totalPrice vào session để sử dụng trong applyCoupon
+    session(['total_price' => $totalPrice]);
+
+    // Lấy thông tin người dùng nếu đã đăng nhập
+    $user = auth()->user();
+
+    return view('Users.Checkout.index', compact('cartItems', 'totalPrice', 'finalPrice', 'discount', 'user'));
+}
+
 
     public function placeOrder(Request $request)
     {
