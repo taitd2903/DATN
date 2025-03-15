@@ -44,33 +44,32 @@
 
             <div class="input-box">
                 <label for="province"><i class="fa-solid fa-map-marker-alt"></i> Tỉnh/Thành phố</label>
-                <select id="province" name="city" onchange="loadDistricts()">
-                    <option value="">Chọn tỉnh/thành phố</option>
+                <select id="province" name="city" required {{ $user->city ? 'disabled' : '' }}>
+                    <option value="" selected disabled>Chọn tỉnh/thành phố</option>
                 </select>
-                <input type="hidden" name="province_name" id="province_name" value="{{ old('province_name', $user->city) }}">
             </div>
 
             <div class="input-box">
                 <label for="district"><i class="fa-solid fa-building"></i> Quận/Huyện</label>
-                <select id="district" name="district" onchange="loadWards()">
-                    <option value="">Chọn quận/huyện</option>
+                <select id="district" name="district" required {{ $user->district ? 'disabled' : '' }}>
+                    <option value="" selected disabled>Chọn quận/huyện</option>
                 </select>
-                <input type="hidden" name="district_name" id="district_name" value="{{ old('district_name', $user->district) }}">
             </div>
 
             <div class="input-box">
                 <label for="ward"><i class="fa-solid fa-home"></i> Xã/Phường</label>
-                <select id="ward" name="ward">
-                    <option value="">Chọn xã/phường</option>
+                <select id="ward" name="ward" required disabled>
+                    <option value="" {{ !$user->ward ? 'selected' : '' }}>Chọn xã/phường</option>
                 </select>
-                <input type="hidden" name="ward_name" id="ward_name" value="{{ old('ward_name', $user->ward) }}">
             </div>
 
             <div class="input-box">
-                <label for="address"><i class="fa-solid fa-location-dot"></i> Địa chỉ cụ thể</label>
-                <input type="text" id="address" name="address" value="{{ old('address', $user->address) }}">
+                <label for="address_detail"><i class="fa-solid fa-location-dot"></i> Địa chỉ cụ thể</label>
+                <input type="text" id="address_detail" name="address" value="{{ old('address', $user->address) }}" required disabled>
+
             </div>
 
+            <button type="button" class="btn" id="editAddress">Chỉnh sửa địa chỉ</button>
             <div class="input-box">
                 <label for="gender"><i class="fa-solid fa-venus-mars"></i> Giới tính</label>
                 <input type="text" id="gender" name="gender" value="{{ $user->gender === 'male' ? 'Nam' : 'Nữ' }}" readonly>
@@ -86,7 +85,7 @@
                 <span class="error">{{ $message }}</span>
                 @enderror
             </div>
-
+            
             <button type="submit" class="btn">Cập nhật</button>
         </form>
 
@@ -101,85 +100,89 @@
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    const userCity = "{{ $user->city }}";
-    const userDistrict = "{{ $user->district }}";
-    const userWard = "{{ $user->ward }}";
-
-    const provinceSelect = document.getElementById("province");
-    const districtSelect = document.getElementById("district");
-    const wardSelect = document.getElementById("ward");
-
+    // Load tỉnh/thành phố
     fetch("https://provinces.open-api.vn/api/p/")
         .then(response => response.json())
         .then(data => {
+            const provinceSelect = document.getElementById("province");
             data.forEach(province => {
                 let option = new Option(province.name, province.code);
                 provinceSelect.add(option);
-                if (province.code == userCity) {
+                if (province.code == "{{ $user->city }}") {
                     option.selected = true;
+                    loadDistricts(province.code);
                 }
             });
-            if (userCity) loadDistricts(userCity);
         });
-
-    window.loadDistricts = function (cityCode) {
+    
+    // Load quận/huyện
+    function loadDistricts(cityCode) {
         fetch(`https://provinces.open-api.vn/api/p/${cityCode}?depth=2`)
             .then(response => response.json())
             .then(data => {
-                districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
-                wardSelect.innerHTML = '<option value="">Chọn xã/phường</option>'; // Reset xã/phường khi chọn tỉnh mới
-
+                const districtSelect = document.getElementById("district");
+                districtSelect.innerHTML = '<option value="" disabled selected>Chọn quận/huyện</option>';
                 data.districts.forEach(district => {
                     let option = new Option(district.name, district.code);
                     districtSelect.add(option);
-                    if (district.code == userDistrict) {
+                    if (district.code == "{{ $user->district }}") {
                         option.selected = true;
+                        loadWards(district.code);
                     }
                 });
-
-                document.getElementById("province_name").value = provinceSelect.options[provinceSelect.selectedIndex].text;
-
-                if (userDistrict) loadWards(userDistrict);
             });
-    };
-
-    window.loadWards = function (districtCode) {
+    }
+    
+    // Load xã/phường
+    function loadWards(districtCode) {
         fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`)
             .then(response => response.json())
             .then(data => {
-                wardSelect.innerHTML = '<option value="">Chọn xã/phường</option>';
+                const wardSelect = document.getElementById("ward");
+                wardSelect.innerHTML = '<option value="" disabled selected>Chọn xã/phường</option>';
                 data.wards.forEach(ward => {
                     let option = new Option(ward.name, ward.code);
                     wardSelect.add(option);
-                    if (ward.code == userWard) {
+                    if (ward.code == "{{ $user->ward }}") {
                         option.selected = true;
                     }
                 });
-
-                document.getElementById("district_name").value = districtSelect.options[districtSelect.selectedIndex].text;
             });
-    };
-
-    provinceSelect.addEventListener("change", function () {
-        let cityCode = this.value;
-        document.getElementById("province_name").value = this.options[this.selectedIndex].text;
-        if (cityCode) {
-            loadDistricts(cityCode);
-        }
+    }
+    
+    // Bật/tắt chỉnh sửa địa chỉ
+    const editButton = document.getElementById('editAddress');
+    editButton.addEventListener('click', () => {
+        document.querySelectorAll('#province, #district, #ward, #address_detail').forEach(el => el.disabled = false);
+        editButton.style.display = 'none';
+    
+        document.getElementById('province').addEventListener('change', (e) => {
+            loadDistricts(e.target.value);
+        });
+    
+        document.getElementById('district').addEventListener('change', (e) => {
+            loadWards(e.target.value);
+        });
     });
-
-    districtSelect.addEventListener("change", function () {
-        let districtCode = this.value;
-        document.getElementById("district_name").value = this.options[this.selectedIndex].text;
-        if (districtCode) {
-            loadWards(districtCode);
-        }
-    });
-
-    wardSelect.addEventListener("change", function () {
-        document.getElementById("ward_name").value = this.options[this.selectedIndex].text;
-    });
-});
-</script>
+    </script>
+    
+    <style>
+    select {
+        background-color: #fff;
+        color: #333;
+        cursor: pointer;
+    }
+    select option[disabled] {
+        color: #bbb;
+        font-style: italic;
+    }
+    .btn {
+        margin-top: 10px;
+        background-color: #4caf50;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        cursor: pointer;
+    }
+    </style>
 @endsection
