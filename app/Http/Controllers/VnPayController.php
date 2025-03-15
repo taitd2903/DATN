@@ -49,7 +49,7 @@ class VnPayController extends Controller
             'coupon_code' => $request->input('coupon_code'),
             'payment_method' => 'vnpay',
             'status' => 'Chờ xác nhận',
-            'payment_status' => 'Đã thanh toán',
+            'payment_status' => 'Chưa thanh toán',
             'vnp_txn_ref' => $vnp_TxnRef,
         ]);
 
@@ -64,37 +64,36 @@ class VnPayController extends Controller
             ]);
 
             // Cập nhật tồn kho
-            if ($item->variant) {
-                $variant = $item->variant;
+            // if ($item->variant) {
+            //     $variant = $item->variant;
 
-                if ($variant->stock_quantity < $item->quantity) {
-                    return redirect()->route('cart.index')->with('error', 'Biến thể "' . $variant->name . '" không đủ số lượng trong kho.');
-                }
+            //     if ($variant->stock_quantity < $item->quantity) {
+            //         return redirect()->route('cart.index')->with('error', 'Biến thể "' . $variant->name . '" không đủ số lượng trong kho.');
+            //     }
 
-                $variant->stock_quantity -= $item->quantity;
-                $variant->sold_quantity += $item->quantity;
+            //     $variant->stock_quantity -= $item->quantity;
+            //     $variant->sold_quantity += $item->quantity;
 
-                if ($variant->stock_quantity <= 0) {
-                    $variant->stock_quantity = 0;
-                }
+            //     if ($variant->stock_quantity <= 0) {
+            //         $variant->stock_quantity = 0;
+            //     }
+            //     $variant->save();
+            // } else {
+            //     $product = $item->product;
 
-                $variant->save();
-            } else {
-                $product = $item->product;
+            //     if ($product->stock_quantity < $item->quantity) {
+            //         return redirect()->route('cart.index')->with('error', 'Sản phẩm "' . $product->name . '" không đủ số lượng trong kho.');
+            //     }
 
-                if ($product->stock_quantity < $item->quantity) {
-                    return redirect()->route('cart.index')->with('error', 'Sản phẩm "' . $product->name . '" không đủ số lượng trong kho.');
-                }
+            //     $product->stock_quantity -= $item->quantity;
+            //     $product->sold_quantity += $item->quantity;
 
-                $product->stock_quantity -= $item->quantity;
-                $product->sold_quantity += $item->quantity;
+            //     if ($product->stock_quantity <= 0) {
+            //         $product->stock_quantity = 0;
+            //     }
 
-                if ($product->stock_quantity <= 0) {
-                    $product->stock_quantity = 0;
-                }
-
-                $product->save();
-            }
+            //     $product->save();
+            // }
         }
         // Xóa giỏ hàng sau khi tạo đơn hàng thành công
         CartItem::where('user_id', Auth::id())->delete();
@@ -183,46 +182,62 @@ class VnPayController extends Controller
         $inputData = $request->except(['vnp_SecureHash']);
         ksort($inputData);
 
-        $hashdata = '';
-        $i = 0;
-        foreach ($inputData as $key => $value) {
-            if ($i == 1) {
-                $hashdata .= '&' . urlencode($key) . "=" . urlencode($value);
-            } else {
-                $hashdata .= urlencode($key) . "=" . urlencode($value);
-                $i = 1;
-            }
-        }
-
-        // Kiểm tra chữ ký
+        $hashdata = urldecode(http_build_query($inputData));
         $secureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);
         $isValidSignature = ($secureHash === $request->query('vnp_SecureHash'));
 
-        // Lấy mã giao dịch từ VNPAY
         $txnRef = $request->query('vnp_TxnRef');
-
-        // Tìm đơn hàng dựa vào mã giao dịch
-        $order = Order::where('vnp_txn_ref', $txnRef)->with('orderItems.product', 'orderItems.variant', 'user')->first();
+        $order = Order::where('vnp_txn_ref', $txnRef)->with('orderItems.product', 'orderItems.variant')->first();
 
         if (!$order) {
             return redirect()->route('home')->with('error', 'Không tìm thấy đơn hàng.');
         }
 
-        $status = $request->query('vnp_ResponseCode') == '00' ? 'Thành công' : 'Thất bại';
+        if ($request->query('vnp_ResponseCode') == '00') {
+            // Thanh toán thành công, cập nhật trạng thái đơn hàng
+            $order->update(['payment_status' => 'Đã thanh toán', 'status' => 'Chờ xác nhận']);
 
-        return view('Users.Checkout.invoice', compact('order', 'status'));
+            // Trừ kho hàng
+            foreach ($order->orderItems as $item) {
+                if ($item->variant) {
+                    $item->variant->stock_quantity -= $item->quantity;
+                    $item->variant->sold_quantity += $item->quantity;
+                    $item->variant->save();
+                } else {
+                    $item->product->stock_quantity -= $item->quantity;
+                    $item->product->sold_quantity += $item->quantity;
+                    $item->product->save();
+                }
+            }
+        } else {
+            // Nếu giao dịch thất bại, hủy đơn hàng và hoàn kho
+            $order->update(['payment_status' => 'Thất bại', 'status' => 'Hủy']);
+
+            // foreach ($order->orderItems as $item) {
+            //     if ($item->variant) {
+            //         $item->variant->increment('stock_quantity', $item->quantity);
+            //         $item->variant->decrement('sold_quantity', min($item->quantity, $item->variant->sold_quantity));
+            //     } else {
+            //         $item->product->increment('stock_quantity', $item->quantity);
+            //         $item->product->decrement('sold_quantity', min($item->quantity, $item->product->sold_quantity));
+            //     }
+            // }
+        }
+
+        return view('Users.Checkout.invoice', [
+            'order' => $order,
+            'status' => $request->query('vnp_ResponseCode') == '00' ? 'Thành công' : 'Thất bại'
+        ]);
     }
-
     public function updateStatus(Request $request, Order $order)
-{
-    // Nếu đơn hàng thanh toán bằng VNPay thì không cho phép cập nhật thành "Hủy"
-    if ($order->payment_method == 'vnpay' && $request->status == 'Hủy') {
-        return redirect()->back()->with('error', 'Không thể hủy đơn hàng đã thanh toán bằng VNPay.');
+    {
+        // Nếu đơn hàng thanh toán bằng VNPay thì không cho phép cập nhật thành "Hủy"
+        if ($order->payment_method == 'vnpay' && $request->status == 'Hủy') {
+            return redirect()->back()->with('error', 'Không thể hủy đơn hàng đã thanh toán bằng VNPay.');
+        }
+
+        $order->update(['status' => $request->status]);
+
+        return redirect()->route('admin.orders.index')->with('success', 'Cập nhật trạng thái thành công.');
     }
-
-    $order->update(['status' => $request->status]);
-
-    return redirect()->route('admin.orders.index')->with('success', 'Cập nhật trạng thái thành công.');
-}
-
 }
