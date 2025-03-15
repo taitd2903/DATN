@@ -59,12 +59,14 @@ body {
 
 /* Ô input */
 .login-box input {
-    width: 100%;
-    padding: 10px;
+    width: 100%; /* Để ô input full chiều rộng khung chứa */
+    max-width: 400px; /* Giữ tối đa chiều ngang 400px */
+    padding: 12px 15px;
     margin: 10px 0;
     border: 1px solid #ccc;
     border-radius: 25px;
     text-align: center;
+    font-size: 16px;
 }
 
 /* Link quên mật khẩu */
@@ -115,7 +117,40 @@ body {
     font-size: 14px;
     margin-bottom: 20px;
 }
+.options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Đẩy hai phần tử về hai phía */
+    width: 100%;
+    margin-top: 15px; /* Tăng khoảng cách trên */
+    padding: 0 15px; /* Tạo khoảng cách hai bên */
+}
 
+.options label {
+    display: flex;
+    align-items: center;
+    font-size: 16px; /* Tăng kích thước chữ */
+    gap: 10px; /* Tạo khoảng cách giữa checkbox và chữ */
+}
+
+.options input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #ff4b2b; /* Màu checkbox */
+}
+
+.options a {
+    font-size: 16px; /* Tăng kích thước chữ */
+    color: #007bff;
+    font-weight: 500;
+    text-decoration: none;
+    white-space: nowrap; /* Tránh xuống dòng */
+    margin-left: auto; /* Đẩy "Quên mật khẩu" sang phải xa hơn */
+}
+
+.options a:hover {
+    text-decoration: underline;
+}
 /* Nút SIGN UP */
 .btn-outline {
     padding: 10px 20px;

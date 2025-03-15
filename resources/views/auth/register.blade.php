@@ -8,14 +8,14 @@
     <div class="auth-box">
         <!-- Phần đăng nhập (bên trái) -->
         <div class="auth-left">
-            <h2>Welcome Back!</h2>
-            <p>To keep connected with us, please login with your personal info</p>
-            <a href="{{ route('login') }}" class="btn-outline">SIGN IN</a>
+            <h2>Chào mừng bạn yêu!</h2>
+            <p>Nếu bạn đã có tài khoản,hãy tiếp tục đăng nhập và tận hưởng không gian mua sắm với OceanSport</p>
+            <a href="{{ route('login') }}" class="btn-outline">ĐĂNG NHẬP</a>
         </div>
 
         <!-- Phần đăng ký (bên phải) -->
         <div class="auth-right">
-          <h1>Create Account</h1>
+          <h1>Đăng ký tài khoản</h1>
             
 
             <form method="POST" action="{{ route('register') }}">
@@ -31,14 +31,14 @@
 
                 <input type="password" name="password_confirmation" placeholder="Confirm Password">
 
-                <label for="gender"><i class="fa-solid fa-venus-mars"></i> Gender</label>
+                <label for="gender"><i class="fa-solid fa-venus-mars"></i> Giới tính</label>
             <select name="gender" id="gender" class="form-control" 1>
                 <option value="">-- Chọn giới tính --</option>
                 <option value="male">Nam</option>
                 <option value="female">Nữ</option>
             </select>
 
-            <br>    <button type="submit" class="btn">SIGN UP</button>
+            <br>    <button type="submit" class="btn">ĐĂNG KÝ</button>
             </form>
         </div>
     </div>

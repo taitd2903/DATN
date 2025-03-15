@@ -3,6 +3,7 @@
 @section('content')
 <link rel="stylesheet" href="{{ asset('assets/css/thanhtoan.css') }}">
 
+
 <div class="checkout-container">
         @if ($errors->any())
             <div class="alert alert-danger">
@@ -14,7 +15,7 @@
             </div>
         @endif
         <div class="billing-info">
-        <h2>THÔNG TIN THANH TOÁN</h2>
+        <h3>THÔNG TIN THANH TOÁN</h3>
 
         <form action="{{ route('checkout.placeOrder') }}" method="POST">
             @csrf
@@ -78,8 +79,8 @@
        
                 @foreach ($cartItems as $item)
                     <div class="order-item">
-                 <p> {{ $item->product->name }}</p>
-                   <p> Giá: {{ number_format($item->price, 0, ',', '.') }} VND</p>
+                 <p> Sản phẩm: <b> {{ $item->product->name }} </b></p>
+                   <p> Giá: <b> {{ number_format($item->price, 0, ',', '.') }} VND </b></p>
                     </div>
                       
                         <p>Số lượng: {{ $item->quantity }} </p>
