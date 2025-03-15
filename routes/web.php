@@ -86,6 +86,7 @@ Route::middleware('auth')->prefix('cart')->name('cart.')->group(function () {
     Route::patch('/{id}', [CartController::class, 'update'])->name('update');
     Route::delete('/{id}', [CartController::class, 'remove'])->name('remove');
     Route::get('/check-stock', [CartController::class, 'checkStock'])->name('checkStock');
+    Route::post('/update-price/{variantId}', [CartController::class, 'updatePrice'])->name('update.price');
 });
 
 // ========================= SẢN PHẨM (PRODUCTS) =========================
@@ -173,6 +174,3 @@ Route::get('/admin/users/{id}/toggle-status', [UserController::class, 'toggleSta
 Route::get('/product/{id}/review', [ReviewController::class, 'create'])->name('product.review');
 Route::post('/product/{id}/review', [ReviewController::class, 'store'])->name('product.review.store');
 Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
-
-
-

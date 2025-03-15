@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\PriceUpdated;
 use Illuminate\Http\Request;
 use App\Models\CartItem;
 use App\Models\ProductVariant;
@@ -139,5 +140,24 @@ class CartController extends Controller
         }
 
         return response()->json($stockData);
+    }
+    public function updatePrice($variantId, $newPrice)
+    {
+        $variant = ProductVariant::find($variantId);
+        if (!$variant) {
+            return redirect()->back()->with('error', 'Biến thể sản phẩm không tồn tại.');
+        }
+        $variant->price = $newPrice;
+        $variant->save();
+
+        // Cập nhật giá trong giỏ hàng và phát Event
+        $cartItems = CartItem::where('variant_id', $variantId)->get();
+        foreach ($cartItems as $cartItem) {
+            $cartItem->price = $newPrice;
+            $cartItem->save();
+            event(new PriceUpdated($cartItem));
+        }
+
+        return redirect()->back()->with('success', 'Giá sản phẩm đã được cập nhật.');
     }
 }

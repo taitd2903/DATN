@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ocean Sports</title>
-
+@vite(['resources/js/app.js'])
 <!-- Favicons -->
 <link rel="icon" href="{{ asset('assets/img/favicon.png') }}">
 <link rel="apple-touch-icon" href="{{ asset('assets/img/apple-touch-icon.png') }}">

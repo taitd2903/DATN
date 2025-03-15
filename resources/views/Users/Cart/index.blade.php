@@ -99,6 +99,31 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+            // Lắng nghe kênh private cho user hiện tại
+            Echo.private(`cart.{{ Auth::id() }}`)
+                .listen('PriceUpdated', (e) => {
+                    const row = document.querySelector(`tr[data-cart-id='${e.id}']`);
+                    console.log('Found row:', row); // Thêm dòng này
+                    if (row) {
+                        const priceCell = row.querySelector('td:nth-child(3)'); // Cột giá
+                        const subtotalCell = row.querySelector('.subtotal'); // Cột tổng phụ
+                        const input = row.querySelector('.quantity-input');
+                        
+                        console.log('Price cell before:', priceCell.textContent); // Trước khi cập nhật
+                priceCell.textContent = new Intl.NumberFormat('vi-VN').format(e.price) + ' đ';
+                console.log('Price cell after:', priceCell.textContent); // Sau khi cập nhật
+
+                console.log('Subtotal cell before:', subtotalCell.textContent);
+                subtotalCell.textContent = new Intl.NumberFormat('vi-VN').format(e.subtotal) + ' đ';
+                console.log('Subtotal cell after:', subtotalCell.textContent);
+
+                input.setAttribute('data-price', e.price);
+                console.log('Input data-price after:', input.getAttribute('data-price'));
+
+                        // Cập nhật lại tổng tiền
+                        updateTotals();
+                    }else{console.log('Row not found for cart ID:', e.id); }
+                });
             // Hàm cập nhật tổng phụ (subtotal) và tổng tiền (total) trên giao diện
             function updateTotals() {
                 let total = 0;
