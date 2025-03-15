@@ -88,6 +88,12 @@
                         </a>
                     </li>
                     <li>
+                        <a class="nav-link" href="{{ route('admin.banners.index') }}">
+                            <i class="nc-icon nc-atom"></i>
+                            <p>quản lý Banner</p>
+                        </a>
+                    </li>
+                    <li>
                         <a class="nav-link" href="{{ route('admin.coupons.index') }}">
                             <i class="nc-icon nc-pin-3"></i>
                             <p>Hóa đơn</p>
