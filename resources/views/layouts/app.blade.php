@@ -8,7 +8,7 @@
 
 <!-- Favicons -->
 <link rel="icon" href="{{ asset('assets/img/favicon.png') }}">
-<link rel="apple-touch-icon" href="{{ asset('assets/img/apple-touch-icon.png') }}">\
+<link rel="apple-touch-icon" href="{{ asset('assets/img/apple-touch-icon.png') }}">
 
 <!-- Bootstrap 5 CSS (nếu cần) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
@@ -55,7 +55,7 @@
                 <!-- Start Header Navigation -->
 
                 <div class="navbar-header" style="margin-right:150px">
-                <a href="" class="logo d-flex align-items-center me-auto me-xl-0">
+                <a href="{{ url('/') }}" class="logo d-flex align-items-center me-auto me-xl-0">
                      <h1 class="sitename">OceanSport</h1>
                       <span>.</span>
                  </a>
