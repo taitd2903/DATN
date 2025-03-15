@@ -60,6 +60,7 @@
     </p>
  
     <p><strong>Tồn kho: </strong> <span id="stock-info">{{ $product->variants->sum('stock_quantity') }}</span></p>
+    <p> Mô Tả: {{ $product->description }}</p>
 
 
     <form action="{{ route('cart.add') }}" method="POST" id="addToCartForm">
@@ -122,7 +123,7 @@
         @endif
 {{--========================= Hết phần của Đạt ============================--}}
                 <br>
-                <p> Mô Tả: {{ $product->description }}</p>
+              
 </div>
 
 
@@ -133,7 +134,7 @@
     </form>
     </div>
 
-    <a href="{{ route('products.index') }}">Quay lại danh sách sản phẩm</a>
+    <a class="btn btn-primary" href="{{ route('products.index') }}">Quay lại danh sách sản phẩm</a>
 
      
 
