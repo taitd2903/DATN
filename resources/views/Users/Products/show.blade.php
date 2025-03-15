@@ -135,38 +135,97 @@
 
     <a href="{{ route('products.index') }}">Quay lại danh sách sản phẩm</a>
 
-      <!-- Đánh giá sản phẩm -->
-      <h4 class="mt-4">Đánh giá sản phẩm</h4>
-        <div class="rating-box">
-            <div >
+     
 
-               <div><span>5⭐ ---------------------- 0% | 0 đánh giá</span></div> 
-               <div><span>4⭐ 0% | 0 đánh giá</span></div> 
-               <div><span>3⭐ 0% | 0 đánh giá</span></div> 
-               <div><span>2⭐ 0% | 0 đánh giá</span></div> 
-               <div><span>1⭐ 0% | 0 đánh giá</span></div> 
-               
-                <button class="btn btn-dark btn-sm" >Đánh giá ngay</button>
-            </div>
+
+{{-- đánh giá sản phầm của nam --}}
+{{-- <h4 class="mt-4">Đánh giá sản phẩm</h4>
+
+@if ($reviews->count() > 0)
+    @foreach ($reviews as $review)
+        <div class="review-item mb-3">
+            <strong>{{ $review->user->name }}</strong> - <span>{{ $review->created_at->format('d/m/Y') }}</span>
+            <br>
+            <span>
+                @for ($i = 1; $i <= 5; $i++)
+                    @if ($i <= $review->rating)
+                        ⭐
+                    @else
+                        ☆
+                    @endif
+                @endfor
+            </span>
+            <p>{{ $review->comment }}</p>
         </div>
-
         <hr>
+    @endforeach
+@else
+    <p>Chưa có đánh giá nào.</p>
+@endif --}}
 
-        <!-- Bình luận -->
-        <h4 class="mt-4">Bình luận</h4>
-        <textarea class="form-control" placeholder="Bình luận ngay..." rows="3"></textarea>
-        <div class="mt-2 d-flex align-items-center">
-            <input type="radio" name="gender" id="male" checked> <label for="male" class="ms-2 me-3">Anh</label>
-            <input type="radio" name="gender" id="female"> <label for="female" class="ms-2">Chị</label>
+
+<h4 class="mt-4">Đánh giá sản phẩm</h4>
+
+@if ($reviews->count() > 0)
+    @foreach ($reviews as $review)
+        <div class="review-item mb-3">
+            <strong>{{ $review->user->name }}</strong> - <span>{{ $review->created_at->format('d/m/Y') }}</span>
+            <br>
+            <span>
+                @for ($i = 1; $i <= 5; $i++)
+                    @if ($i <= $review->rating)
+                        ⭐
+                    @else
+                        ☆
+                    @endif
+                @endfor
+            </span>
+            <p>{{ $review->comment }}</p>
+
+            @if(auth()->check() && auth()->id() === $review->user_id)
+                <form action="{{ route('reviews.destroy', $review->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa đánh giá này không?');">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger btn-sm mt-2">Xóa</button>
+                </form>
+            @endif
         </div>
-        <div class="mt-2 d-flex">
-            <input type="text" class="form-control me-2" placeholder="Họ và tên">
-            <input type="email" class="form-control me-2" placeholder="Email">
-            <button class="btn btn-danger">Gửi</button>
-        </div>
-    </div>
-<br>
+        <hr>
+    @endforeach
+@else
+    <p>Chưa có đánh giá nào.</p>
+@endif
+
+
+
 <hr>
+
+@if($userHasPurchased)
+    <h4 class="mt-4">Đánh giá sản phẩm</h4>
+    <form action="{{ route('product.review.store', ['id' => $product->id])}}" method="POST">
+        @csrf
+        <input type="hidden" name="product_id" value="{{ $product->id }}">
+        
+        <div class="mb-3">
+            <label class="form-label">Chọn số sao:</label>
+            <select name="rating" class="form-select">
+                <option value="5">⭐⭐⭐⭐⭐ 5 Sao</option>
+                <option value="4">⭐⭐⭐⭐ 4 Sao</option>
+                <option value="3">⭐⭐⭐ 3 Sao</option>
+                <option value="2">⭐⭐ 2 Sao</option>
+                <option value="1">⭐ 1 Sao</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <textarea name="comment" class="form-control" placeholder="Nhập bình luận..." rows="3"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-danger">Gửi đánh giá</button>
+    </form>
+@endif
+
+
 
     <!-- JavaScript -->
     <script>

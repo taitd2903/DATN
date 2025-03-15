@@ -6,6 +6,8 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\Review;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller {
     
@@ -48,8 +50,30 @@ class ProductController extends Controller {
 
     // Hiển thị chi tiết sản phẩm
     public function show($id) {
-        $product = Product::with('category', 'variants')->findOrFail($id);
+        // $product = Product::with('category', 'variants')->findOrFail($id);
         
-        return view('users.products.show', compact('product'));
+        // return view('users.products.show', compact('product'));
+        $reviews = Review::where('product_id', $id)->latest()->get();
+        $product = Product::with('category', 'variants')->findOrFail($id);
+        $userHasPurchased = $this->hasPurchasedProduct($id); // Kiểm tra user đã mua hàng chưa
+
+        return view('users.products.show', compact('product', 'userHasPurchased' ,'reviews'));
     }
+
+    public function hasPurchasedProduct($productId)
+{
+    if (!auth()->check()) {
+        return false; // Nếu chưa đăng nhập, không thể đánh giá
+    }
+
+    $userId = auth()->id();
+
+    return DB::table('orders')
+        ->join('order_items', 'orders.id', '=', 'order_items.order_id')
+        ->where('orders.user_id', $userId)
+        ->where('order_items.product_id', $productId)
+        ->where('orders.status', 'Hoàn thành') // Chỉ kiểm tra đơn đã hoàn thành
+        ->exists();
+}
+
 }

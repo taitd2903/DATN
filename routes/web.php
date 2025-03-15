@@ -172,7 +172,7 @@ Route::get('/admin/users/{id}/toggle-status', [UserController::class, 'toggleSta
 // danh gia
 Route::get('/product/{id}/review', [ReviewController::class, 'create'])->name('product.review');
 Route::post('/product/{id}/review', [ReviewController::class, 'store'])->name('product.review.store');
-
+Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
 
 
 

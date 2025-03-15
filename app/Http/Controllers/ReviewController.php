@@ -32,4 +32,18 @@ class ReviewController extends Controller
 
         return redirect()->back()->with('success', 'Đánh giá của bạn đã được gửi và đang chờ duyệt.');
     }
+
+    public function destroy($id)
+{
+    $review = Review::findOrFail($id);
+
+    // Kiểm tra xem user có quyền xóa bình luận không
+    if (auth()->id() !== $review->user_id) {
+        return redirect()->back()->with('error', 'Bạn không có quyền xóa đánh giá này.');
+    }
+
+    $review->delete();
+
+    return redirect()->back()->with('success', 'Đánh giá đã được xóa.');
+}
 }
