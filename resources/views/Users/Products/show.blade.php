@@ -103,8 +103,26 @@
     <div class="mt-3 d-flex">
                     <button type="submit" id="addToCartButton" disabled class="btn btn-danger">Thêm vào giỏ hàng</button>
                 </div>
+{{--========================== Phần này của Đạt thông báo lỗi ============================--}}
+                @if (session('error'))
+            <small class="text-danger" id="error-message">{{ session('error') }}</small>
+            <script>
+                setTimeout(function () {
+                    document.getElementById('error-message').style.display = 'none';
+                }, 5000);
+            </script>
+        @endif
+        @if (session('success'))
+            <small class="text-success" id="success-message">{{ session('success') }}</small>
+            <script>
+                setTimeout(function () {
+                    document.getElementById('success-message').style.display = 'none';
+                }, 5000);
+            </script>
+        @endif
+{{--========================= Hết phần của Đạt ============================--}}
                 <br>
-                <p> Mo ta: {{ $product->description }}</p>
+                <p> Mô Tả: {{ $product->description }}</p>
 </div>
 
 

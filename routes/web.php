@@ -85,6 +85,7 @@ Route::middleware('auth')->prefix('cart')->name('cart.')->group(function () {
     Route::post('/add', [CartController::class, 'add'])->name('add');
     Route::patch('/{id}', [CartController::class, 'update'])->name('update');
     Route::delete('/{id}', [CartController::class, 'remove'])->name('remove');
+    Route::get('/check-stock', [CartController::class, 'checkStock'])->name('checkStock');
 });
 
 // ========================= SẢN PHẨM (PRODUCTS) =========================

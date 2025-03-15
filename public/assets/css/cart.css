@@ -51,8 +51,8 @@
     margin-top: 20px;
     padding: 15px;
     border: 1px solid #ddd;
-    width: 300px;
-    float: right;
+    width: 100%;
+    float: left;
 }
 
 .cart-summary h3 {
@@ -71,10 +71,14 @@
 }
 
 .cart-actions {
+    /* margin-top: 20px;
+    display: inline-flex;
+    gap: 10px;
+    flex-wrap: wrap; */
     margin-top: 20px;
     display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
+    justify-content: space-between;
+    width: 100%;
 }
 
 .cart-actions .btn {
