@@ -14,29 +14,33 @@ use Illuminate\Support\Facades\DB;
 
 class CheckoutController extends Controller
 {
-    public function index()
-{
-    // Lấy sản phẩm trong giỏ hàng chỉ của user hiện tại
-    $cartItems = CartItem::with(['product', 'variant'])
-                ->where('user_id', auth()->id())
-                ->get();
+    public function index(Request $request)
+    {
+        // Lấy danh sách ID sản phẩm được chọn từ query string (ví dụ: ?items=1,2,3)
+        $selectedItems = $request->query('items') ? explode(',', $request->query('items')) : [];
 
-    if ($cartItems->isEmpty()) {
-        return redirect('/cart')->with('error', 'Giỏ hàng của bạn đang trống.');
+        // Lấy sản phẩm trong giỏ hàng chỉ của user hiện tại, lọc theo danh sách được chọn
+        $cartItems = CartItem::with(['product', 'variant'])
+            ->where('user_id', auth()->id())
+            ->whereIn('id', $selectedItems) // Lọc theo ID sản phẩm được chọn
+            ->get();
+
+        if ($cartItems->isEmpty()) {
+            return redirect('/cart')->with('error', 'Giỏ hàng của bạn đang trống.');
+        }
+
+        $totalPrice = $cartItems->sum(fn($item) => $item->price * $item->quantity);
+        $discount = session('discount', 0);
+        $finalPrice = $totalPrice - $discount;
+
+        // Lưu totalPrice vào session để sử dụng trong applyCoupon
+        session(['total_price' => $totalPrice]);
+
+        // Lấy thông tin người dùng nếu đã đăng nhập
+        $user = auth()->user();
+
+        return view('Users.Checkout.index', compact('cartItems', 'totalPrice', 'finalPrice', 'discount', 'user'));
     }
-
-    $totalPrice = $cartItems->sum(fn($item) => $item->price * $item->quantity);
-    $discount = session('discount', 0);
-    $finalPrice = $totalPrice - $discount;
-
-    // Lưu totalPrice vào session để sử dụng trong applyCoupon
-    session(['total_price' => $totalPrice]);
-
-    // Lấy thông tin người dùng nếu đã đăng nhập
-    $user = auth()->user();
-
-    return view('Users.Checkout.index', compact('cartItems', 'totalPrice', 'finalPrice', 'discount', 'user'));
-}
 
 
     public function placeOrder(Request $request)
@@ -221,7 +225,7 @@ class CheckoutController extends Controller
     public function orderTracking()
     {
         $orders = Order::where('user_id', Auth::id())->with('orderItems.product')->get();
-        
+
         return view('users.tracking.order_tracking', compact('orders'));
     }
 

@@ -33,6 +33,7 @@
             <table class="cart-table">
                 <thead>
                     <tr>
+                        <th></th>
                         <th>Ảnh</th>
                         <th>Sản phẩm</th>
                         <th>Giá</th>
@@ -49,6 +50,7 @@
                             $total += $subtotal;
                         @endphp
                         <tr data-cart-id="{{ $item->id }}">
+                            <td><input type="checkbox" class="select-item" data-id="{{ $item->id }}" checked></td>
                             <td><img src="{{ asset('storage/' . $item->variant->image) }}" class="cart-image"></td>
                             <td>
                                 {{ $item->product->name }} ({{ $item->variant->size }} / {{ $item->variant->color }})
@@ -83,7 +85,9 @@
                     @endforeach
                 </tbody>
             </table>
-
+            <div style="font-family: Arial, sans-serif; padding: 10px; margin-top: 15px; background-color: #f4f4f4; border: 1px solid #ccc; border-radius: 5px; display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" id="select-all" checked>Chọn tất cả
+            </div>
             <div class="cart-summary">
                 <h3>Tóm tắt đơn hàng</h3>
                 <p>Tạm tính: <span class="total-amount">{{ number_format($total, 0, ',', '.') }} đ</span></p>
@@ -105,44 +109,65 @@
                     const row = document.querySelector(`tr[data-cart-id='${e.id}']`);
                     console.log('Found row:', row); // Thêm dòng này
                     if (row) {
-                        const priceCell = row.querySelector('td:nth-child(3)'); // Cột giá
+                        const priceCell = row.querySelector('td:nth-child(4)'); // Cột giá
                         const subtotalCell = row.querySelector('.subtotal'); // Cột tổng phụ
                         const input = row.querySelector('.quantity-input');
-                        
-                        console.log('Price cell before:', priceCell.textContent); // Trước khi cập nhật
-                priceCell.textContent = new Intl.NumberFormat('vi-VN').format(e.price) + ' đ';
-                console.log('Price cell after:', priceCell.textContent); // Sau khi cập nhật
 
-                console.log('Subtotal cell before:', subtotalCell.textContent);
-                subtotalCell.textContent = new Intl.NumberFormat('vi-VN').format(e.subtotal) + ' đ';
-                console.log('Subtotal cell after:', subtotalCell.textContent);
+                        // console.log('Giá trước:', priceCell.textContent);
+                        priceCell.textContent = new Intl.NumberFormat('vi-VN').format(e.price) + ' đ';
+                        // console.log('Giá sau:', priceCell.textContent);
 
-                input.setAttribute('data-price', e.price);
-                console.log('Input data-price after:', input.getAttribute('data-price'));
+                        // console.log('Tổng trước:', subtotalCell.textContent);
+                        subtotalCell.textContent = new Intl.NumberFormat('vi-VN').format(e.subtotal) + ' đ';
+                        // console.log('Tổng sau:', subtotalCell.textContent);
+
+                        input.setAttribute('data-price', e.price);
+                        // console.log('Input data-price after:', input.getAttribute('data-price'));
 
                         // Cập nhật lại tổng tiền
                         updateTotals();
-                    }else{console.log('Row not found for cart ID:', e.id); }
+                    } else {
+                        console.log('Row not found for cart ID:', e.id);
+                    }
                 });
-            // Hàm cập nhật tổng phụ (subtotal) và tổng tiền (total) trên giao diện
+            // Hàm cập nhật tổng tiền dựa trên các sản phẩm được chọn
             function updateTotals() {
                 let total = 0;
                 // Lặp qua từng dòng sản phẩm trong bảng
                 document.querySelectorAll('tr[data-cart-id]').forEach(row => {
-                    const input = row.querySelector('.quantity-input');
-                    const price = parseFloat(input.getAttribute('data-price')); // Lấy giá từ data-price
-                    const quantity = parseInt(input.value); // Lấy số lượng từ input
-                    const subtotal = price * quantity;
-                    // Cập nhật tổng phụ trên giao diện
-                    row.querySelector('.subtotal').textContent = new Intl.NumberFormat('vi-VN').format(
-                        subtotal) + ' đ';
-                    total += subtotal;
+                    const checkbox = row.querySelector('.select-item');
+                    if (checkbox.checked) {
+                        const input = row.querySelector('.quantity-input');
+                        const price = parseFloat(input.getAttribute('data-price')); // Lấy giá từ data-price
+                        const quantity = parseInt(input.value); // Lấy số lượng từ input
+                        const subtotal = price * quantity;
+                        // Cập nhật tổng phụ trên giao diện
+                        row.querySelector('.subtotal').textContent = new Intl.NumberFormat('vi-VN').format(
+                            subtotal) + ' đ';
+                        total += subtotal;
+                    }
                 });
                 // Cập nhật tổng tiền trên giao diện
                 document.querySelector('.total-amount').textContent = new Intl.NumberFormat('vi-VN').format(total) +
                     ' đ';
             }
-
+            // Xử lý checkbox "Chọn tất cả"
+            document.getElementById('select-all').addEventListener('change', function() {
+                const isChecked = this.checked;
+                document.querySelectorAll('.select-item').forEach(checkbox => {
+                    checkbox.checked = isChecked;
+                });
+                updateTotals();
+            });
+            // Xử lý checkbox từng sản phẩm
+            document.querySelectorAll('.select-item').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const allChecked = document.querySelectorAll('.select-item').length ===
+                        document.querySelectorAll('.select-item:checked').length;
+                    document.getElementById('select-all').checked = allChecked;
+                    updateTotals();
+                });
+            });
             // Hàm kiểm tra tồn kho bằng cách gửi request lên server
             function checkStock() {
                 fetch("{{ route('cart.checkStock') }}", {
@@ -233,8 +258,9 @@
                             const quantity = data[cartId].quantity;
                             const row = document.querySelector(`tr[data-cart-id='${cartId}']`);
                             const stockWarning = row.querySelector('.stock-warning');
+                            const checkbox = row.querySelector('.select-item');
 
-                            if (quantity > stock) {
+                            if (checkbox.checked && quantity > stock) {
                                 canCheckout = false;
                                 // Hiển thị thông báo trong stock-warning
                                 stockWarning.style.display = 'inline';
@@ -248,12 +274,21 @@
 
                         // Nếu không có vấn đề gì với tồn kho, chuyển hướng đến trang thanh toán
                         if (canCheckout) {
-                            window.location.href = "{{ route('checkout') }}";
+                            // Gửi danh sách sản phẩm được chọn đến checkout
+                            const selectedItems = Array.from(document.querySelectorAll(
+                                    '.select-item:checked'))
+                                .map(checkbox => checkbox.getAttribute('data-id'));
+                            if (selectedItems.length > 0) {
+                                const url = "{{ route('checkout') }}?items=" + selectedItems.join(',');
+                                window.location.href = url;
+                            } else {
+                                alert('Vui lòng chọn ít nhất một sản phẩm để thanh toán!');
+                            }
                         }
 
                         // Cập nhật lại tổng tiền sau khi điều chỉnh
                         updateTotals();
-                    })
+                    });
             });
 
             // Xử lý tăng/giảm số lượng
@@ -312,6 +347,7 @@
                     updateTotals();
                 });
             });
+            updateTotals();
         });
     </script>
 
