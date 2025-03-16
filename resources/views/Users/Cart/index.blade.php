@@ -50,7 +50,7 @@
                             $total += $subtotal;
                         @endphp
                         <tr data-cart-id="{{ $item->id }}">
-                            <td><input type="checkbox" class="select-item" data-id="{{ $item->id }}" checked></td>
+                            <td><input type="checkbox" class="select-item" data-id="{{ $item->id }}"></td>
                             <td><img src="{{ asset('storage/' . $item->variant->image) }}" class="cart-image"></td>
                             <td>
                                 {{ $item->product->name }} ({{ $item->variant->size }} / {{ $item->variant->color }})
@@ -75,7 +75,7 @@
                             </td>
                             <td class="subtotal">{{ number_format($subtotal, 0, ',', '.') }} đ</td>
                             <td>
-                                <form action="{{ route('cart.remove', $item->id) }}" method="POST">
+                                <form action="{{ route('cart.remove', $item->id) }}" method="POST" class="remove-form">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger">×</button>
@@ -85,8 +85,9 @@
                     @endforeach
                 </tbody>
             </table>
-            <div style="font-family: Arial, sans-serif; padding: 10px; margin-top: 15px; background-color: #f4f4f4; border: 1px solid #ccc; border-radius: 5px; display: flex; align-items: center; gap: 10px;">
-                <input type="checkbox" id="select-all" checked>Chọn tất cả
+            <div
+                style="font-family: Arial, sans-serif; padding: 10px; margin-top: 15px; background-color: #f4f4f4; border: 1px solid #ccc; border-radius: 5px; display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" id="select-all">Chọn tất cả
             </div>
             <div class="cart-summary">
                 <h3>Tóm tắt đơn hàng</h3>
@@ -103,55 +104,46 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // Lắng nghe kênh private cho user hiện tại
             Echo.private(`cart.{{ Auth::id() }}`)
                 .listen('PriceUpdated', (e) => {
                     const row = document.querySelector(`tr[data-cart-id='${e.id}']`);
-                    console.log('Found row:', row); // Thêm dòng này
+                    console.log('Found row:', row);
                     if (row) {
-                        const priceCell = row.querySelector('td:nth-child(4)'); // Cột giá
-                        const subtotalCell = row.querySelector('.subtotal'); // Cột tổng phụ
+                        const priceCell = row.querySelector('td:nth-child(4)');
+                        const subtotalCell = row.querySelector('.subtotal');
                         const input = row.querySelector('.quantity-input');
 
-                        // console.log('Giá trước:', priceCell.textContent);
                         priceCell.textContent = new Intl.NumberFormat('vi-VN').format(e.price) + ' đ';
-                        // console.log('Giá sau:', priceCell.textContent);
-
-                        // console.log('Tổng trước:', subtotalCell.textContent);
                         subtotalCell.textContent = new Intl.NumberFormat('vi-VN').format(e.subtotal) + ' đ';
-                        // console.log('Tổng sau:', subtotalCell.textContent);
-
                         input.setAttribute('data-price', e.price);
-                        // console.log('Input data-price after:', input.getAttribute('data-price'));
 
-                        // Cập nhật lại tổng tiền
                         updateTotals();
                     } else {
                         console.log('Row not found for cart ID:', e.id);
                     }
                 });
-            // Hàm cập nhật tổng tiền dựa trên các sản phẩm được chọn
+
+
             function updateTotals() {
                 let total = 0;
-                // Lặp qua từng dòng sản phẩm trong bảng
                 document.querySelectorAll('tr[data-cart-id]').forEach(row => {
                     const checkbox = row.querySelector('.select-item');
+                    const input = row.querySelector('.quantity-input');
+                    const price = parseFloat(input.getAttribute('data-price'));
+                    const quantity = parseInt(input.value);
+                    const subtotal = price * quantity;
+
+                    row.querySelector('.subtotal').textContent = new Intl.NumberFormat('vi-VN').format(
+                        subtotal) + ' đ';
+
                     if (checkbox.checked) {
-                        const input = row.querySelector('.quantity-input');
-                        const price = parseFloat(input.getAttribute('data-price')); // Lấy giá từ data-price
-                        const quantity = parseInt(input.value); // Lấy số lượng từ input
-                        const subtotal = price * quantity;
-                        // Cập nhật tổng phụ trên giao diện
-                        row.querySelector('.subtotal').textContent = new Intl.NumberFormat('vi-VN').format(
-                            subtotal) + ' đ';
                         total += subtotal;
                     }
                 });
-                // Cập nhật tổng tiền trên giao diện
                 document.querySelector('.total-amount').textContent = new Intl.NumberFormat('vi-VN').format(total) +
                     ' đ';
             }
-            // Xử lý checkbox "Chọn tất cả"
+
             document.getElementById('select-all').addEventListener('change', function() {
                 const isChecked = this.checked;
                 document.querySelectorAll('.select-item').forEach(checkbox => {
@@ -159,7 +151,7 @@
                 });
                 updateTotals();
             });
-            // Xử lý checkbox từng sản phẩm
+
             document.querySelectorAll('.select-item').forEach(checkbox => {
                 checkbox.addEventListener('change', function() {
                     const allChecked = document.querySelectorAll('.select-item').length ===
@@ -168,7 +160,7 @@
                     updateTotals();
                 });
             });
-            // Hàm kiểm tra tồn kho bằng cách gửi request lên server
+
             function checkStock() {
                 fetch("{{ route('cart.checkStock') }}", {
                         method: 'GET',
@@ -177,64 +169,58 @@
                             'Accept': 'application/json'
                         }
                     })
-                    .then(response => response.json()) // Chuyển response thành JSON
-                    .then(data => { // Lặp qua dữ liệu trả về từ server
+                    .then(response => response.json())
+                    .then(data => {
                         Object.keys(data).forEach(cartId => {
                             const row = document.querySelector(`tr[data-cart-id='${cartId}']`);
                             const input = row.querySelector('.quantity-input');
-                            const stock = data[cartId].stock_quantity; // Số lượng tồn kho từ server
-                            const quantity = data[cartId].quantity; // Số lượng hiện tại trong giỏ
-                            const price = parseFloat(input.getAttribute('data-price'));
+                            const stock = data[cartId].stock_quantity;
+                            const quantity = data[cartId].quantity;
                             const stockWarning = row.querySelector('.stock-warning');
 
-                            input.setAttribute('max', stock); // Cập nhật giá trị max của input
-                            // Nếu số lượng trong giỏ vượt quá tồn kho
+                            input.setAttribute('max', stock);
                             if (quantity > stock) {
-                                input.value = stock; // Điều chỉnh số lượng về mức tối đa
+                                input.value = stock;
                                 stockWarning.style.display = 'inline';
                                 stockWarning.textContent = `(Chỉ còn ${stock} trong kho)`;
-                                // Gửi request cập nhật số lượng về server
                                 updateCartItem(cartId, stock);
                             } else {
                                 stockWarning.style.display = 'none';
                             }
-
-                            updateTotals(); // Cập nhật lại tổng tiền
+                            updateTotals();
                         });
                     })
-                    .catch(error => console.error('Error checking stock:', error)); // Log lỗi nếu request thất bại
+                    .catch(error => console.error('Error checking stock:', error));
             }
 
-            // Hàm gửi request cập nhật số lượng lên server
             function updateCartItem(cartId, quantity) {
                 const form = document.querySelector(`tr[data-cart-id='${cartId}'] .update-form`);
                 const formData = new FormData(form);
-                formData.set('quantity', quantity); // Cập nhật số lượng mới trong form data
+                formData.set('quantity', quantity);
 
                 fetch(form.action, {
                         method: 'POST',
                         headers: {
                             'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Accept': 'application/json'
+                            'Accept': 'application/json',
+                            'X-HTTP-Method-Override': 'PATCH'
                         },
                         body: formData
                     })
-                    .then(response => response.json())
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.json();
+                    })
                     .then(data => {
                         console.log('Cart updated:', data);
+                        updateTotals();
                     })
                     .catch(error => console.error('Error updating cart:', error));
             }
-
-            // Gọi kiểm tra tồn kho ngay khi tải trang
             checkStock();
 
-            // Kiểm tra định kỳ mỗi 10 giây (có thể điều chỉnh)
-            // setInterval(checkStock, 10000);
-
-            // Kiểm tra trước khi thanh toán
             document.getElementById('checkout-btn').addEventListener('click', function(e) {
-                e.preventDefault(); // Ngăn chuyển hướng ngay lập tức
+                e.preventDefault();
                 fetch("{{ route('cart.checkStock') }}", {
                         method: 'GET',
                         headers: {
@@ -244,15 +230,12 @@
                     })
                     .then(response => response.json())
                     .then(data => {
-                        let canCheckout = true; // Biến kiểm tra xem có thể thanh toán không
-
-                        // Reset tất cả thông báo stock-warning trước khi kiểm tra
+                        let canCheckout = true;
                         document.querySelectorAll('.stock-warning').forEach(span => {
                             span.style.display = 'none';
                             span.textContent = '';
                         });
 
-                        // Duyệt qua dữ liệu để kiểm tra tồn kho
                         Object.keys(data).forEach(cartId => {
                             const stock = data[cartId].stock_quantity;
                             const quantity = data[cartId].quantity;
@@ -262,19 +245,15 @@
 
                             if (checkbox.checked && quantity > stock) {
                                 canCheckout = false;
-                                // Hiển thị thông báo trong stock-warning
                                 stockWarning.style.display = 'inline';
                                 stockWarning.textContent = `(Chỉ còn ${stock} trong kho)`;
-                                // Tự động điều chỉnh số lượng về mức tối đa trong kho
                                 const input = row.querySelector('.quantity-input');
                                 input.value = stock;
-                                updateCartItem(cartId, stock); // Gửi request cập nhật số lượng
+                                updateCartItem(cartId, stock);
                             }
                         });
 
-                        // Nếu không có vấn đề gì với tồn kho, chuyển hướng đến trang thanh toán
                         if (canCheckout) {
-                            // Gửi danh sách sản phẩm được chọn đến checkout
                             const selectedItems = Array.from(document.querySelectorAll(
                                     '.select-item:checked'))
                                 .map(checkbox => checkbox.getAttribute('data-id'));
@@ -285,13 +264,60 @@
                                 alert('Vui lòng chọn ít nhất một sản phẩm để thanh toán!');
                             }
                         }
-
-                        // Cập nhật lại tổng tiền sau khi điều chỉnh
                         updateTotals();
                     });
             });
 
-            // Xử lý tăng/giảm số lượng
+            function removeCartItem(cartId) {
+                const form = document.querySelector(`tr[data-cart-id='${cartId}'] .remove-form`);
+                if (!form) {
+                    console.error('Form not found for cart ID:', cartId);
+                    return;
+                }
+                const formData = new FormData(form);
+
+                fetch(form.action, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json',
+                            'X-HTTP-Method-Override': 'DELETE'
+                        },
+                        body: formData
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(errorData => {
+                                throw new Error(errorData.error || 'Có lỗi khi xóa sản phẩm');
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Cart item removed:', data);
+                        const row = document.querySelector(`tr[data-cart-id='${cartId}']`);
+                        if (row) row.remove();
+                        updateTotals();
+                        const allChecked = document.querySelectorAll('.select-item').length ===
+                            document.querySelectorAll('.select-item:checked').length;
+                        document.getElementById('select-all').checked = allChecked;
+                    })
+                    .catch(error => {
+                        console.error('Error removing cart item:', error.message);
+                        alert(error.message);
+                    });
+            }
+
+            document.querySelectorAll('tr[data-cart-id] form button[type="submit"]').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('Delete button clicked');
+                    const cartId = this.closest('tr[data-cart-id]').getAttribute('data-cart-id');
+                    console.log('Removing cart ID:', cartId);
+                    removeCartItem(cartId);
+                });
+            });
+            // Xử lý tăng/giảm số lượng bằng AJAX
             document.querySelectorAll(".increment, .decrement").forEach(button => {
                 button.addEventListener("click", function() {
                     let id = this.getAttribute("data-id");
@@ -317,12 +343,11 @@
                         input.value = currentValue - 1;
                     }
 
-                    updateTotals();
-                    input.closest(".update-form").submit();
+                    updateCartItem(id, input.value);
                 });
             });
 
-            // Xử lý khi nhập tay số lượng
+            // Xử lý khi nhập tay số lượng bằng AJAX
             document.querySelectorAll(".quantity-input").forEach(input => {
                 input.addEventListener("change", function() {
                     let id = this.getAttribute("data-id");
@@ -339,12 +364,10 @@
                     } else if (value > max) {
                         this.value = max;
                         errorDiv.textContent = 'Số lượng vượt quá tồn kho!';
-                        updateCartItem(id, max); // Cập nhật số lượng mới lên server
+                        updateCartItem(id, max);
                     } else {
-                        this.closest(".update-form").submit();
+                        updateCartItem(id, value);
                     }
-
-                    updateTotals();
                 });
             });
             updateTotals();
