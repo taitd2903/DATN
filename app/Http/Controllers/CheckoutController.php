@@ -204,18 +204,52 @@ class CheckoutController extends Controller
         return view('admin.orders.edit-status', compact('order', 'statusOptions'));
     }
 
-    // Cập nhật trạng thái đơn hàng
+    // Cập nhật trạng thái qly đơn hàng trong admin
     public function updateStatus(Request $request, Order $order)
     {
         $request->validate([
             'status' => 'required|in:Chờ xác nhận,Đang giao,Hoàn thành,Hủy',
         ]);
 
-        // Nếu đơn hàng đã bị huỷ thì không cho phép cập nhật nữa
+        // Nếu đơn hàng đã bị huỷ trước đó, không cho phép cập nhật nữa
         if ($order->status === 'Hủy') {
             return redirect()->route('admin.orders.index')->with('error', 'Đơn hàng đã bị huỷ và không thể cập nhật trạng thái!');
         }
 
+        // Nếu chuyển trạng thái sang "Hủy", hoàn lại hàng vào kho
+        if ($request->status === 'Hủy') {
+            foreach ($order->orderItems as $item) {
+                if ($item->variant) {
+                    $variant = $item->variant;
+
+                    // Hoàn kho: cộng lại stock_quantity, trừ sold_quantity
+                    $variant->stock_quantity += $item->quantity;
+                    $variant->sold_quantity -= $item->quantity;
+
+                    // Đảm bảo sold_quantity không âm
+                    if ($variant->sold_quantity < 0) {
+                        $variant->sold_quantity = 0;
+                    }
+
+                    $variant->save();
+                } else {
+                    $product = $item->product;
+
+                    // Hoàn kho: cộng lại stock_quantity, trừ sold_quantity
+                    $product->stock_quantity += $item->quantity;
+                    $product->sold_quantity -= $item->quantity;
+
+                    // Đảm bảo sold_quantity không âm
+                    if ($product->sold_quantity < 0) {
+                        $product->sold_quantity = 0;
+                    }
+
+                    $product->save();
+                }
+            }
+        }
+
+        // Cập nhật trạng thái đơn hàng
         $order->update(['status' => $request->status]);
 
         return redirect()->route('admin.orders.index')->with('success', 'Cập nhật trạng thái thành công!');
