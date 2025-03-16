@@ -49,31 +49,90 @@ class ProductController extends Controller {
     }
 
     // Hiển thị chi tiết sản phẩm
-    public function show($id) {
-        // $product = Product::with('category', 'variants')->findOrFail($id);
-        
-        // return view('users.products.show', compact('product'));
-        $reviews = Review::where('product_id', $id)->latest()->get();
-        $product = Product::with('category', 'variants')->findOrFail($id);
-        $userHasPurchased = $this->hasPurchasedProduct($id); // Kiểm tra user đã mua hàng chưa
+    
 
-        return view('users.products.show', compact('product', 'userHasPurchased' ,'reviews'));
+    public function show($id)
+{
+    $product = Product::with('category', 'variants')->findOrFail($id);
+    $reviews = Review::where('product_id', $id)->latest()->get();
+    $userHasPurchased = auth()->check() ? $this->hasPurchasedProduct($id) : false;
+    
+    // Lấy đơn hàng gần nhất của user (nếu có)
+    $order = DB::table('orders')
+        ->join('order_items', 'orders.id', '=', 'order_items.order_id')
+        ->where('orders.user_id', auth()->id())
+        ->where('order_items.product_id', $id)
+        ->where('orders.status', 'Hoàn thành')
+        ->orderBy('orders.created_at', 'desc')
+        ->select('orders.id')
+        ->first();
+
+    // Kiểm tra nếu user đã đánh giá đơn hàng gần nhất
+    $userCanReview = false;
+    if ($order) {
+        $userCanReview = !Review::where('order_id', $order->id)
+            ->where('user_id', auth()->id())
+            ->where('product_id', $id)
+            ->exists();
     }
 
-    public function hasPurchasedProduct($productId)
+    return view('users.products.show', compact('product', 'reviews', 'userCanReview'));
+}
+
+
+//     public function hasPurchasedProduct($productId)
+// {
+//     if (!auth()->check()) {
+//         return false; // Nếu chưa đăng nhập, không thể đánh giá
+//     }
+
+//     $userId = auth()->id();
+
+//     return DB::table('orders')
+//         ->join('order_items', 'orders.id', '=', 'order_items.order_id')
+//         ->where('orders.user_id', $userId)
+//         ->where('order_items.product_id', $productId)
+//         ->where('orders.status', 'Hoàn thành') // Chỉ kiểm tra đơn đã hoàn thành
+//         ->exists();
+// }
+
+
+
+
+public function hasPurchasedProduct($productId)
 {
     if (!auth()->check()) {
-        return false; // Nếu chưa đăng nhập, không thể đánh giá
+        return false;
     }
 
     $userId = auth()->id();
 
-    return DB::table('orders')
+    // Lấy danh sách order_id của user đã mua sản phẩm này
+    $orderIds = DB::table('orders')
         ->join('order_items', 'orders.id', '=', 'order_items.order_id')
         ->where('orders.user_id', $userId)
         ->where('order_items.product_id', $productId)
-        ->where('orders.status', 'Hoàn thành') // Chỉ kiểm tra đơn đã hoàn thành
+        ->where('orders.status', 'Hoàn thành')
+        ->pluck('orders.id');
+
+    if ($orderIds->isEmpty()) {
+        return false;
+    }
+
+    // Kiểm tra xem user đã đánh giá tất cả các đơn này chưa
+    $hasUnreviewedOrders = DB::table('order_items')
+        ->whereIn('order_id', $orderIds)
+        ->where('product_id', $productId)
+        ->whereNotExists(function ($query) use ($userId, $productId) {
+            $query->select(DB::raw(1))
+                ->from('reviews')
+                ->whereRaw('reviews.order_id = order_items.order_id')
+                ->where('reviews.user_id', $userId)
+                ->where('reviews.product_id', $productId);
+        })
         ->exists();
+
+    return $hasUnreviewedOrders;
 }
 
 }

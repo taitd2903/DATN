@@ -140,90 +140,56 @@
 
 
 {{-- đánh giá sản phầm của nam --}}
-{{-- <h4 class="mt-4">Đánh giá sản phẩm</h4>
 
-@if ($reviews->count() > 0)
-    @foreach ($reviews as $review)
-        <div class="review-item mb-3">
-            <strong>{{ $review->user->name }}</strong> - <span>{{ $review->created_at->format('d/m/Y') }}</span>
-            <br>
-            <span>
-                @for ($i = 1; $i <= 5; $i++)
-                    @if ($i <= $review->rating)
-                        ⭐
-                    @else
-                        ☆
-                    @endif
-                @endfor
-            </span>
-            <p>{{ $review->comment }}</p>
-        </div>
-        <hr>
-    @endforeach
-@else
-    <p>Chưa có đánh giá nào.</p>
-@endif --}}
 
 
 <h4 class="mt-4">Đánh giá sản phẩm</h4>
 
-@if ($reviews->count() > 0)
-    @foreach ($reviews as $review)
-        <div class="review-item mb-3">
-            <strong>{{ $review->user->name }}</strong> - <span>{{ $review->created_at->format('d/m/Y') }}</span>
-            <br>
-            <span>
-                @for ($i = 1; $i <= 5; $i++)
-                    @if ($i <= $review->rating)
-                        ⭐
-                    @else
-                        ☆
-                    @endif
-                @endfor
-            </span>
-            <p>{{ $review->comment }}</p>
+@foreach ($reviews as $review)
+    <div class="review-item mb-3">
+        <strong>{{ $review->user->name }}</strong> - <span>{{ $review->created_at->format('d/m/Y') }}</span>
+        <br>
+        <span>
+            @for ($i = 1; $i <= 5; $i++)
+                @if ($i <= $review->rating)
+                    ⭐
+                @else
+                    ☆
+                @endif
+            @endfor
+        </span>
+        <p>{{ $review->comment }}</p>
 
-            @if(auth()->check() && auth()->id() === $review->user_id)
-                <form action="{{ route('reviews.destroy', $review->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa đánh giá này không?');">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-danger btn-sm mt-2">Xóa</button>
-                </form>
-            @endif
-        </div>
-        <hr>
-    @endforeach
-@else
-    <p>Chưa có đánh giá nào.</p>
-@endif
+        {{-- Hiển thị nút xóa nếu đây là đánh giá của user hiện tại --}}
+        @if (auth()->check() && auth()->id() == $review->user_id)
+            <form action="{{ route('reviews.destroy', ['id' => $review->id]) }}" method="POST" onsubmit="return confirm('Bạn có chắc muốn xóa đánh giá này không?');">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-danger btn-sm mt-2">Xóa</button>
+            </form>
+        @endif
+    </div>
+    <hr>
+@endforeach
 
 
-
-<hr>
-
-@if($userHasPurchased)
-    <h4 class="mt-4">Đánh giá sản phẩm</h4>
-    <form action="{{ route('product.review.store', ['id' => $product->id])}}" method="POST">
+{{-- Chỉ hiển thị form nếu user có quyền đánh giá --}}
+@if ($userCanReview)
+    <form action="{{ route('product.review.store', ['id' => $product->id]) }}" method="POST">
         @csrf
-        <input type="hidden" name="product_id" value="{{ $product->id }}">
-        
-        <div class="mb-3">
-            <label class="form-label">Chọn số sao:</label>
-            <select name="rating" class="form-select">
-                <option value="5">⭐⭐⭐⭐⭐ 5 Sao</option>
-                <option value="4">⭐⭐⭐⭐ 4 Sao</option>
-                <option value="3">⭐⭐⭐ 3 Sao</option>
-                <option value="2">⭐⭐ 2 Sao</option>
-                <option value="1">⭐ 1 Sao</option>
-            </select>
-        </div>
-
-        <div class="mb-3">
-            <textarea name="comment" class="form-control" placeholder="Nhập bình luận..." rows="3"></textarea>
-        </div>
-
-        <button type="submit" class="btn btn-danger">Gửi đánh giá</button>
+        <label>Đánh giá của bạn:</label>
+        <select name="rating" required>
+            <option value="5">⭐⭐⭐⭐⭐5 Sao</option>
+            <option value="4">⭐⭐⭐⭐4 Sao</option>
+            <option value="3">⭐⭐⭐3 Sao</option>
+            <option value="2">⭐⭐2 Sao</option>
+            <option value="1">⭐1 Sao</option>
+        </select>
+        <textarea name="comment" class="form-control" placeholder="Viết đánh giá của bạn..." required></textarea>
+        <button type="submit" class="btn btn-primary mt-2">Gửi đánh giá</button>
     </form>
+@else
+    <p><i>Chỉ mua hàng mới có thể đánh giá.</i></p>
 @endif
 
 
