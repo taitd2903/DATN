@@ -41,7 +41,7 @@ class CartController extends Controller
         $newQuantity = $currentQuantity + $request->quantity;
 
         if ($variant->stock_quantity < $newQuantity) {
-            return redirect()->back()->with('error', "Số lượng vượt quá tồn kho. Hiện chỉ còn {$variant->stock_quantity} sản phẩm trong kho.");
+            return redirect()->back()->with('error', "Bạn đã có {$variant->stock_quantity} sản phẩm trong giỏ hàng.");
         }
 
         if ($cartItem) {
@@ -120,9 +120,14 @@ class CartController extends Controller
                 'variant_color' => $item->variant->color,
             ];
 
-            if ($item->variant->stock_quantity < $item->quantity) {
+            if ($item->variant->stock_quantity > 0 && $item->quantity == 0) {
+                $item->quantity = 1;
+                $item->save();
+                $stockData[$item->id]['quantity'] = 1;
+            } elseif ($item->variant->stock_quantity < $item->quantity) {
                 $item->quantity = $item->variant->stock_quantity;
                 $item->save();
+                $stockData[$item->id]['quantity'] = $item->variant->stock_quantity;
             }
         }
 

@@ -48,9 +48,11 @@
                         @php
                             $subtotal = $item->quantity * $item->price;
                             $total += $subtotal;
+                            $isOutOfStock = $item->variant->stock_quantity == 0;
                         @endphp
                         <tr data-cart-id="{{ $item->id }}">
-                            <td><input type="checkbox" class="select-item" data-id="{{ $item->id }}"></td>
+                            <td><input type="checkbox" class="select-item" data-id="{{ $item->id }}"
+                                    {{ $isOutOfStock ? 'disabled' : '' }}></td>
                             <td><img src="{{ asset('storage/' . $item->variant->image) }}" class="cart-image"></td>
                             <td>
                                 {{ $item->product->name }} ({{ $item->variant->size }} / {{ $item->variant->color }})
@@ -62,13 +64,13 @@
                                     @csrf
                                     @method('PATCH')
                                     <div class="quantity-container">
-                                        <button type="button" class="btn decrement"
-                                            data-id="{{ $item->id }}">-</button>
+                                        <button type="button" class="btn decrement" data-id="{{ $item->id }}"
+                                            {{ $isOutOfStock ? 'disabled' : '' }}>-</button>
                                         <input type="number" name="quantity" value="{{ $item->quantity }}" min="1"
                                             max="{{ $item->variant->stock_quantity }}" class="quantity-input"
                                             data-id="{{ $item->id }}" data-price="{{ $item->price }}">
-                                        <button type="button" class="btn increment"
-                                            data-id="{{ $item->id }}">+</button>
+                                        <button type="button" class="btn increment" data-id="{{ $item->id }}"
+                                            {{ $isOutOfStock ? 'disabled' : '' }}>+</button>
                                     </div>
                                     <div class="error-message" style="color: red; font-size: 0.9em; margin-top: 5px;"></div>
                                 </form>
@@ -118,8 +120,11 @@
                         input.setAttribute('data-price', e.price);
 
                         updateTotals();
+                    } else {
+                        console.log('Row not found for cart ID:', e.id);
                     }
                 });
+
 
             function updateTotals() {
                 let total = 0;
@@ -133,7 +138,7 @@
                     row.querySelector('.subtotal').textContent = new Intl.NumberFormat('vi-VN').format(
                         subtotal) + ' đ';
 
-                    if (checkbox.checked) {
+                    if (checkbox.checked && !checkbox.disabled) {
                         total += subtotal;
                     }
                 });
@@ -149,7 +154,7 @@
                     }));
                 localStorage.setItem('cartSelections', JSON.stringify(selectedItems));
             }
-            // Khôi phục trạng thái checkbox từ localStorage
+
             const selections = JSON.parse(localStorage.getItem('cartSelections')) || [];
             selections.forEach(selection => {
                 const checkbox = document.querySelector(`.select-item[data-id='${selection.id}']`);
@@ -159,7 +164,9 @@
             document.getElementById('select-all').addEventListener('change', function() {
                 const isChecked = this.checked;
                 document.querySelectorAll('.select-item').forEach(checkbox => {
-                    checkbox.checked = isChecked;
+                    if (!checkbox.disabled) {
+                        checkbox.checked = isChecked;
+                    }
                 });
                 updateTotals();
                 saveCheckboxState();
@@ -191,15 +198,38 @@
                             const stock = data[cartId].stock_quantity;
                             const quantity = data[cartId].quantity;
                             const stockWarning = row.querySelector('.stock-warning');
+                            const checkbox = row.querySelector('.select-item');
+                            const decrementBtn = row.querySelector('.decrement');
+                            const incrementBtn = row.querySelector('.increment');
 
                             input.setAttribute('max', stock);
-                            if (quantity > stock) {
+                            if (stock === 0) {
+                                checkbox.disabled = true;
+                                decrementBtn.disabled = true;
+                                incrementBtn.disabled = true;
+                                input.value = 0;
+                                stockWarning.style.display = 'inline';
+                                stockWarning.textContent = `(Hết hàng)`;
+                                if (checkbox.checked) {
+                                    checkbox.checked = false;
+                                    saveCheckboxState();
+                                }
+                            } else if (quantity > stock) {
                                 input.value = stock;
                                 stockWarning.style.display = 'inline';
                                 stockWarning.textContent = `(Chỉ còn ${stock} trong kho)`;
                                 updateCartItem(cartId, stock);
                             } else {
                                 stockWarning.style.display = 'none';
+                                checkbox.disabled = false;
+                                decrementBtn.disabled = false;
+                                incrementBtn.disabled = false;
+                                if (quantity < 1) {
+                                    input.value = 1;
+                                    updateCartItem(cartId, 1);
+                                } else {
+                                    input.value = quantity;
+                                }
                             }
                             updateTotals();
                         });
@@ -232,7 +262,7 @@
                     .catch(error => console.error('Error updating cart:', error));
             }
             checkStock();
-
+            // setInterval(checkStock, 3000);
             document.getElementById('checkout-btn').addEventListener('click', function(e) {
                 e.preventDefault();
                 fetch("{{ route('cart.checkStock') }}", {
@@ -256,12 +286,25 @@
                             const row = document.querySelector(`tr[data-cart-id='${cartId}']`);
                             const stockWarning = row.querySelector('.stock-warning');
                             const checkbox = row.querySelector('.select-item');
+                            const input = row.querySelector('.quantity-input');
+                            const decrementBtn = row.querySelector('.decrement');
+                            const incrementBtn = row.querySelector('.increment');
 
-                            if (checkbox.checked && quantity > stock) {
+                            if (stock === 0) {
+                                checkbox.disabled = true;
+                                decrementBtn.disabled = true;
+                                incrementBtn.disabled = true;
+                                input.value = 0;
+                                stockWarning.style.display = 'inline';
+                                stockWarning.textContent = `(Hết hàng)`;
+                                if (checkbox.checked) {
+                                    checkbox.checked = false;
+                                    canCheckout = false;
+                                }
+                            } else if (checkbox.checked && quantity > stock) {
                                 canCheckout = false;
                                 stockWarning.style.display = 'inline';
                                 stockWarning.textContent = `(Chỉ còn ${stock} trong kho)`;
-                                const input = row.querySelector('.quantity-input');
                                 input.value = stock;
                                 updateCartItem(cartId, stock);
                             }
@@ -334,7 +377,6 @@
                     removeCartItem(cartId);
                 });
             });
-            // Xử lý tăng/giảm số lượng bằng AJAX
             document.querySelectorAll(".increment, .decrement").forEach(button => {
                 button.addEventListener("click", function() {
                     let id = this.getAttribute("data-id");
@@ -345,7 +387,10 @@
                     let errorDiv = input.closest('.quantity-container').nextElementSibling;
 
                     errorDiv.textContent = '';
-
+                    if (max === 0) {
+                        errorDiv.textContent = 'Sản phẩm đã hết hàng!';
+                        return;
+                    }
                     if (this.classList.contains("increment")) {
                         if (currentValue >= max) {
                             errorDiv.textContent = 'Đã đạt số lượng tối đa trong kho!';
@@ -364,7 +409,6 @@
                 });
             });
 
-            // Xử lý khi nhập tay số lượng bằng AJAX
             document.querySelectorAll(".quantity-input").forEach(input => {
                 input.addEventListener("change", function() {
                     let id = this.getAttribute("data-id");
