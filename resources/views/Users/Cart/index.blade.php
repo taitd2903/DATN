@@ -47,7 +47,7 @@
                     @foreach ($cartItems as $item)
                         @php
                             $subtotal = $item->quantity * $item->price;
-                            $total += $subtotal;
+                            // $total += $subtotal;
                             $isOutOfStock = $item->variant->stock_quantity == 0;
                         @endphp
                         <tr data-cart-id="{{ $item->id }}">

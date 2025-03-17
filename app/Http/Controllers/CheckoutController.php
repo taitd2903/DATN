@@ -11,6 +11,7 @@ use App\Models\Coupon;
 use App\Models\CouponUsage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CheckoutController extends Controller
 {
@@ -66,13 +67,11 @@ class CheckoutController extends Controller
         $discount = 0;
         $finalPrice = $totalPrice;
 
-        // Nếu có mã giảm giá, kiểm tra lại trước khi đặt hàng
         if ($appliedCoupons) {
             $validCoupons = [];
             foreach ($appliedCoupons as $couponData) {
                 $coupon = Coupon::where('code', $couponData['code'])->first();
                 if ($coupon && $this->isCouponValid($coupon, auth()->user())) {
-                    // Tính lại số tiền giảm cho mã này
                     $discountAmount = $this->calculateDiscount($coupon, $totalPrice);
                     $validCoupons[] = [
                         'code' => $coupon->code,
@@ -81,12 +80,10 @@ class CheckoutController extends Controller
                 }
             }
 
-            // Tính tổng số tiền giảm từ các mã hợp lệ
             $discount = array_sum(array_column($validCoupons, 'discount_amount'));
             $finalPrice = $totalPrice - $discount;
-
-            // Cập nhật lại danh sách mã hợp lệ trong session
             $request->session()->put('applied_coupons', $validCoupons);
+            $appliedCoupons = $validCoupons;
         }
 
         if ($finalPrice <= 0) {
@@ -95,10 +92,8 @@ class CheckoutController extends Controller
 
         $note = " {$validated['address']}, {$request->ward_name}, {$request->district_name}, {$request->province_name}";
 
-        // Lưu danh sách mã giảm giá vào cột coupon_code (dạng JSON hoặc chuỗi)
         $couponCodes = array_column($appliedCoupons, 'code');
-        $couponCodeString = implode(',', $couponCodes);
-
+        $couponCodeString = !empty($couponCodes) ? implode(',', $couponCodes) : null;
         $order = Order::create([
             'user_id' => auth()->id(),
             'note' => $note,
@@ -109,7 +104,7 @@ class CheckoutController extends Controller
             'customer_phone' => $request->phone,
             'customer_address' => $request->address,
             'payment_status' => "Chưa thanh toán",
-            'coupon_code' => $couponCodeString ?: null
+            'coupon_code' => $couponCodeString,
         ]);
 
         // Lưu sản phẩm vào order_items và cập nhật kho hàng
@@ -156,7 +151,6 @@ class CheckoutController extends Controller
             }
         }
 
-        // Tăng used_count và thêm vào coupon_usages cho từng mã hợp lệ
         if ($appliedCoupons) {
             foreach ($appliedCoupons as $couponData) {
                 $coupon = Coupon::where('code', $couponData['code'])->first();
@@ -174,7 +168,6 @@ class CheckoutController extends Controller
             }
         }
 
-        // Xóa giỏ hàng và dữ liệu trong session sau khi đặt hàng
         CartItem::where('user_id', auth()->id())->delete();
         session()->forget(['discount', 'applied_coupons', 'total_price']);
 
@@ -247,6 +240,26 @@ class CheckoutController extends Controller
                     $product->save();
                 }
             }
+            if ($order->coupon_code) {
+                $couponCodes = explode(',', $order->coupon_code);
+                foreach ($couponCodes as $code) {
+                    $code = trim($code);
+                    if (!empty($code)) {
+                        $coupon = Coupon::where('code', $code)->first();
+                        if ($coupon) {
+                            $couponUsage = CouponUsage::where('order_id', $order->id)
+                                ->where('user_id', $order->user_id)
+                                ->where('coupon_id', $coupon->id)
+                                ->first();
+                            if ($couponUsage) {
+                                $couponUsage->delete();
+                                $coupon->used_count = max(0, $coupon->used_count - 1);
+                                $coupon->save();
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         // Cập nhật trạng thái đơn hàng
@@ -272,7 +285,7 @@ class CheckoutController extends Controller
         if ($order->status !== 'Chờ xác nhận') {
             return redirect()->back()->with('error', 'Đơn hàng đang vận chuyển, không thể hủy!');
         }
-
+        Log::info('Coupon Code in cancelOrder:', [$order->coupon_code]);
         DB::transaction(function () use ($order) {
             // Khôi phục tồn kho
             foreach ($order->orderItems as $item) {
@@ -296,23 +309,22 @@ class CheckoutController extends Controller
                 $couponCodes = explode(',', $order->coupon_code);
                 foreach ($couponCodes as $code) {
                     $code = trim($code);
-                    if ($code) {
+                    if (!empty($code)) {
                         $coupon = Coupon::where('code', $code)->first();
                         if ($coupon) {
                             $couponUsage = CouponUsage::where('order_id', $order->id)
-                                ->where('user_id', Auth::id())
+                                ->where('user_id', $order->user_id)
                                 ->where('coupon_id', $coupon->id)
                                 ->first();
                             if ($couponUsage) {
                                 $couponUsage->delete();
-                                $coupon->used_count -= 1;
+                                $coupon->used_count = max(0, $coupon->used_count - 1);
                                 $coupon->save();
                             }
                         }
                     }
                 }
             }
-
             $order->status = 'Hủy';
             $order->save();
         });
@@ -325,9 +337,8 @@ class CheckoutController extends Controller
     {
         $couponCode = $request->input('coupon_code');
         $user = Auth::user();
-        $totalPrice = $request->session()->get('total_price', 0); // Lấy totalPrice từ session
+        $totalPrice = $request->session()->get('total_price', 0);
 
-        // Kiểm tra mã có được nhập không
         if (empty($couponCode)) {
             return response()->json([
                 'success' => false,
@@ -335,7 +346,6 @@ class CheckoutController extends Controller
             ]);
         }
 
-        // Kiểm tra mã tồn tại
         $coupon = Coupon::where('code', $couponCode)->first();
         if (!$coupon) {
             return response()->json([
@@ -344,7 +354,6 @@ class CheckoutController extends Controller
             ]);
         }
 
-        // Kiểm tra trạng thái
         if ($coupon->status != 1) {
             return response()->json([
                 'success' => false,
@@ -352,7 +361,6 @@ class CheckoutController extends Controller
             ]);
         }
 
-        // Kiểm tra ngày hiệu lực
         $currentDate = now();
         if ($currentDate < $coupon->start_date || $currentDate > $coupon->end_date) {
             return response()->json([
@@ -361,15 +369,14 @@ class CheckoutController extends Controller
             ]);
         }
 
-        // Kiểm tra điều kiện áp dụng cho người dùng
-        if ($coupon->user_voucher_limit == 2) { // Chỉ áp dụng cho người dùng cụ thể
+        if ($coupon->user_voucher_limit == 2) {
             if (!$coupon->users->contains($user->id)) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Mã giảm giá không áp dụng cho bạn'
                 ]);
             }
-        } elseif ($coupon->user_voucher_limit == 3) { // Theo giới tính
+        } elseif ($coupon->user_voucher_limit == 3) {
             if ($user->gender != $coupon->gender) {
                 return response()->json([
                     'success' => false,
@@ -378,7 +385,6 @@ class CheckoutController extends Controller
             }
         }
 
-        // Kiểm tra số lần sử dụng tổng cộng
         if ($coupon->used_count >= $coupon->usage_limit) {
             return response()->json([
                 'success' => false,
@@ -386,7 +392,6 @@ class CheckoutController extends Controller
             ]);
         }
 
-        // Kiểm tra số lần sử dụng của người dùng
         $userUsageCount = CouponUsage::where('user_id', $user->id)
             ->where('coupon_id', $coupon->id)
             ->count();
@@ -396,47 +401,46 @@ class CheckoutController extends Controller
                 'message' => 'Đã hết lượt sử dụng mã'
             ]);
         }
-        // Lấy danh sách mã đã áp dụng từ session (hoặc mảng rỗng nếu chưa có)
+
         $appliedCoupons = $request->session()->get('applied_coupons', []);
 
-        // Kiểm tra xem mã đã được áp dụng chưa
         if (in_array($couponCode, array_column($appliedCoupons, 'code'))) {
             return response()->json([
                 'success' => false,
                 'message' => 'Mã giảm giá này đã được áp dụng'
             ]);
         }
-        // Tính số tiền giảm
+
         $discountAmount = 0;
-        if ($coupon->discount_type == 1) { // Phần trăm
+        if ($coupon->discount_type == 1) {
             $discountAmount = ($totalPrice * $coupon->discount_value) / 100;
             if ($coupon->max_discount_amount && $discountAmount > $coupon->max_discount_amount) {
                 $discountAmount = $coupon->max_discount_amount;
             }
-        } else { // Giá trị cố định
+        } else {
             $discountAmount = $coupon->discount_value;
         }
 
-        // Đảm bảo số tiền giảm không vượt quá tổng tiền
+
         if ($discountAmount > $totalPrice) {
             $discountAmount = $totalPrice;
         }
-        // Thêm mã vào danh sách đã áp dụng
+
         $appliedCoupons[] = [
             'code' => $couponCode,
             'discount_amount' => $discountAmount,
         ];
 
-        // Lưu lại danh sách mã vào session
+
         $request->session()->put('applied_coupons', $appliedCoupons);
 
-        // Tính tổng số tiền giảm từ tất cả mã
+
         $totalDiscount = array_sum(array_column($appliedCoupons, 'discount_amount'));
 
-        // Tính tổng tiền sau giảm
+
         $finalPrice = $totalPrice - $totalDiscount;
 
-        // Lưu tổng số tiền giảm vào session
+
         $request->session()->put('discount', $totalDiscount);
 
         return response()->json([
@@ -453,25 +457,20 @@ class CheckoutController extends Controller
         $couponCode = $request->input('coupon_code');
         $totalPrice = $request->session()->get('total_price', 0);
 
-        // Lấy danh sách mã đã áp dụng từ session
         $appliedCoupons = $request->session()->get('applied_coupons', []);
 
-        // Tìm và xóa mã khỏi danh sách
         $appliedCoupons = array_filter($appliedCoupons, function ($coupon) use ($couponCode) {
             return $coupon['code'] !== $couponCode;
         });
 
-        // Cập nhật lại danh sách mã trong session
-        $appliedCoupons = array_values($appliedCoupons); // Reset lại chỉ số mảng
+
+        $appliedCoupons = array_values($appliedCoupons);
         $request->session()->put('applied_coupons', $appliedCoupons);
 
-        // Tính lại tổng số tiền giảm
         $totalDiscount = array_sum(array_column($appliedCoupons, 'discount_amount'));
 
-        // Tính lại tổng tiền sau giảm
         $finalPrice = $totalPrice - $totalDiscount;
 
-        // Cập nhật tổng số tiền giảm trong session
         $request->session()->put('discount', $totalDiscount);
 
         return response()->json([
@@ -488,17 +487,14 @@ class CheckoutController extends Controller
     {
         $currentDate = now();
 
-        // Kiểm tra trạng thái
         if ($coupon->status != 1) {
             return false;
         }
 
-        // Kiểm tra ngày hiệu lực
         if ($currentDate < $coupon->start_date || $currentDate > $coupon->end_date) {
             return false;
         }
 
-        // Kiểm tra điều kiện áp dụng cho người dùng
         if ($coupon->user_voucher_limit == 2) {
             if (!$coupon->users->contains($user->id)) {
                 return false;
@@ -509,12 +505,10 @@ class CheckoutController extends Controller
             }
         }
 
-        // Kiểm tra số lần sử dụng tổng cộng
         if ($coupon->used_count >= $coupon->usage_limit) {
             return false;
         }
 
-        // Kiểm tra số lần sử dụng của người dùng
         $userUsageCount = CouponUsage::where('user_id', $user->id)
             ->where('coupon_id', $coupon->id)
             ->count();
@@ -546,12 +540,12 @@ class CheckoutController extends Controller
     private function calculateDiscount(Coupon $coupon, $totalPrice)
     {
         $discountAmount = 0;
-        if ($coupon->discount_type == 1) { // Phần trăm
+        if ($coupon->discount_type == 1) {
             $discountAmount = ($totalPrice * $coupon->discount_value) / 100;
             if ($coupon->max_discount_amount && $discountAmount > $coupon->max_discount_amount) {
                 $discountAmount = $coupon->max_discount_amount;
             }
-        } else { // Giá trị cố định
+        } else {
             $discountAmount = $coupon->discount_value;
         }
 

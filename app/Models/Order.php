@@ -12,7 +12,6 @@ class Order extends Model
     protected $fillable = [
         'user_id',
         'total_price',
-        'discount_code',
         'payment_method',
         'status',
         'customer_name',
@@ -20,7 +19,8 @@ class Order extends Model
         'customer_address',
         'payment_status',
         'note',
-        'vnp_txn_ref'
+        'vnp_txn_ref',
+        'coupon_code'
     ];
 
     public function orderItems()
