@@ -431,17 +431,15 @@ class CheckoutController extends Controller
             'discount_amount' => $discountAmount,
         ];
 
+        $totalDiscount = array_sum(array_column($appliedCoupons, 'discount_amount'));
+        if ($totalDiscount > $totalPrice) {
+            $totalDiscount = $totalPrice;
+        }
 
         $request->session()->put('applied_coupons', $appliedCoupons);
-
-
-        $totalDiscount = array_sum(array_column($appliedCoupons, 'discount_amount'));
-
-
-        $finalPrice = $totalPrice - $totalDiscount;
-
-
         $request->session()->put('discount', $totalDiscount);
+        
+        $finalPrice = $totalPrice - $totalDiscount;
 
         return response()->json([
             'success' => true,
