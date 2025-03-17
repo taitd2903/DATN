@@ -118,11 +118,8 @@
                         input.setAttribute('data-price', e.price);
 
                         updateTotals();
-                    } else {
-                        console.log('Row not found for cart ID:', e.id);
                     }
                 });
-
 
             function updateTotals() {
                 let total = 0;
@@ -144,12 +141,28 @@
                     ' đ';
             }
 
+            function saveCheckboxState() {
+                const selectedItems = Array.from(document.querySelectorAll('.select-item'))
+                    .map(cb => ({
+                        id: cb.getAttribute('data-id'),
+                        checked: cb.checked
+                    }));
+                localStorage.setItem('cartSelections', JSON.stringify(selectedItems));
+            }
+            // Khôi phục trạng thái checkbox từ localStorage
+            const selections = JSON.parse(localStorage.getItem('cartSelections')) || [];
+            selections.forEach(selection => {
+                const checkbox = document.querySelector(`.select-item[data-id='${selection.id}']`);
+                if (checkbox) checkbox.checked = selection.checked;
+            });
+
             document.getElementById('select-all').addEventListener('change', function() {
                 const isChecked = this.checked;
                 document.querySelectorAll('.select-item').forEach(checkbox => {
                     checkbox.checked = isChecked;
                 });
                 updateTotals();
+                saveCheckboxState();
             });
 
             document.querySelectorAll('.select-item').forEach(checkbox => {
@@ -158,6 +171,7 @@
                         document.querySelectorAll('.select-item:checked').length;
                     document.getElementById('select-all').checked = allChecked;
                     updateTotals();
+                    saveCheckboxState();
                 });
             });
 
@@ -301,6 +315,9 @@
                         const allChecked = document.querySelectorAll('.select-item').length ===
                             document.querySelectorAll('.select-item:checked').length;
                         document.getElementById('select-all').checked = allChecked;
+                        const remainingItems = document.querySelectorAll('.select-item').length;
+                        if (remainingItems === 0) localStorage.removeItem('cartSelections');
+                        saveCheckboxState();
                     })
                     .catch(error => {
                         console.error('Error removing cart item:', error.message);
