@@ -369,6 +369,13 @@ class CheckoutController extends Controller
             ]);
         }
 
+        if ($coupon->minimum_order_value && $totalPrice < $coupon->minimum_order_value) {
+            return response()->json([
+                'success' => false,
+                'message' => "Đơn hàng cần tối thiểu " . number_format($coupon->minimum_order_value, 0, ',', '.') . " VNĐ để áp dụng mã này."
+            ]);
+        }
+
         if ($coupon->user_voucher_limit == 2) {
             if (!$coupon->users->contains($user->id)) {
                 return response()->json([
@@ -438,7 +445,7 @@ class CheckoutController extends Controller
 
         $request->session()->put('applied_coupons', $appliedCoupons);
         $request->session()->put('discount', $totalDiscount);
-        
+
         $finalPrice = $totalPrice - $totalDiscount;
 
         return response()->json([

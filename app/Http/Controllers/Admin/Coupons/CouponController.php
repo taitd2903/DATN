@@ -45,6 +45,7 @@ class CouponController extends Controller
             'usage_per_user' => 'required|integer|min:1',
             'status' => 'required|integer|in:1,2',
             'max_discount_amount' => 'nullable|integer|min:0',
+            'minimum_order_value' => 'nullable|numeric|min:0',
             'user_voucher_limit' => 'required|integer|in:1,2,3', // 1: Tất cả, 2: Người cụ thể, 3: Giới tính
             'selected_users' => 'nullable|array',  // Danh sách ID người dùng (chỉ khi chọn "Người dùng cụ thể")
             'title' => 'nullable|string|max:255'
@@ -74,6 +75,9 @@ class CouponController extends Controller
             'user_voucher_limit.required' => 'Giới hạn người dùng không được để trống.',
             'user_voucher_limit.in' => 'Giới hạn người dùng không hợp lệ.',
             'selected_users.array' => 'Danh sách người dùng không hợp lệ.',
+        ], [
+            'minimum_order_value.numeric' => 'Giá trị tối thiểu đơn hàng phải là số.',
+            'minimum_order_value.min' => 'Giá trị tối thiểu đơn hàng không thể nhỏ hơn 0.',
         ]);
 
         // Tạo coupon mới
@@ -142,6 +146,9 @@ class CouponController extends Controller
             'user_voucher_limit.required' => 'Giới hạn người dùng không được để trống.',
             'user_voucher_limit.in' => 'Giới hạn người dùng không hợp lệ.',
             'selected_users.array' => 'Danh sách người dùng không hợp lệ.',
+        ], [
+            'minimum_order_value.numeric' => 'Giá trị tối thiểu đơn hàng phải là số.',
+            'minimum_order_value.min' => 'Giá trị tối thiểu đơn hàng không thể nhỏ hơn 0.',
         ]);
 
         // Cập nhật dữ liệu

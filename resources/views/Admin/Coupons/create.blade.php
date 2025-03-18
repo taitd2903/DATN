@@ -126,6 +126,15 @@
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
+                <div class="col-md-6 mb-3">
+                    <label for="minimum_order_value" class="form-label">Giá trị đơn hàng tối thiểu:</label>
+                    <input type="number" name="minimum_order_value" id="minimum_order_value"
+                        value="{{ old('minimum_order_value') }}"
+                        class="form-control @error('minimum_order_value') is-invalid @enderror">
+                    @error('minimum_order_value')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
 
                 <div class="col-md-6 mb-3">
                     <label for="status" class="form-label">Trạng thái:</label>

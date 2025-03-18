@@ -12,31 +12,31 @@ class Coupon extends Model
     use HasFactory;
 
     protected $fillable = [
-        'code', // Mã coupon
-        'description', // Mô tả
-        'discount_type', // Loại giảm giá (1: Phần trăm, 2: Giá trị cố định)
-        'discount_value', // Giá trị giảm giá (có thể là % hoặc số tiền)
-        'start_date', // Ngày bắt đầu
-        'end_date', // Ngày kết thúc
-        'usage_limit', // Tổng số lần có thể sử dụng
-        'used_count', // Số lần đã sử dụng
-        'usage_per_user', // Số lần sử dụng tối đa cho mỗi người
-        'status', // Trạng thái (1: Hoạt động, 2: Dừng hoạt động)
-        'max_discount_amount', // Số tiền giảm tối đa (nếu là %)
-        'user_voucher_limit', // Loại người dùng được áp dụng (1: Tất cả, 2: Người cụ thể, 3: Giới tính)
-        'title', // Tiêu đề coupon
-        'gender'
+        'code',
+        'description', 
+        'discount_type', 
+        'discount_value', 
+        'start_date', 
+        'end_date', 
+        'usage_limit', 
+        'used_count', 
+        'usage_per_user', 
+        'status', 
+        'max_discount_amount', 
+        'user_voucher_limit', 
+        'title', 
+        'gender',
+        'minimum_order_value'
     ];
 
-    // Ép kiểu dữ liệu cho các cột để sử dụng thuận tiện hơn
     protected $casts = [
-        'start_date' => 'date', // Chuyển đổi start_date thành Carbon để dễ sử dụng
-        'end_date' => 'date', // Chuyển đổi end_date thành Carbon
+        'start_date' => 'date',
+        'end_date' => 'date', 
     ];
 
     /**
-     * Scope lọc ra các coupon đang hoạt động (chưa hết hạn)
-     * Sử dụng: Coupon::active()->get();
+     * 
+     * 
      */
     public function scopeActive($query)
     {
@@ -45,8 +45,8 @@ class Coupon extends Model
     }
 
     /**
-     * Kiểm tra xem coupon có hết hạn hay chưa
-     * Sử dụng: $coupon->isExpired();
+     * 
+     * 
      */
     public function isExpired()
     {
@@ -54,7 +54,7 @@ class Coupon extends Model
     }
 
     /**
-     * Quan hệ nhiều-nhiều với bảng users để xác định người dùng cụ thể có thể sử dụng coupon
+     * 
      */
     public function users()
     {
