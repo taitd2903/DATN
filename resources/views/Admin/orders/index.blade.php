@@ -11,6 +11,7 @@
                 <th>Số điện thoại</th>
                 <th>Địa chỉ</th>
                 <th>Phương thức thanh toán</th>
+                <th>Trạng thái thanh toán</th>
                 <th>Tổng tiền</th>
                 <th>Trạng thái</th>
                 <th>Hành động</th>
@@ -32,7 +33,7 @@
                         Khác
                     @endif
                 </td> <!-- Hiển thị phương thức thanh toán -->
-                
+                <td>{{ $order->payment_status }}</td>
                 <td>{{ number_format($order->total_price, 0, ',', '.') }} đ</td>
                 <td>
                     <span class="badge

@@ -126,6 +126,8 @@
                 <input type="radio" name="payment_method" value="vnpay"> Thanh toán qua VNPAY
 
             </div>
+            <input type="hidden" name="items" id="selectitem" value="{{$items}}">
+            
             <button id="paymentButton" type="submit" class="btn btn-success">Thanh toán</button>
 
             </form>
@@ -158,7 +160,8 @@
                         ward: formData.get('ward_name'),
                         address: formData.get('address'),
                         note: form.querySelector('textarea').value,
-                        coupon_code: formData.get('coupon_code')
+                        coupon_code: formData.get('coupon_code'),
+                        items: formData.get('items')
                     };
 
                     console.log('Data sent to VNPAY:', data); // Ghi log để kiểm tra dữ liệu gửi đi

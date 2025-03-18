@@ -19,7 +19,7 @@ class CheckoutController extends Controller
     {
         // Lấy danh sách ID sản phẩm được chọn từ query string (ví dụ: ?items=1,2,3)
         $selectedItems = $request->query('items') ? explode(',', $request->query('items')) : [];
-
+        $items = $request->query('items');
         // Lấy sản phẩm trong giỏ hàng chỉ của user hiện tại, lọc theo danh sách được chọn
         $cartItems = CartItem::with(['product', 'variant'])
             ->where('user_id', auth()->id())
@@ -40,12 +40,13 @@ class CheckoutController extends Controller
         // Lấy thông tin người dùng nếu đã đăng nhập
         $user = auth()->user();
 
-        return view('Users.Checkout.index', compact('cartItems', 'totalPrice', 'finalPrice', 'discount', 'user'));
+        return view('Users.Checkout.index', compact('cartItems', 'totalPrice', 'finalPrice', 'discount', 'user','items'));
     }
 
 
     public function placeOrder(Request $request)
     {
+        //dd($request->all());
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'phone' => 'required|string|max:15',
@@ -57,7 +58,14 @@ class CheckoutController extends Controller
             'payment_method' => 'required|in:cod,vnpay',
         ]);
 
-        $cartItems = CartItem::with(['product', 'variant'])->where('user_id', auth()->id())->get();
+        $selectedItems = $request->items ? explode(',', $request->items) : [];
+        
+        // Lấy sản phẩm trong giỏ hàng chỉ của user hiện tại, lọc theo danh sách được chọn
+        $cartItems = CartItem::with(['product', 'variant'])
+            ->where('user_id', auth()->id())
+            ->whereIn('id', $selectedItems) // Lọc theo ID sản phẩm được chọn
+            ->get();
+       
         if ($cartItems->isEmpty()) {
             return redirect()->route('cart.index')->with('error', 'Giỏ hàng trống.');
         }
@@ -168,7 +176,7 @@ class CheckoutController extends Controller
             }
         }
 
-        CartItem::where('user_id', auth()->id())->delete();
+        CartItem::where('user_id', auth()->id())->whereIn('id', $selectedItems)->delete();
         session()->forget(['discount', 'applied_coupons', 'total_price']);
 
         return redirect()->route('checkout.invoice', ['id' => $order->id])
@@ -178,6 +186,7 @@ class CheckoutController extends Controller
     // Hiển thị sang trang invoice
     public function invoice($id)
     {
+        
         $order = Order::with(['orderItems.product', 'orderItems.variant', 'user'])->findOrFail($id);
 
         return view('Users.Checkout.invoice', compact('order'));

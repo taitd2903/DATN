@@ -58,8 +58,14 @@ class VnPayController extends Controller
             'payment_status' => 'Chưa thanh toán',
             'vnp_txn_ref' => $vnp_TxnRef,
         ]);
-
-        $cartItems = CartItem::with(['product', 'variant'])->where('user_id', auth()->id())->get();
+        
+        $selectedItems = $request->items ? explode(',', $request->items) : [];
+        
+        // Lấy sản phẩm trong giỏ hàng chỉ của user hiện tại, lọc theo danh sách được chọn
+        $cartItems = CartItem::with(['product', 'variant'])
+            ->where('user_id', auth()->id())
+            ->whereIn('id', $selectedItems) // Lọc theo ID sản phẩm được chọn
+            ->get();
         foreach ($cartItems as $item) {
             OrderItem::create([
                 'order_id' => $order->id,
@@ -102,7 +108,7 @@ class VnPayController extends Controller
             // }
         }
         // Xóa giỏ hàng sau khi tạo đơn hàng thành công
-        CartItem::where('user_id', Auth::id())->delete();
+        CartItem::where('user_id', Auth::id())->whereIn('id', $selectedItems)->delete();
         $request->session()->put('applied_coupons_for_vnpay', $appliedCoupons);
         // Kiểm tra xem đơn hàng đã được lưu chưa
         if (!$order) {

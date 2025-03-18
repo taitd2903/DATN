@@ -13,6 +13,7 @@
 
             <p><strong>Trạng thái:</strong> <span class="badge bg-info">{{ $order->status }}</span></p>
             <p><strong>Phương thức thanh toán:</strong> {{ strtoupper($order->payment_method) }}</p>
+            <p><strong>Trạng thái thanh toán:</strong> {{ strtoupper($order->payment_status) }}</p>
             <p><strong>Tổng tiền:</strong> <span class="text-danger">{{ number_format($order->total_price, 0, ',', '.') }}
                     VND</span></p>
             <p><strong>Ghi chú:</strong> {{ $order->note }}</p>
