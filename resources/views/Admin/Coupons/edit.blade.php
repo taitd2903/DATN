@@ -59,7 +59,7 @@
                 <div class="col-md-6 mb-3">
                     <label for="end_date" class="form-label">Ngày hết hạn:</label>
                     <input type="date" class="form-control @error('end_date') is-invalid @enderror" name="end_date"
-                        id="end_date" value="{{ old('end_date', optional($coupon->end_date)->format('Y-m-d')) }}">
+                        id="end_date" min="{{ date('Y-m-d') }}" value="{{ old('end_date', optional($coupon->end_date)->format('Y-m-d')) }}">
                     @error('end_date')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror

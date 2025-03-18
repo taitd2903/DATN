@@ -56,7 +56,7 @@
 
                 <div class="col-md-6 mb-3">
                     <label for="start_date" class="form-label">Ngày bắt đầu:</label>
-                    <input type="date" name="start_date" id="start_date" value="{{ old('start_date') }}"
+                    <input type="date" name="start_date" id="start_date" min="{{ date('Y-m-d') }}" value="{{ old('start_date') }}"
                         class="form-control @error('start_date') is-invalid @enderror">
                     @error('start_date')
                         <div class="invalid-feedback">{{ $message }}</div>
@@ -65,7 +65,7 @@
 
                 <div class="col-md-6 mb-3">
                     <label for="end_date" class="form-label">Ngày hết hạn:</label>
-                    <input type="date" name="end_date" id="end_date" value="{{ old('end_date') }}"
+                    <input type="date" name="end_date" id="end_date" min="{{ date('Y-m-d', strtotime('+1 day')) }}" value="{{ old('end_date') }}"
                         class="form-control @error('end_date') is-invalid @enderror">
                     @error('end_date')
                         <div class="invalid-feedback">{{ $message }}</div>

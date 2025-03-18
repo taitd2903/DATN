@@ -10,9 +10,17 @@ use Carbon\Carbon;
 
 class CouponController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $coupons = Coupon::all();
+        Coupon::where('status', 1)
+        ->where('end_date', '<', Carbon::today())
+        ->update(['status' => 2]);
+
+        $query = Coupon::query();
+        $query->when($request->status !== null && $request->status !== '', function ($q) use ($request) {
+            return $q->where('status', $request->status);
+        });
+        $coupons = $query->orderBy('created_at', 'desc')->paginate(10);
         return view('Admin.Coupons.index', compact('coupons'));
     }
 
@@ -40,7 +48,7 @@ class CouponController extends Controller
             'user_voucher_limit' => 'required|integer|in:1,2,3', // 1: Tất cả, 2: Người cụ thể, 3: Giới tính
             'selected_users' => 'nullable|array',  // Danh sách ID người dùng (chỉ khi chọn "Người dùng cụ thể")
             'title' => 'nullable|string|max:255'
-        ],[
+        ], [
             'code.required' => 'Mã giảm giá không được để trống.',
             'code.max' => 'Mã giảm giá không được vượt quá 255 ký tự.',
             'code.unique' => 'Mã giảm giá đã tồn tại.',
@@ -94,7 +102,12 @@ class CouponController extends Controller
             'description' => 'nullable|string',
             'discount_type' => 'required|integer|in:1,2',
             'discount_value' => 'required|numeric|min:0',
-            'start_date' => 'required|date|after_or_equal:today',
+            'start_date' => 'required','date',
+            function ($attribute, $value, $fail) use ($coupon) {
+                if ($value != $coupon->start_date && $value < now()->toDateString()) {
+                    $fail('Ngày bắt đầu phải từ hôm nay trở đi khi thay đổi.');
+                }
+            },
             'end_date' => 'required|date|after:start_date',
             'usage_limit' => 'required|integer|min:1',
             'usage_per_user' => 'required|integer|min:1',
@@ -103,7 +116,7 @@ class CouponController extends Controller
             'user_voucher_limit' => 'required|integer|in:1,2,3', // 1: Tất cả, 2: Người cụ thể, 3: Giới tính
             'selected_users' => 'nullable|array',  // Danh sách ID người dùng (chỉ khi chọn "Người dùng cụ thể")
             'title' => 'nullable|string|max:255'
-        ],[
+        ], [
             'code.required' => 'Mã giảm giá không được để trống.',
             'code.max' => 'Mã giảm giá không được vượt quá 255 ký tự.',
             'code.unique' => 'Mã giảm giá đã tồn tại.',

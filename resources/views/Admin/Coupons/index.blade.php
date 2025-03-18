@@ -7,7 +7,6 @@
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
 
@@ -16,7 +15,20 @@
             <i class="bi bi-plus-circle"></i> Tạo mã giảm giá mới
         </a>
     </div>
-
+    <div class="mb-3">
+        <form method="GET" action="{{ route('admin.coupons.index') }}" class="row g-3 align-items-center">
+            <div class="col-auto">
+                <label for="status" class="col-form-label">Lọc theo trạng thái:</label>
+            </div>
+            <div class="col-auto">
+                <select name="status" id="status" class="form-select" onchange="this.form.submit()">
+                    <option value="">Tất cả</option>
+                    <option value="1" {{ request('status') == '1' ? 'selected' : '' }}>Hoạt động</option>
+                    <option value="2" {{ request('status') == '2' ? 'selected' : '' }}>Dừng hoạt động</option>
+                </select>
+            </div>
+        </form>
+    </div>
     <div class="table-responsive">
         <table class="table table-bordered table-hover">
             <thead class="table-dark text-center">
@@ -82,6 +94,9 @@
                 @endforeach
             </tbody>
         </table>
+        <div class="d-flex justify-content-center mt-4">
+            {{ $coupons->appends(request()->query())->links() }}
+        </div>
     </div>
 </div>
 @endsection
