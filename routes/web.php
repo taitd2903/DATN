@@ -178,3 +178,5 @@ Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])->name('revi
 
 //=========================Xử lý Chat=========================//
 Route::get('/admin/chat', [ChatController::class, 'index'])->name('admin.chat')->middleware('auth');
+
+Route::post('/chat/send', [ChatController::class, 'sendMessage'])->name('chat.send')->middleware('auth');

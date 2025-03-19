@@ -239,24 +239,7 @@
 
     <main>
         @yield('content')
-        <div class="chat-button" id="chatButton" onclick="toggleChat()">
-            <span>Chat với Admin</span>
-        </div>
-    
-        <!-- Hộp thoại chat -->
-        <div class="chat-box" id="chatBox">
-            <div class="chat-header">
-                <span>Chat với Admin</span>
-                <button class="close-btn" onclick="toggleChat()"><img src="https://cdn-icons-png.flaticon.com/128/12613/12613236.png" alt="" style="width: 25px; height: 23px;" ></button>
-            </div>
-            <div class="chat-content">
-                <p>Chào bạn! Bạn có câu hỏi gì không?.</p>
-            </div>
-            <div class="chat-input">
-                <input type="text" placeholder="Nhập tin nhắn...">
-                <button>Gửi</button>
-            </div>
-        </div>
+
     </main>
     
      <!-- Start Footer  -->
@@ -338,8 +321,6 @@
  <script src="{{ asset('assets/js/baguetteBox.min.js') }}"></script>
  <script src="{{ asset('assets/js/form-validator.min.js') }}"></script>
  <script src="{{ asset('assets/js/custom.js') }}"></script>
- <script src="{{ asset('assets/js/chat.js') }}"></script>
-
 </body>
 
 </html>

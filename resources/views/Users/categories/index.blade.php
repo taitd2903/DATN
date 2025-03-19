@@ -88,4 +88,5 @@
         object-fit: cover;
     }
 </style>
+@include('Users.chat')
 @endsection

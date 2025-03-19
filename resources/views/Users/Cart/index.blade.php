@@ -434,5 +434,5 @@
             updateTotals();
         });
     </script>
-
+@include('Users.chat')
 @endsection

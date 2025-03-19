@@ -418,4 +418,5 @@
         });
     </script>
     </div>
+@include('Users.chat')
 @endsection

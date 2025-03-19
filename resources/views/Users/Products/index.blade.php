@@ -244,5 +244,5 @@
     </div>
 </section>
  <!-- about section end -->
-
+ @include('Users.chat')
  @endsection
