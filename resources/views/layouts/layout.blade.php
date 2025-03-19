@@ -94,6 +94,12 @@
                         </a>
                     </li>
                     <li>
+                        <a class="nav-link" href="{{ route('admin.reviews.index') }}">
+                            <i class="nc-icon nc-atom"></i>
+                            <p>quản lý đánh giá</p>
+                        </a>
+                    </li>
+                    <li>
                         <a class="nav-link" href="{{ route('admin.coupons.index') }}">
                             <i class="nc-icon nc-pin-3"></i>
                             <p>Hóa đơn</p>
