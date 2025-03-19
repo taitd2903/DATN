@@ -30,6 +30,7 @@
     <!-- CSS Files -->
     <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet" />
     <link href="{{ asset('assets/css/light-bootstrap-dashboard.css?v=2.0.0') }}" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ asset('assets/css/adminchat.css') }}">
     <!-- CSS Just for demo purpose, don't include it in your project -->
     <link href="{{ asset('assets/css/demo.css') }}" rel="stylesheet" />
 
@@ -91,6 +92,12 @@
                         <a class="nav-link" href="{{ route('admin.banners.index') }}">
                             <i class="nc-icon nc-atom"></i>
                             <p>quản lý Banner</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link" href="{{ route('admin.chat') }}">
+                            <i class="nc-icon nc-chat-round"></i>
+                            <p>Tin nhắn</p>
                         </a>
                     </li>
                     <li>

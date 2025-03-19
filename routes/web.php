@@ -21,6 +21,7 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\Admin\Reviews\AdminReviewController;
+use App\Http\Controllers\ChatController;
 
 /*
 |--------------------------------------------------------------------------
@@ -174,3 +175,6 @@ Route::get('/admin/users/{id}/toggle-status', [UserController::class, 'toggleSta
 Route::get('/product/{id}/review', [ReviewController::class, 'create'])->name('product.review');
 Route::post('/product/{id}/review', [ReviewController::class, 'store'])->name('product.review.store');
 Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
+
+//=========================Xử lý Chat=========================//
+Route::get('/admin/chat', [ChatController::class, 'index'])->name('admin.chat')->middleware('auth');
