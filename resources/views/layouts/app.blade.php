@@ -16,6 +16,9 @@
 <!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
 <!-- Custom CSS -->
 <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
@@ -48,7 +51,7 @@
 <body>
 
  <!-- Start Main Top -->
- <header class="main-header" style="margin-top: -50px">
+ <header class="main-header" style="margin-top: -5px">
         <!-- Start Navigation -->
         <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-default bootsnav">
             <div class="container">
@@ -73,57 +76,51 @@
                     <ul class="nav navbar-nav ml-auto" data-in="fadeInDown" data-out="fadeOutUp">
                         <li class="nav-item active"><a class="nav-link" href="index.html">Home</a></li>
                         <li class="nav-item"><a class="nav-link" href="about.html">About Us</a></li>
+
                         <li class="dropdown megamenu-fw">
                             <a href="#" class="nav-link dropdown-toggle arrow" data-toggle="dropdown">Product</a>
                             <ul class="dropdown-menu megamenu-content" role="menu">
                                 <li>
-                                    <div class="row">
-                                        <div class="col-menu col-md-3">
-                                            <h6 class="title">Top</h6>
-                                            <div class="content">
-                                                <ul class="menu-col">
-                                                    <li><a href="shop.html">Jackets</a></li>
-                                                    <li><a href="shop.html">Shirts</a></li>
-                                                    <li><a href="shop.html">Sweaters & Cardigans</a></li>
-                                                    <li><a href="shop.html">T-shirts</a></li>
-                                                </ul>
-                                            </div>
+                                   
+
+                                        <div class="row">
+                                         <div class="col-menu col-md-3">
+                                             <h6 class="title">Top</h6>
+                                        <ul class="menu-col">
+                                             <li><a href="shop.html">Jackets</a></li>
+                                              <li><a href="shop.html">Shirts</a></li>
+                                         <li><a href="shop.html">Sweaters & Cardigans</a></li>
+                                            <li><a href="shop.html">T-shirts</a></li>
+                                        </ul>
                                         </div>
                                         <!-- end col-3 -->
                                         <div class="col-menu col-md-3">
-                                            <h6 class="title">Bottom</h6>
-                                            <div class="content">
-                                                <ul class="menu-col">
-                                                    <li><a href="shop.html">Swimwear</a></li>
-                                                    <li><a href="shop.html">Skirts</a></li>
-                                                    <li><a href="shop.html">Jeans</a></li>
-                                                    <li><a href="shop.html">Trousers</a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        <!-- end col-3 -->
-                                        <div class="col-menu col-md-3">
-                                            <h6 class="title">Clothing</h6>
-                                            <div class="content">
-                                                <ul class="menu-col">
-                                                    <li><a href="shop.html">Top Wear</a></li>
-                                                    <li><a href="shop.html">Party wear</a></li>
-                                                    <li><a href="shop.html">Bottom Wear</a></li>
-                                                    <li><a href="shop.html">Indian Wear</a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        <div class="col-menu col-md-3">
-                                            <h6 class="title">Accessories</h6>
-                                            <div class="content">
-                                                <ul class="menu-col">
-                                                    <li><a href="shop.html">Bags</a></li>
-                                                    <li><a href="shop.html">Sunglasses</a></li>
-                                                    <li><a href="shop.html">Fragrances</a></li>
-                                                    <li><a href="shop.html">Wallets</a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
+                                <h6 class="title">Bottom</h6>
+                                <ul class="menu-col">
+                                    <li><a href="shop.html">Swimwear</a></li>
+                                    <li><a href="shop.html">Skirts</a></li>
+                                    <li><a href="shop.html">Jeans</a></li>
+                                    <li><a href="shop.html">Trousers</a></li>
+                                </ul>
+                            </div>
+                            <div class="col-menu col-md-3">
+                                <h6 class="title">Clothing</h6>
+                                <ul class="menu-col">
+                                    <li><a href="shop.html">Top Wear</a></li>
+                                    <li><a href="shop.html">Party wear</a></li>
+                                    <li><a href="shop.html">Bottom Wear</a></li>
+                                    <li><a href="shop.html">Indian Wear</a></li>
+                                </ul>
+                            </div>
+                            <div class="col-menu col-md-3">
+                                <h6 class="title">Accessories</h6>
+                                <ul class="menu-col">
+                                    <li><a href="shop.html">Bags</a></li>
+                                    <li><a href="shop.html">Sunglasses</a></li>
+                                    <li><a href="shop.html">Fragrances</a></li>
+                                    <li><a href="shop.html">Wallets</a></li>
+                                </ul>
+                            </div>
                                         <!-- end col-3 -->
                                     </div>
                                     <!-- end row -->
@@ -132,45 +129,30 @@
                         </li>
                         <li class="nav-item"><a class="nav-link" href="service.html">Our Service</a></li>
                         <li class="nav-item"><a class="nav-link" href="contact-us.html">Contact Us</a></li>
-                        <li class="dropdown">
-                            <a href="#" class="nav-link dropdown-toggle arrow" data-toggle="dropdown">SHOP</a>
-                            <ul class="dropdown-menu">
-                                <li><a href="{{ route('cart.index') }}">Đi đến giỏ hàng</a></li>
-                                <li><a href="checkout.html">Checkout</a></li>
-                                <li><a href="wishlist.html">Wishlist</a></li>
-                                <li><a href="shop-detail.html">Shop Detail</a></li>
-
-                                <li> @if(Auth::check())
-               <span>Chào, <strong>{{ Auth::user()->name }}</strong>!</span>
-            @if(!auth()->user()->img === '')
-                <img src="{{ asset(auth()->user()->img) }}" alt="" class="img-account">
-            @endif 
-            
-            @if(auth()->user()->role === 'admin')
-                <a href="{{ route('admin.dashboard') }}" class="btn-custom btn-admin">Chuyển sang Admin</a>
-            @endif
-            <a href="{{ route('logout') }}"
-               onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
-               class="btn-custom btn-logout">
-                Đăng xuất
-            </a>
-            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                @csrf
-            </form>
-        @else
-            <a href="{{ route('login') }}" class="btn-custom btn-login">Đăng nhập</a> 
-       
-        @endif</li>
-                              
-                            </ul>
-                        </li>
                       
                     </ul>
                 </div>
                 <!-- /.navbar-collapse -->
 
-               
-                <li class="user-dropdown">
+
+ <!-- Nút Giỏ Hàng -->
+<li class="cart-icon">
+    <a href="{{ route('cart.index') }}">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count"></span>
+    </a>
+</li>
+
+<!-- Nút Sản Phẩm Yêu Thích -->
+<li class="wishlist-icon">
+    <a href="#">
+        <i class="fas fa-heart"></i>
+        <span class="wishlist-count"></span>
+    </a>
+</li>
+
+<!-- Đăng nhập  -->
+<li class="user-dropdown">
     @if(Auth::check())
         <div class="user-info">
             @if (!empty(Auth::user()->image) && file_exists(public_path('storage/' . Auth::user()->image)))
@@ -216,6 +198,8 @@
         <a href="{{ route('login') }}" class="btn-login">Đăng nhập</a>
     @endif
 </li>
+
+
             </div>
         </nav>
         <!-- End Navigation -->
@@ -321,6 +305,22 @@
  <script src="{{ asset('assets/js/baguetteBox.min.js') }}"></script>
  <script src="{{ asset('assets/js/form-validator.min.js') }}"></script>
  <script src="{{ asset('assets/js/custom.js') }}"></script>
+
+ <script>
+$(document).ready(function(){
+    $('.dropdown-toggle').click(function(e) {
+        e.preventDefault();
+        $(this).next('.dropdown-menu').toggleClass('show');
+    });
+
+    // Ẩn dropdown khi click ra ngoài
+    $(document).click(function(e) {
+        if (!$(e.target).closest('.dropdown').length) {
+            $('.dropdown-menu').removeClass('show');
+        }
+    });
+});
+</script>
 </body>
 
 </html>
