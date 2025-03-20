@@ -200,7 +200,7 @@
         @endforeach
 
         {{-- Hiển thị sản phẩm bán chạy theo từng danh mục con --}}
-        @foreach($categories as $category)
+        {{-- @foreach($categories as $category)
             @if(isset($topSellingProductsByCategory[$category->id]) && $topSellingProductsByCategory[$category->id]->isNotEmpty())
                 <div class="category-section">
                     <h2 class="text-center">{{ $category->name }}</h2>
@@ -229,7 +229,7 @@
                     </div>
                 </div>
             @endif
-        @endforeach
+        @endforeach --}}
     </div>
 </div>
 
