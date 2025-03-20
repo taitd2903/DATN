@@ -278,7 +278,7 @@ class VnPayController extends Controller
                 // }
             }
         });
-        
+        $request->session()->forget(['applied_coupons', 'applied_coupons_for_vnpay', 'discount', 'total_price']);
         if ($request->query('vnp_ResponseCode') !== '00') {
             foreach ($order->orderItems as $item) {
                 // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
@@ -302,7 +302,6 @@ class VnPayController extends Controller
                 }
             }
         }
-        
         
         return view('Users.Checkout.invoice', [
             'order' => $order,
