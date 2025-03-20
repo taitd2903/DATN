@@ -88,6 +88,7 @@
                 <th>Sản phẩm</th>
                 <th>Ngày đặt</th>
                 <th>Phương thức thanh toán</th>
+                <th>Trạng thái thanh toán</th>
                 <th>Địa chỉ giao hàng</th>
                 <th>Trạng thái</th>
                 <th>Hành động</th>
@@ -107,6 +108,7 @@
                     </td>
                     <td>{{ $order->created_at }}</td>
                     <td class="text-center">{{ $order->payment_method }}</td> 
+                    <td class="text-center">{{ $order->payment_status }}</td> 
                     <td>{{ $order->note }}</td>
                     <td>
                         @php
