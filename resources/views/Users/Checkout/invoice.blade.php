@@ -46,11 +46,15 @@
             </tbody>
         </table>
 
-        {{-- <a href="{{ route('/') }}" class="btn btn-primary mt-3">Quay lại</a> --}}
+        <a href="{{ route('home') }}" class="btn btn-primary mt-3">Quay lại</a>
+        @if ($status == 'Thất bại')
+            <div class="text-center mt-4">
+                <a href="{{ route('cart.index') }}" class="btn btn-primary">Tiếp tục mua hàng</a>
+            </div>
+        @endif
 
-        
+
+
     </div>
-@include('Users.chat')
+    @include('Users.chat')
 @endsection
-
-

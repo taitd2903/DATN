@@ -278,7 +278,32 @@ class VnPayController extends Controller
                 // }
             }
         });
-        $request->session()->forget(['applied_coupons', 'applied_coupons_for_vnpay', 'discount', 'total_price']);
+        //$request->session()->forget(['applied_coupons', 'applied_coupons_for_vnpay', 'discount', 'total_price']);
+        if ($request->query('vnp_ResponseCode') !== '00') {
+            foreach ($order->orderItems as $item) {
+                // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
+                $existingCartItem = CartItem::where('user_id', $order->user_id)
+                    ->where('product_id', $item->product_id)
+                    ->where('variant_id', $item->variant_id)
+                    ->first();
+        
+                if ($existingCartItem) {
+                    // Nếu đã có, tăng số lượng
+                    $existingCartItem->increment('quantity', $item->quantity);
+                } else {
+                    // Nếu chưa có, thêm mới
+                    CartItem::create([
+                        'user_id' => $order->user_id,
+                        'product_id' => $item->product_id,
+                        'variant_id' => $item->variant_id,
+                        'quantity' => $item->quantity,
+                        'price' => $item->price,
+                    ]);
+                }
+            }
+        }
+        
+        
         return view('Users.Checkout.invoice', [
             'order' => $order,
             'status' => $request->query('vnp_ResponseCode') == '00' ? 'Thành công' : 'Thất bại'
