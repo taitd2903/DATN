@@ -272,11 +272,11 @@ class CheckoutController extends Controller
         }
 
         // Cập nhật trạng thái đơn hàng ship COD nếu mà hoàn thành thì chuyển sang thanh toán thành công
-        
+
         if ($order->payment_method === 'cod' && $request->status === 'Hoàn thành') {
             $order->update([
                 'status' => $request->status,
-                'payment_status' => 'Đã thanh toán', 
+                'payment_status' => 'Đã thanh toán',
             ]);
         } else {
             // Cập nhật trạng thái đơn hàng bình thường
@@ -285,6 +285,13 @@ class CheckoutController extends Controller
 
         return redirect()->route('admin.orders.index')->with('success', 'Cập nhật trạng thái thành công!');
     }
+
+    public function show(Order $order)
+    {
+        return view('admin.orders.show', compact('order'));
+    }
+
+
 
 
     public function orderTracking()

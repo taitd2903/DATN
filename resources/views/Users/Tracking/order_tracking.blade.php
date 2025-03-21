@@ -124,6 +124,7 @@
                         </span>
                     </td>
                     <td>
+                        <a href="{{ route('checkout.invoice', $order->id) }}" class="btn btn-primary btn-sm">Xem chi tiết</a> <br>
                         @if ($order->status == 'Chờ xác nhận' && $order->payment_status != 'Đã thanh toán')
                             @if ($order->payment_method == 'cod')
                                 <form action="{{ route('order.cancel', $order->id) }}" method="POST">
@@ -131,6 +132,7 @@
                                     <button type="submit" class="btn btn-danger btn-sm">Hủy</button>
                                 </form>
                             @else
+                            
                                 <span class="text-muted">Không thể hủy</span>
                             @endif
                         @else

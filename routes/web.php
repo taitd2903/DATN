@@ -135,7 +135,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/orders', [CheckoutController::class, 'orderList'])->name('orders.index');
     Route::get('/orders/{order}/edit-status', [CheckoutController::class, 'editStatus'])->name('orders.editStatus');
     Route::put('/orders/{order}/update-status', [CheckoutController::class, 'updateStatus'])->name('orders.updateStatus');
-    // Route::delete('/orders/{id}', [CheckoutController::class, 'destroy'])->name('orders.destroy'); //xoá ở phần amin
+    Route::get('/orders/{order}', [CheckoutController::class, 'show'])->name('orders.show');
 
     // check reviews
     Route::get('/check_reviews', [AdminReviewController::class, 'index'])->name('reviews.index');
