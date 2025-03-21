@@ -185,6 +185,11 @@
                 </a>
             </li>
             <li>
+                <a href="{{ route('order.tracking') }}">
+                    <i class="fas fa-user-edit"></i> Đơn hàng
+                </a>
+            </li>
+            <li>
                 <a href="{{ route('logout') }}"
                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                     <i class="fas fa-sign-out-alt"></i> Đăng xuất
