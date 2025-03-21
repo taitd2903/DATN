@@ -11,7 +11,7 @@
                 style="width: 25px; height: 23px;"></button>
     </div>
     <div class="chat-content" id="chatMessages">
-        <p>Chào bạn! Bạn có câu hỏi gì không?.</p>
+        {{-- <p>Chào bạn! Bạn có câu hỏi gì không?.</p> --}}
     </div>
     <div class="chat-input">
         <input type="text" id="messageInput" placeholder="Nhập tin nhắn...">
@@ -20,25 +20,37 @@
 </div>
 
 @vite(['resources/js/app.js'])
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://js.pusher.com/7.0/pusher.min.js"></script>
 <script>
     function toggleChat() {
         const chatBox = document.getElementById('chatBox');
         const chatButton = document.getElementById('chatButton');
+        chatBox.style.display = chatBox.style.display === 'flex' ? 'none' : 'flex';
+        chatButton.style.display = chatBox.style.display === 'flex' ? 'none' : 'block';
+
         if (chatBox.style.display === 'flex') {
-            chatBox.style.display = 'none';
-            chatButton.style.display = 'block';
-        } else {
-            chatBox.style.display = 'flex';
-            chatButton.style.display = 'none';
+            loadChatHistory();
         }
+    }
+
+    function loadChatHistory() {
+        $.get('/chat/history', function(response) {
+            console.log('Chat history:', response);
+            $('#chatMessages').empty();
+            response.messages.forEach(function(msg) {
+                let sender = msg.is_admin ? 'Admin' : 'Bạn';
+                $('#chatMessages').append(`<p><strong>${sender}:</strong> ${msg.message}</p>`);
+            });
+            $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
+        });
     }
 
     function sendMessage() {
         const messageInput = document.getElementById('messageInput');
-        const message = messageInput.value;
+        const message = messageInput.value.trim();
 
-        if (message.trim() === '') return;
+        if (!message) return;
 
         fetch("{{ route('chat.send') }}", {
                 method: 'POST',
@@ -51,25 +63,59 @@
                 })
             })
             .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.status);
+                }
                 return response.json();
             })
             .then(data => {
-                const chatMessages = document.getElementById('chatMessages');
-                const newMessage = document.createElement('p');
-                newMessage.textContent = `Bạn: ${message}`;
-                chatMessages.appendChild(newMessage);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-                messageInput.value = '';
+                console.log(data);
+                if (data.status === 'Message sent!') {
+                    $('#chatMessages').append(`<p><strong>Bạn:</strong> ${message}</p>`);
+                    $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
+                    messageInput.value = '';
+                } else {
+                    console.error('Error from server:', data.message);
+                }
             })
             .catch(error => console.error('Error:', error));
     }
-    window.Echo.private(`chat.user.{{ auth()->id() }}`)
-        .listen('.message.sent', (e) => {
-            const chatMessages = document.getElementById('chatMessages');
-            const newMessage = document.createElement('p');
-            newMessage.textContent = `Bạn: ${e.message}`;
-            chatMessages.appendChild(newMessage);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        });
+
+    // Pusher để nhận tin nhắn từ admin
+    console.log('Pusher script loaded');
+    const pusher = new Pusher('{{ env('PUSHER_APP_KEY') }}', {
+        cluster: '{{ env('PUSHER_APP_CLUSTER') }}',
+        encrypted: true,
+        authEndpoint: '/broadcasting/auth',
+        auth: {
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        }
+    });
+    console.log('Pusher initialized with key:', '{{ env('PUSHER_APP_KEY') }}', 'and cluster:',
+        '{{ env('PUSHER_APP_CLUSTER') }}');
+
+    pusher.connection.bind('connected', function() {
+        console.log('Connected to Pusher');
+    });
+    pusher.connection.bind('error', function(err) {
+        console.error('Pusher connection error:', err);
+    });
+    const channel = pusher.subscribe('chat.user.{{ auth()->id() }}');
+
+    console.log('Subscribing to private-chat.user.{{ auth()->id() }}');
+
+    channel.bind('pusher:subscription_succeeded', function() {
+        console.log('Subscribed to private-chat.user.{{ auth()->id() }}');
+    });
+    channel.bind('pusher:subscription_error', function(error) {
+        console.error('Subscription error:', error);
+    });
+
+    channel.bind('message.sent', function(data) {
+        console.log('Received message from Admin:', data);
+        $('#chatMessages').append(`<p><strong>Admin:</strong> ${data.message}</p>`);
+        $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
+    });
 </script>

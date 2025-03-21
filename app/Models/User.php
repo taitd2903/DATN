@@ -50,10 +50,14 @@ class User extends Authenticatable
     public function coupons()
     {
         return $this->belongsToMany(Coupon::class, 'coupon_user', 'user_id', 'coupon_id')
-                    ->withTimestamps();
+            ->withTimestamps();
     }
     public function couponUsages()
     {
         return $this->hasMany(CouponUsage::class);
+    }
+    public function messages()
+    {
+        return $this->hasMany(Message::class, 'user_id', 'id');
     }
 }

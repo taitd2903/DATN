@@ -177,6 +177,8 @@ Route::post('/product/{id}/review', [ReviewController::class, 'store'])->name('p
 Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
 
 //=========================Xử lý Chat=========================//
-Route::get('/admin/chat', [ChatController::class, 'index'])->name('admin.chat')->middleware('auth');
-
-Route::post('/chat/send', [ChatController::class, 'sendMessage'])->name('chat.send')->middleware('auth');
+Route::middleware('auth')->group(function () {
+    Route::get('/admin/chat', [ChatController::class, 'index'])->name('admin.chat');
+    Route::post('/chat/send', [ChatController::class, 'sendMessage'])->name('chat.send');
+    Route::get('/chat/history', [ChatController::class, 'getHistory'])->name('chat.history');
+});
