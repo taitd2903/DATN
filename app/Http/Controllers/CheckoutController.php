@@ -40,7 +40,7 @@ class CheckoutController extends Controller
         // Lấy thông tin người dùng nếu đã đăng nhập
         $user = auth()->user();
 
-        return view('Users.Checkout.index', compact('cartItems', 'totalPrice', 'finalPrice', 'discount', 'user','items'));
+        return view('Users.Checkout.index', compact('cartItems', 'totalPrice', 'finalPrice', 'discount', 'user', 'items'));
     }
 
 
@@ -59,13 +59,13 @@ class CheckoutController extends Controller
         ]);
 
         $selectedItems = $request->items ? explode(',', $request->items) : [];
-        
+
         // Lấy sản phẩm trong giỏ hàng chỉ của user hiện tại, lọc theo danh sách được chọn
         $cartItems = CartItem::with(['product', 'variant'])
             ->where('user_id', auth()->id())
             ->whereIn('id', $selectedItems) // Lọc theo ID sản phẩm được chọn
             ->get();
-       
+
         if ($cartItems->isEmpty()) {
             return redirect()->route('cart.index')->with('error', 'Giỏ hàng trống.');
         }
@@ -186,7 +186,7 @@ class CheckoutController extends Controller
     // Hiển thị sang trang invoice
     public function invoice($id)
     {
-        
+
         $order = Order::with(['orderItems.product', 'orderItems.variant', 'user'])->findOrFail($id);
 
         return view('Users.Checkout.invoice', compact('order'));
@@ -271,8 +271,17 @@ class CheckoutController extends Controller
             }
         }
 
-        // Cập nhật trạng thái đơn hàng
-        $order->update(['status' => $request->status]);
+        // Cập nhật trạng thái đơn hàng ship COD nếu mà hoàn thành thì chuyển sang thanh toán thành công
+        
+        if ($order->payment_method === 'cod' && $request->status === 'Hoàn thành') {
+            $order->update([
+                'status' => $request->status,
+                'payment_status' => 'Đã thanh toán', 
+            ]);
+        } else {
+            // Cập nhật trạng thái đơn hàng bình thường
+            $order->update(['status' => $request->status]);
+        }
 
         return redirect()->route('admin.orders.index')->with('success', 'Cập nhật trạng thái thành công!');
     }
