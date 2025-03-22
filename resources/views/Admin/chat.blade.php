@@ -8,7 +8,7 @@
                 @foreach ($users as $user)
                     <li class="list-group-item user-item d-flex align-items-center" data-user-id="{{ $user->id }}"
                         style="cursor: pointer;">
-                        <span>{{ $user->name }}</span>
+                        <span class="abc">{{ $user->name }}</span>
                     </li>
                 @endforeach
             </ul>
@@ -42,10 +42,10 @@
     <script>
         $('.user-item').on('click', function() {
             let userId = $(this).data('user-id');
-            let userName = $(this).find('span').text();
+            let userName = $(this).find('.abc').text();
             $('#receiver_id').val(userId);
             $('#chat-user-name').text(userName);
-
+            $(this).find('.unread').remove();
             $.get('/chat/history', {
                 receiver_id: userId
             }, function(response) {
@@ -123,6 +123,22 @@
 
         channel.bind('message.sent', function(data) {
             console.log('Received message from User:', data);
+            let userItem = $(`.user-item[data-user-id="${data.userId}"]`);
+            if (userItem.length) {
+                $('.user-list ul').prepend(userItem);
+            } else {
+                $('.user-list ul').prepend(`<li class="list-group-item user-item d-flex align-items-center" 
+                                    data-user-id="${data.userId}" style="cursor: pointer;">
+                                    <span>${data.userName}</span>
+                                    <span class="badge badge-danger unread">(Mới)</span>
+                                </li>`);
+            }
+
+            if ($('#receiver_id').val() != data.userId) {
+                userItem.find('.unread').remove();
+                userItem.append(`<span class="badge badge-danger unread" style="margin-left: 5px">(Mới)</span>`);
+            }
+
             if ($('#receiver_id').val() == data.userId) {
                 $('#chatMessages').append(`<p><strong>${data.userName}:</strong> ${data.message}</p>`);
                 $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);

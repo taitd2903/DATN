@@ -13,14 +13,15 @@ class ChatController extends Controller
 {
     public function index()
     {
-        $users = User::whereHas('messages', function ($query) {
-            $query->whereNull('receiver_id')->orWhere('receiver_id', auth()->id());
-        })->with(['messages' => function ($query) {
-            $query->orderBy('created_at', 'desc');
-        }])->get()->sortByDesc(function ($user) {
-            return $user->messages->first()->created_at;
-        });
-    
+        $users = User::where('role', '!=', 'admin')
+            ->whereHas('messages', function ($query) {
+                $query->whereNull('receiver_id')->orWhere('receiver_id', auth()->id());
+            })->with(['messages' => function ($query) {
+                $query->orderBy('created_at', 'desc');
+            }])->get()->sortByDesc(function ($user) {
+                return $user->messages->first()->created_at;
+            });
+
         return view('admin.chat', compact('users'));
     }
 
@@ -83,7 +84,13 @@ class ChatController extends Controller
             })->orderBy('created_at', 'asc')->get();
         }
     
-        Log::info('User ID: ' . $userId . ' - Receiver ID: ' . $receiverId . ' - Messages: ' . $messages->toJson());
+        if ($messages->isEmpty() && !$isAdmin) {
+            $messages->push([
+                'message' => 'Chào bạn! Bạn có câu hỏi gì không?',
+                'is_admin' => true,
+                'created_at' => now(),
+            ]);
+        }
     
         return response()->json(['messages' => $messages]);
     }
