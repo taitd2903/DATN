@@ -29,7 +29,11 @@ class MessageSent implements ShouldBroadcast
 
     public function broadcastOn()
     {
-        return new Channel('chat.user.' . $this->receiverId);
+        $channels = [new Channel('chat.user.' . $this->receiverId)];
+        if ($this->receiverId !== 'admin') { 
+            $channels[] = new Channel('chat.user.admin');
+        }
+        return $channels;
     }
 
     public function broadcastAs()

@@ -67,7 +67,7 @@
                 <div class="form-group">
                     <!-- <label for="address">Địa chỉ cụ thể *</label> -->
                     <input type="text" id="address" name="address" value="{{ old('address') }}"
-                        placeholder="Địa chỉ cụ th *">
+                        placeholder="Địa chỉ cụ thể *">
                 </div>
 
 

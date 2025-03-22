@@ -40,7 +40,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
     <script>
-        $('.user-item').on('click', function() {
+        $('.user-list').on('click', '.user-item', function() {
             let userId = $(this).data('user-id');
             let userName = $(this).find('.abc').text();
             $('#receiver_id').val(userId);
@@ -122,25 +122,35 @@
         });
 
         channel.bind('message.sent', function(data) {
-            console.log('Received message from User:', data);
-            let userItem = $(`.user-item[data-user-id="${data.userId}"]`);
+            console.log('Received message:', data);
+
+
+            let isFromUser = data.receiverId === 'admin';
+            let isFromAdmin = data.userName === 'Admin';
+            let relevantUserId = isFromUser ? data.userId : data.receiverId;
+            let senderName = isFromUser ? data.userName : 'Admin';
+
+
+            let userItem = $(`.user-item[data-user-id="${relevantUserId}"]`);
             if (userItem.length) {
                 $('.user-list ul').prepend(userItem);
-            } else {
+            } else if (isFromUser) {
+
                 $('.user-list ul').prepend(`<li class="list-group-item user-item d-flex align-items-center" 
-                                    data-user-id="${data.userId}" style="cursor: pointer;">
-                                    <span>${data.userName}</span>
-                                    <span class="badge badge-danger unread">(Mới)</span>
-                                </li>`);
+                            data-user-id="${relevantUserId}" style="cursor: pointer;">
+                            <span class="abc">${data.userName}</span>
+                            <span class="badge badge-danger unread" style="margin-left: 5px">(Mới)</span>
+                        </li>`);
+                userItem = $(`.user-item[data-user-id="${relevantUserId}"]`);
             }
 
-            if ($('#receiver_id').val() != data.userId) {
+            if ($('#receiver_id').val() != relevantUserId) {
                 userItem.find('.unread').remove();
                 userItem.append(`<span class="badge badge-danger unread" style="margin-left: 5px">(Mới)</span>`);
             }
 
-            if ($('#receiver_id').val() == data.userId) {
-                $('#chatMessages').append(`<p><strong>${data.userName}:</strong> ${data.message}</p>`);
+            if ($('#receiver_id').val() == relevantUserId) {
+                $('#chatMessages').append(`<p><strong>${senderName}:</strong> ${data.message}</p>`);
                 $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
             }
         });

@@ -71,10 +71,12 @@ class ChatController extends Controller
         $isAdmin = auth()->user()->role === 'admin';
     
         if ($isAdmin) {
-            $messages = Message::where(function ($query) use ($userId, $receiverId) {
-                $query->where('user_id', $userId)->where('receiver_id', $receiverId); 
-            })->orWhere(function ($query) use ($receiverId, $userId) {
-                $query->where('user_id', $receiverId)->whereNull('receiver_id');
+            $messages = Message::where(function ($query) use ($receiverId) {
+                $query->where('receiver_id', $receiverId)
+                      ->where('is_admin', 1);
+            })->orWhere(function ($query) use ($receiverId) {
+                $query->where('user_id', $receiverId)
+                      ->whereNull('receiver_id');
             })->orderBy('created_at', 'asc')->get();
         } else {
             $messages = Message::where(function ($query) use ($userId) {
