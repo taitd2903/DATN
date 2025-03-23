@@ -110,6 +110,7 @@
             <div class="price-summary mt-4">
                 <p>Tổng tiền trước giảm: <span id="total_price">{{ number_format($totalPrice, 0, ',', '.') }} VNĐ</span>
                 </p>
+                <p>Phí vận chuyển: <span id="shipping_fee">{{ number_format(30000, 0, ',', '.') }} VNĐ</span></p>
                 <p>Số tiền giảm: <span id="discount_amount">0 VNĐ</span></p>
                 <h4>Thành tiền: <span id="final_price">{{ number_format($totalPrice, 0, ',', '.') }} VNĐ</span></h4>
             </div>
@@ -126,8 +127,8 @@
                 <input type="radio" name="payment_method" value="vnpay"> Thanh toán qua VNPAY
 
             </div>
-            <input type="hidden" name="items" id="selectitem" value="{{$items}}">
-            
+            <input type="hidden" name="items" id="selectitem" value="{{ $items }}">
+
             <button id="paymentButton" type="submit" class="btn btn-success">Thanh toán</button>
 
             </form>
@@ -194,8 +195,8 @@
             // Giữ nguyên logic áp dụng mã giảm giá
         });
     </script>
-{{-- Đừng xoá style này nha mấy ní --}}
-     <style> 
+    {{-- Đừng xoá style này nha mấy ní --}}
+    <style>
         #applied_coupons {
             display: flex;
             flex-direction: row;
@@ -218,7 +219,7 @@
             cursor: pointer;
         }
     </style>
-{{-- Đừng xoá Script này nha mấy ní --}}
+    {{-- Đừng xoá Script này nha mấy ní --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const applyCouponBtn = document.getElementById('apply_coupon_btn');
@@ -235,18 +236,20 @@
             // Hàm hiển thị danh sách mã đã áp dụng
             function displayAppliedCoupons(coupons) {
                 appliedCouponsDiv.innerHTML = '';
-                if (coupons.length > 0) {
+                if (coupons && coupons.length > 0) {
                     coupons.forEach(coupon => {
-                        const couponDiv = document.createElement('div');
+                        const couponDiv = document.createElement('div'); // Khai báo couponDiv
                         couponDiv.classList.add('applied-coupon', 'd-flex', 'align-items-center', 'mb-1');
+                        const targetText = coupon.discount_target === 'shipping_fee' ? ' (Phí vận chuyển)' :
+                            ' (Tổng đơn)';
                         couponDiv.innerHTML = `
-            <span class="badge bg-success me-2">${coupon.code}</span>
-            <button type="button" class="btn btn-danger btn-sm remove-coupon" data-code="${coupon.code}">X</button>
-        `;
+                <span class="badge bg-success me-2">${coupon.code}${targetText}</span>
+                <button type="button" class="btn btn-danger btn-sm remove-coupon" data-code="${coupon.code}">X</button>
+            `;
                         appliedCouponsDiv.appendChild(couponDiv);
                     });
 
-                    // Thêm sự kiện click cho các nút "X"
+                    // Gắn sự kiện click cho các nút "X"
                     document.querySelectorAll('.remove-coupon').forEach(button => {
                         button.addEventListener('click', function() {
                             const code = this.getAttribute('data-code');
@@ -268,16 +271,29 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            totalPrice = data.total_price;
-                            discountAmountElement.textContent =
-                                `${data.discount_amount.toLocaleString('vi-VN')} VNĐ`;
-                            finalPriceElement.textContent = `${data.final_price.toLocaleString('vi-VN')} VNĐ`;
-                            hiddenFinalPrice.value = data.final_price;
-                            displayAppliedCoupons(data.applied_coupons);
+                            totalPrice = data.total_price || 0;
+                            const shippingFee = 30000;
+                            const discountOrder = data.discount_order || 0;
+                            const discountShipping = data.discount_shipping || 0;
+                            const totalDiscount = discountOrder + discountShipping;
+                            discountAmountElement.textContent = `${totalDiscount.toLocaleString('vi-VN')} VNĐ`;
+                            finalPriceElement.textContent =
+                                `${(totalPrice + shippingFee - totalDiscount).toLocaleString('vi-VN')} VNĐ`;
+                            hiddenFinalPrice.value = totalPrice + shippingFee - totalDiscount;
+                            displayAppliedCoupons(data.applied_coupons || []);
+                        } else {
+                            discountAmountElement.textContent = '0 VNĐ';
+                            finalPriceElement.textContent =
+                                `${(totalPrice + 30000).toLocaleString('vi-VN')} VNĐ`;
+                            hiddenFinalPrice.value = totalPrice + 30000;
+                            displayAppliedCoupons([]);
                         }
                     })
                     .catch(error => {
                         console.error('Lỗi khi lấy danh sách mã giảm giá:', error);
+                        discountAmountElement.textContent = '0 VNĐ';
+                        finalPriceElement.textContent = `${(totalPrice + 30000).toLocaleString('vi-VN')} VNĐ`;
+                        hiddenFinalPrice.value = totalPrice + 30000;
                     });
             }
 
@@ -301,10 +317,8 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            couponMessage.innerHTML =
-                                `<div class="alert alert-success">${data.message}</div>`;
                             discountAmountElement.textContent =
-                                `${data.discount_amount.toLocaleString('vi-VN')} VNĐ`;
+                                `${(data.discount_order + data.discount_shipping).toLocaleString('vi-VN')} VNĐ`;
                             finalPriceElement.textContent =
                                 `${data.final_price.toLocaleString('vi-VN')} VNĐ`;
                             hiddenFinalPrice.value = data.final_price;
@@ -314,10 +328,6 @@
                                 `<div class="alert alert-danger">${data.message}</div>`;
                         }
                     })
-                    .catch(error => {
-                        couponMessage.innerHTML =
-                            `<div class="alert alert-danger">Đã có lỗi xảy ra. Vui lòng thử lại.</div>`;
-                    });
             });
 
             // Hàm xóa mã giảm giá
@@ -335,9 +345,8 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            couponMessage.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
                             discountAmountElement.textContent =
-                                `${data.discount_amount.toLocaleString('vi-VN')} VNĐ`;
+                                `${(data.discount_order + data.discount_shipping).toLocaleString('vi-VN')} VNĐ`;
                             finalPriceElement.textContent = `${data.final_price.toLocaleString('vi-VN')} VNĐ`;
                             hiddenFinalPrice.value = data.final_price;
                             displayAppliedCoupons(data.applied_coupons);
@@ -345,10 +354,6 @@
                             couponMessage.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
                         }
                     })
-                    .catch(error => {
-                        couponMessage.innerHTML =
-                            `<div class="alert alert-danger">Đã có lỗi xảy ra. Vui lòng thử lại.</div>`;
-                    });
             }
         });
     </script>
@@ -418,5 +423,5 @@
         });
     </script>
     </div>
-@include('Users.chat')
+    @include('Users.chat')
 @endsection

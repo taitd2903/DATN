@@ -46,6 +46,18 @@
                 </div>
 
                 <div class="col-md-6 mb-3">
+                    <label>Áp dụng giảm giá cho:</label><br>
+                    <div class="form-check form-check-inline">
+                        <input class="form-label" type="radio" name="discount_target" id="order_total" value="order_total" checked>
+                        <label class="form-label" for="order_total">Tổng đơn hàng</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-label" type="radio" name="discount_target" id="shipping_fee" value="shipping_fee">
+                        <label class="form-label" for="shipping_fee">Phí vận chuyển</label>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
                     <label for="discount_value" class="form-label">Giá trị giảm giá:</label>
                     <input type="number" name="discount_value" id="discount_value" value="{{ old('discount_value') }}"
                         class="form-control @error('discount_value') is-invalid @enderror">

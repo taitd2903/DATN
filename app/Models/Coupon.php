@@ -26,7 +26,8 @@ class Coupon extends Model
         'user_voucher_limit', 
         'title', 
         'gender',
-        'minimum_order_value'
+        'minimum_order_value',
+        'discount_target',
     ];
 
     protected $casts = [

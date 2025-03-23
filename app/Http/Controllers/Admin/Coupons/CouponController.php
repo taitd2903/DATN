@@ -48,7 +48,8 @@ class CouponController extends Controller
             'minimum_order_value' => 'nullable|numeric|min:0',
             'user_voucher_limit' => 'required|integer|in:1,2,3', // 1: Tất cả, 2: Người cụ thể, 3: Giới tính
             'selected_users' => 'nullable|array',  // Danh sách ID người dùng (chỉ khi chọn "Người dùng cụ thể")
-            'title' => 'nullable|string|max:255'
+            'title' => 'nullable|string|max:255',
+            'discount_target' => 'required|in:order_total,shipping_fee',
         ], [
             'code.required' => 'Mã giảm giá không được để trống.',
             'code.max' => 'Mã giảm giá không được vượt quá 255 ký tự.',
@@ -119,7 +120,8 @@ class CouponController extends Controller
             'max_discount_amount' => 'nullable|integer|min:0',
             'user_voucher_limit' => 'required|integer|in:1,2,3', // 1: Tất cả, 2: Người cụ thể, 3: Giới tính
             'selected_users' => 'nullable|array',  // Danh sách ID người dùng (chỉ khi chọn "Người dùng cụ thể")
-            'title' => 'nullable|string|max:255'
+            'title' => 'nullable|string|max:255',
+            'discount_target' => 'required|in:order_total,shipping_fee',
         ], [
             'code.required' => 'Mã giảm giá không được để trống.',
             'code.max' => 'Mã giảm giá không được vượt quá 255 ký tự.',
