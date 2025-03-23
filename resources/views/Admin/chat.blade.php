@@ -4,11 +4,14 @@
         <!-- Danh sách người dùng -->
         <div class="user-list">
             <h3>Tin nhắn đến</h3>
-            <ul class="list-group">
+            <ul class="list-group" id="userList">
                 @foreach ($users as $user)
                     <li class="list-group-item user-item d-flex align-items-center" data-user-id="{{ $user->id }}"
                         style="cursor: pointer;">
                         <span class="abc">{{ $user->name }}</span>
+                        @if ($user->has_unread)
+                            <span class="unread"></span>
+                        @endif
                     </li>
                 @endforeach
             </ul>
@@ -20,9 +23,7 @@
                 <div class="chat-header">
                     <h3 id="chat-user-name">Chọn người dùng để chat</h3>
                 </div>
-                <div class="chat-messages" id="chatMessages" style="height: 400px; overflow-y: auto;">
-                    <!-- Tin nhắn ở đây -->
-                </div>
+                <div class="chat-messages" id="chatMessages" style="height: 400px; overflow-y: auto;"></div>
                 <div class="chat-input">
                     <form id="adminMessageForm">
                         @csrf
@@ -40,119 +41,95 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
     <script>
-        $('.user-list').on('click', '.user-item', function() {
-            let userId = $(this).data('user-id');
-            let userName = $(this).find('.abc').text();
-            $('#receiver_id').val(userId);
-            $('#chat-user-name').text(userName);
-            $(this).find('.unread').remove();
-            $.get('/chat/history', {
-                receiver_id: userId
-            }, function(response) {
-                console.log('Chat history:', response);
-                $('#chatMessages').empty();
-                response.messages.forEach(function(msg) {
-                    let sender = msg.is_admin ? 'Admin' : userName;
-                    $('#chatMessages').append(`<p><strong>${sender}:</strong> ${msg.message}</p>`);
-                });
-                $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
-            });
-        });
-        $('#adminMessageForm').on('submit', function(e) {
-            e.preventDefault();
-            let message = $('#messageInput').val();
-            let receiverId = $('#receiver_id').val();
+        $(document).ready(function() {
+            // Chọn user để chat
+            $(document).on('click', '.user-item', function() {
+                let userId = $(this).data('user-id');
+                let userName = $(this).find('.abc').text();
+                $('#receiver_id').val(userId);
+                $('#chat-user-name').text(userName);
+                $(this).find('.unread').remove();
 
-            if (!message || !receiverId) return;
-
-            $.post('/chat/send', {
-                _token: '{{ csrf_token() }}',
-                message: message,
-                receiver_id: receiverId,
-                is_admin: true
-            }, function(response) {
-                console.log(response);
-                if (response.status === 'Message sent!') {
-                    $('#messageInput').val('');
-                    $.get('/chat/history', {
-                        receiver_id: receiverId
-                    }, function(response) {
-                        $('#chatMessages').empty();
-                        response.messages.forEach(function(msg) {
-                            let sender = msg.is_admin ? 'Admin' : $('#chat-user-name')
-                                .text();
+                $.get('/chat/history', {
+                    receiver_id: userId
+                }, function(response) {
+                    $('#chatMessages').empty();
+                    let lastDate = "";
+                    response.messages.forEach(function(msg) {
+                        if (msg.date !== lastDate) {
                             $('#chatMessages').append(
-                                `<p><strong>${sender}:</strong> ${msg.message}</p>`);
-                        });
-                        $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
+                                `<p class="date-separator">${msg.date}</p>`
+                            );
+                            lastDate = msg.date;
+                        }
+                        let sender = msg.is_admin ? 'Admin' : userName;
+                        $('#chatMessages').append(
+                            `<p><strong>${sender} (${msg.time}):</strong> ${msg.message}</p>`
+                        );
                     });
-                }
-            }).fail(function(xhr) {
-                console.error('Error:', xhr.responseText);
+                    $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
+                });
             });
-        });
-        console.log('Pusher script loaded');
-        const pusher = new Pusher('{{ env('PUSHER_APP_KEY') }}', {
-            cluster: '{{ env('PUSHER_APP_CLUSTER') }}',
-            encrypted: true,
-            authEndpoint: '/broadcasting/auth',
-            auth: {
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                }
-            }
-        });
-        console.log('Pusher initialized');
-        console.log('Pusher initialized with key:', '{{ env('PUSHER_APP_KEY') }}', 'and cluster:',
-            '{{ env('PUSHER_APP_CLUSTER') }}');
-        pusher.connection.bind('connected', function() {
-            console.log('Connected to Pusher');
-        });
-        pusher.connection.bind('error', function(err) {
-            console.error('Pusher connection error:', err);
-        });
-        const channel = pusher.subscribe('chat.user.admin');
-        console.log('Subscribing to private-chat.user.admin');
 
-        channel.bind('pusher:subscription_succeeded', function() {
-            console.log('Subscribed to private-chat.user.admin');
-        });
-        channel.bind('pusher:subscription_error', function(error) {
-            console.error('Subscription error:', error);
-        });
+            // Gửi tin nhắn
+            $('#adminMessageForm').on('submit', function(e) {
+                e.preventDefault();
+                let message = $('#messageInput').val();
+                let receiverId = $('#receiver_id').val();
+                if (!message || !receiverId) return;
 
-        channel.bind('message.sent', function(data) {
-            console.log('Received message:', data);
+                $.post('/chat/send', {
+                    _token: '{{ csrf_token() }}',
+                    message: message,
+                    receiver_id: receiverId,
+                    is_admin: true
+                }, function(response) {
+                    if (response.status === 'Message sent!') {
+                        $('#messageInput').val('');
+                    }
+                }).fail(function(xhr) {
+                    console.error('Error:', xhr.responseText);
+                });
+            });
 
+            // Kết nối Pusher
+            const pusher = new Pusher('{{ env('PUSHER_APP_KEY') }}', {
+                cluster: '{{ env('PUSHER_APP_CLUSTER') }}',
+                encrypted: true
+            });
 
-            let isFromUser = data.receiverId === 'admin';
-            let isFromAdmin = data.userName === 'Admin';
-            let relevantUserId = isFromUser ? data.userId : data.receiverId;
-            let senderName = isFromUser ? data.userName : 'Admin';
+            const channel = pusher.subscribe('chat.user.admin');
 
-
-            let userItem = $(`.user-item[data-user-id="${relevantUserId}"]`);
-            if (userItem.length) {
-                $('.user-list ul').prepend(userItem);
-            } else if (isFromUser) {
-
-                $('.user-list ul').prepend(`<li class="list-group-item user-item d-flex align-items-center" 
+            channel.bind('message.sent', function(data) {
+                let isFromUser = data.receiverId === 'admin';
+                let relevantUserId = isFromUser ? data.userId : data.receiverId;
+                let senderName = isFromUser ? data.userName : 'Admin';
+                let time = data.time.split(' ')[1].slice(0, 5);
+                let userItem = $(`.user-item[data-user-id="${relevantUserId}"]`);
+                if (userItem.length) {
+                    $('#userList').prepend(userItem);
+                } else if (isFromUser) {
+                    $('#userList').prepend(`<li class="list-group-item user-item d-flex align-items-center" 
                             data-user-id="${relevantUserId}" style="cursor: pointer;">
                             <span class="abc">${data.userName}</span>
-                            <span class="badge badge-danger unread" style="margin-left: 5px">(Mới)</span>
+                            <span class="unread"></span>
                         </li>`);
-                userItem = $(`.user-item[data-user-id="${relevantUserId}"]`);
-            }
+                    userItem = $(`.user-item[data-user-id="${relevantUserId}"]`);
+                }
 
-            if ($('#receiver_id').val() != relevantUserId) {
-                userItem.find('.unread').remove();
-                userItem.append(`<span class="badge badge-danger unread" style="margin-left: 5px">(Mới)</span>`);
-            }
+                if ($('#receiver_id').val() != relevantUserId) {
+                    userItem.find('.unread').remove();
+                    userItem.append(`<span class="unread"></span>`);
+                } else {
+                    userItem.find('.unread').remove();
+                }
 
-            if ($('#receiver_id').val() == relevantUserId) {
-                $('#chatMessages').append(`<p><strong>${senderName}:</strong> ${data.message}</p>`);
-                $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
-            }
+                if ($('#receiver_id').val() == relevantUserId) {
+                    $('#chatMessages').append(
+                        `<p><strong>${senderName} (${time}):</strong> ${data.message}</p>`);
+                    $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
+                }
+            });
         });
     </script>
 @endsection

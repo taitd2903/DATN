@@ -6,9 +6,10 @@
 <div class="chat-box" id="chatBox">
     <div class="chat-header">
         <span>Chat với Admin</span>
-        <button class="close-btn" onclick="toggleChat()"><img
-                src="https://cdn-icons-png.flaticon.com/128/12613/12613236.png" alt=""
-                style="width: 25px; height: 23px;"></button>
+        <button class="close-btn" onclick="toggleChat()">
+            <img src="https://cdn-icons-png.flaticon.com/128/12613/12613236.png" alt=""
+                style="width: 25px; height: 23px;">
+        </button>
     </div>
     <div class="chat-content" id="chatMessages">
         @guest
@@ -38,6 +39,13 @@
         return `${day}/${month}/${year}`;
     }
 
+    function formatTime(dateString) {
+        const date = new Date(dateString);
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${hours}:${minutes}`;
+    }
+
     function closeNotification() {
         $('#newMessageNotification').hide();
     }
@@ -58,15 +66,18 @@
     function loadChatHistory() {
         $.get('/chat/history', function(response) {
             $('#chatMessages').empty();
-            let currentDate = null;
+            let currentDate = "";
             response.messages.forEach(function(msg) {
-                const msgDate = formatDate(msg.created_at);
+                const msgDate = msg.date;
+                const msgTime = msg.time; 
+
                 if (msgDate !== currentDate) {
                     $('#chatMessages').append(`<div class="date-separator">${msgDate}</div>`);
                     currentDate = msgDate;
                 }
                 let sender = msg.is_admin ? 'Admin' : 'Bạn';
-                $('#chatMessages').append(`<p><strong>${sender}:</strong> ${msg.message}</p>`);
+                $('#chatMessages').append(
+                    `<p><strong>${sender}:</strong> ${msg.message} <span>(${msgTime})</span></p>`);
             });
             $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
         });
@@ -96,13 +107,13 @@
             })
             .then(data => {
                 if (data.status === 'Message sent!') {
-                    $('#chatMessages').append(`<p><strong>Bạn:</strong> ${message}</p>`);
+                    $('#chatMessages').append(
+                        `<p><strong>Bạn:</strong> ${message} <span>(${formatTime(new Date())})</span></p>`);
                     $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
                     messageInput.value = '';
                 }
-            })
+            });
     }
-
 
     const pusher = new Pusher('{{ env('PUSHER_APP_KEY') }}', {
         cluster: '{{ env('PUSHER_APP_CLUSTER') }}',
@@ -115,16 +126,16 @@
         }
     });
 
-
     @if (auth()->check())
         const channel = pusher.subscribe('chat.user.{{ auth()->id() }}');
         channel.bind('message.sent', function(data) {
-            const today = formatDate(new Date());
+            const today = data.date;
             const lastDate = $('#chatMessages .date-separator:last').text();
             if (lastDate !== today) {
                 $('#chatMessages').append(`<div class="date-separator">${today}</div>`);
             }
-            $('#chatMessages').append(`<p><strong>Admin:</strong> ${data.message}</p>`);
+            $('#chatMessages').append(
+                `<p><strong>Admin:</strong> ${data.message} <span>(${formatTime(new Date())})</span></p>`);
             $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
 
             const chatBox = document.getElementById('chatBox');

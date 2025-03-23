@@ -36,7 +36,7 @@
 
     <!-- jQuery from CDN -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+    <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
 
 </head>
 
@@ -221,7 +221,11 @@
             </nav>
             <!-- End Navbar -->
             @yield('content')
-
+            <div id="messageNotification" class="notification" style="display: none;">
+                <p>Cúc cu, khách tới!</span>!</p>
+                <button onclick="window.location.href='/admin/chat'">Xem</button>
+                <button onclick="closeNotification()">Đóng</button>
+            </div>
 
         </div>
     </div>
@@ -306,6 +310,31 @@
   -->
 </body>
 <!--   Core JS Files   -->
+<script>
+    function closeNotification() {
+        $('#messageNotification').hide();
+    }
+    const pusher = new Pusher('{{ env('PUSHER_APP_KEY') }}', {
+        cluster: '{{ env('PUSHER_APP_CLUSTER') }}',
+        encrypted: true,
+        authEndpoint: '/broadcasting/auth',
+        auth: {
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        }
+    });
+    const channel = pusher.subscribe('chat.user.admin');
+    channel.bind('message.sent', function(data) {
+        if (data.receiverId === 'admin') {
+            $('#senderName').text(data.userName);
+            $('#messageNotification').show();
+            setTimeout(() => {
+                $('#messageNotification').hide();
+            }, 5000);
+        }
+    });
+</script>
 <script src="{{ asset('assets/js/core/jquery.3.2.1.min.js') }}" type="text/javascript"></script>
 <script src="{{ asset('assets/js/core/popper.min.js') }}" type="text/javascript"></script>
 <script src="{{ asset('assets/js/core/bootstrap.min.js') }}" type="text/javascript"></script>

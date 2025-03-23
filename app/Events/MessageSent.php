@@ -46,7 +46,9 @@ class MessageSent implements ShouldBroadcast
             'message' => $this->message,
             'userId' => $this->userId,
             'receiverId' => $this->receiverId,
-            'userName' => $this->userName
+            'userName' => $this->userName,
+            'time' => now()->toDateTimeString(),
+            'date' => now()->format('d/m/Y')
         ];
     }
 }
