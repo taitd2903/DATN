@@ -11,6 +11,7 @@
                 style="width: 25px; height: 23px;">
         </button>
     </div>
+    <div class="floating-status" id="adminStatus"></div>
     <div class="chat-content" id="chatMessages">
         @guest
             <p class="login-prompt">Bạn hãy đăng nhập để tiếp tục nhé!</p>
@@ -79,6 +80,12 @@
                 $('#chatMessages').append(
                     `<p><strong>${sender}:</strong> ${msg.message} <span>(${msgTime})</span></p>`);
             });
+
+            const adminStatusMessage = response.admin_online
+                ? ''
+                : 'Admin hiện đang Offline, bạn để lại thông tin chúng tôi sẽ liên lạc lại ngay.';
+                $('#adminStatus').html(`<p class="status-message">${adminStatusMessage}</p>`);
+
             $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
         });
     }

@@ -98,13 +98,7 @@ class ChatController extends Controller
             })->orderBy('created_at', 'asc')->get();
         }
 
-        // if ($messages->isEmpty() && !$isAdmin) {
-        //     $messages->push(new Message([
-        //         'message' => 'Chào bạn! Bạn có câu hỏi gì không?',
-        //         'is_admin' => true,
-        //         'created_at' => now(),
-        //     ]));
-        // }
+        $adminOnline = User::where('role', 'admin')->where('is_online', true)->exists();
 
         $formattedMessages = $messages->map(function ($message) {
             return [
@@ -115,6 +109,9 @@ class ChatController extends Controller
             ];
         });
 
-        return response()->json(['messages' => $formattedMessages]);
+        return response()->json([
+            'messages' => $formattedMessages,
+            'admin_online' => $adminOnline
+        ]);
     }
 }

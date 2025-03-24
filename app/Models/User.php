@@ -27,6 +27,7 @@ class User extends Authenticatable
         'address',
         'role',
         'status',
+        'is_online'
     ];
 
     /**
