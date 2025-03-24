@@ -29,7 +29,16 @@ class CheckoutController extends Controller
         if ($cartItems->isEmpty()) {
             return redirect('/cart')->with('error', 'Giỏ hàng của bạn đang trống.');
         }
-
+        //============================24/03==========================
+        $currentCartHash = md5(serialize($cartItems->pluck('id')->toArray()));
+        $previousCartHash = session('cart_hash');
+        if ($previousCartHash && $previousCartHash !== $currentCartHash) {
+            session()->forget('applied_coupons');
+            session()->forget('discount_order');
+            session()->forget('discount_shipping');
+        }
+        session(['cart_hash' => $currentCartHash]);
+        //============================24/03==========================
         $totalPrice = $cartItems->sum(fn($item) => $item->price * $item->quantity);
         $discount = session('discount', 0);
         $finalPrice = $totalPrice - $discount;
@@ -84,31 +93,55 @@ class CheckoutController extends Controller
                 if ($coupon && $this->isCouponValid($coupon, auth()->user())) {
                     $baseAmount = ($coupon->discount_target == 'shipping_fee') ? $shippingFee : $totalPrice;
                     $discountAmount = $this->calculateDiscount($coupon, $baseAmount);
-                    
-                    // Phân loại giảm giá
+
+                    if ($coupon->minimum_order_value && $totalPrice < $coupon->minimum_order_value) {
+                        continue;
+                    }
+
                     if ($coupon->discount_target == 'shipping_fee') {
-                        $discountShipping += min($discountAmount, $shippingFee); // Không vượt quá phí vận chuyển
+                        $discountShipping += $discountAmount;
                     } else {
                         $discountOrder += $discountAmount;
                     }
-    
+
                     $validCoupons[] = [
                         'code' => $coupon->code,
                         'discount_amount' => $discountAmount,
-                        'discount_target' => $coupon->discount_target, // Lưu thêm target
+                        'discount_target' => $coupon->discount_target,
                     ];
                 }
             }
-    
+
+            $discountOrder = min($discountOrder, $totalPrice);
             $discountShipping = min($discountShipping, $shippingFee);
+
+            $totalDiscount = $discountOrder + $discountShipping;
+            $maxDiscount = $totalPrice + $shippingFee;
+            if ($totalDiscount > $maxDiscount) {
+                $totalDiscount = $maxDiscount;
+                if ($discountOrder > $totalPrice) {
+                    $discountOrder = $totalPrice;
+                    $discountShipping = $totalDiscount - $discountOrder;
+                } else {
+                    $discountShipping = $totalDiscount - $discountOrder;
+                }
+            }
+
+            $finalPrice = $totalPrice + $shippingFee - $totalDiscount;
+            if ($finalPrice < 0) {
+                $finalPrice = 0;
+                $totalDiscount = $totalPrice + $shippingFee;
+                $discountShipping = min($discountShipping, $shippingFee);
+                $discountOrder = $totalDiscount - $discountShipping;
+            }
+
             $request->session()->put('applied_coupons', $validCoupons);
-            $appliedCoupons = $validCoupons;
+        } else {
+            $finalPrice = $totalPrice + $shippingFee;
         }
 
-        $finalPrice = $totalPrice + $shippingFee - $discountOrder - $discountShipping;
-
-        if ($finalPrice <= 0) {
-            return redirect()->route('cart.index')->with('error', 'Tổng giá trị đơn hàng không hợp lệ.');
+        if ($finalPrice == 0) {
+            return redirect()->route('cart.index')->with('error', 'Tổng giá trị đơn hàng không hợp lệ (đã đạt mức giảm tối đa).');
         }
 
         $note = " {$validated['address']}, {$request->ward_name}, {$request->district_name}, {$request->province_name}";
@@ -376,6 +409,7 @@ class CheckoutController extends Controller
         $couponCode = $request->input('coupon_code');
         $user = Auth::user();
         $totalPrice = $request->session()->get('total_price', 0);
+        $shippingFee = 30000;
 
         if (empty($couponCode)) {
             return response()->json([
@@ -403,7 +437,7 @@ class CheckoutController extends Controller
         if ($currentDate < $coupon->start_date || $currentDate > $coupon->end_date) {
             return response()->json([
                 'success' => false,
-                'message' => 'Mã giảm giá đã hết hạn hoặc chưa có hiệu lực'
+                'message' => 'Mã giảm giá chưa có hiệu lực'
             ]);
         }
 
@@ -412,22 +446,6 @@ class CheckoutController extends Controller
                 'success' => false,
                 'message' => "Đơn hàng cần tối thiểu " . number_format($coupon->minimum_order_value, 0, ',', '.') . " VNĐ để áp dụng mã này."
             ]);
-        }
-
-        if ($coupon->user_voucher_limit == 2) {
-            if (!$coupon->users->contains($user->id)) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Mã giảm giá không áp dụng cho bạn'
-                ]);
-            }
-        } elseif ($coupon->user_voucher_limit == 3) {
-            if ($user->gender != $coupon->gender) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Mã giảm giá không áp dụng cho bạn'
-                ]);
-            }
         }
 
         if ($coupon->used_count >= $coupon->usage_limit) {
@@ -447,6 +465,18 @@ class CheckoutController extends Controller
             ]);
         }
 
+        if ($coupon->user_voucher_limit == 2 && !$coupon->users->contains($user->id)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Mã giảm giá không áp dụng cho bạn'
+            ]);
+        } elseif ($coupon->user_voucher_limit == 3 && $user->gender != $coupon->gender) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Mã giảm giá không áp dụng cho bạn'
+            ]);
+        }
+
         $appliedCoupons = $request->session()->get('applied_coupons', []);
 
         if (in_array($couponCode, array_column($appliedCoupons, 'code'))) {
@@ -456,12 +486,9 @@ class CheckoutController extends Controller
             ]);
         }
 
-        $totalPrice = $request->session()->get('total_price', 0);
-        $shippingFee = 30000;
-
         $discountAmount = 0;
+        $baseAmount = ($coupon->discount_target == 'shipping_fee') ? $shippingFee : $totalPrice;
         if ($coupon->discount_type == 1) {
-            $baseAmount = ($coupon->discount_target == 'shipping_fee') ? $shippingFee : $totalPrice;
             $discountAmount = ($baseAmount * $coupon->discount_value) / 100;
             if ($coupon->max_discount_amount && $discountAmount > $coupon->max_discount_amount) {
                 $discountAmount = $coupon->max_discount_amount;
@@ -470,8 +497,7 @@ class CheckoutController extends Controller
             $discountAmount = $coupon->discount_value;
         }
 
-
-        $discountAmount = min($discountAmount, ($coupon->discount_target == 'shipping_fee' ? $shippingFee : $totalPrice));
+        $discountAmount = min($discountAmount, $baseAmount);
 
         $appliedCoupons[] = [
             'code' => $couponCode,
@@ -479,54 +505,104 @@ class CheckoutController extends Controller
             'discount_target' => $coupon->discount_target,
         ];
 
-        $totalDiscount = array_sum(array_column($appliedCoupons, 'discount_amount'));
-        if ($totalDiscount > $totalPrice) {
-            $totalDiscount = $totalPrice;
+        $totalDiscountOrder = array_sum(array_filter(
+            array_column($appliedCoupons, 'discount_amount'),
+            fn($item) => $appliedCoupons[array_search($item, array_column($appliedCoupons, 'discount_amount'))]['discount_target'] == 'order_total'
+        ));
+        $totalDiscountShipping = array_sum(array_filter(
+            array_column($appliedCoupons, 'discount_amount'),
+            fn($item) => $appliedCoupons[array_search($item, array_column($appliedCoupons, 'discount_amount'))]['discount_target'] == 'shipping_fee'
+        ));
+
+        $totalDiscountOrder = min($totalDiscountOrder, $totalPrice);
+        $totalDiscountShipping = min($totalDiscountShipping, $shippingFee);
+
+        $totalDiscount = $totalDiscountOrder + $totalDiscountShipping;
+        $maxDiscount = $totalPrice + $shippingFee;
+        $isMaxDiscountReached = false;
+        if ($totalDiscount > $maxDiscount) {
+            $totalDiscount = $maxDiscount;
+            $isMaxDiscountReached = true;
+            if ($totalDiscountOrder > $totalPrice) {
+                $totalDiscountOrder = $totalPrice;
+                $totalDiscountShipping = $totalDiscount - $totalDiscountOrder;
+            } else {
+                $totalDiscountShipping = $totalDiscount - $totalDiscountOrder;
+            }
         }
 
-        $totalDiscountOrder = array_sum(array_filter(array_column($appliedCoupons, 'discount_amount'), fn($item) => $appliedCoupons[array_search($item, array_column($appliedCoupons, 'discount_amount'))]['discount_target'] == 'order_total'));
-        $totalDiscountShipping = array_sum(array_filter(array_column($appliedCoupons, 'discount_amount'), fn($item) => $appliedCoupons[array_search($item, array_column($appliedCoupons, 'discount_amount'))]['discount_target'] == 'shipping_fee'));
-        $totalDiscountShipping = min($totalDiscountShipping, $shippingFee);
-        $finalPrice = $totalPrice + $shippingFee - $totalDiscountOrder - $totalDiscountShipping;
-    
+        $finalPrice = $totalPrice + $shippingFee - $totalDiscount;
+        if ($finalPrice < 0) {
+            $finalPrice = 0;
+            $totalDiscount = $totalPrice + $shippingFee;
+            $totalDiscountShipping = min($totalDiscountShipping, $shippingFee);
+            $totalDiscountOrder = $totalDiscount - $totalDiscountShipping;
+            $isMaxDiscountReached = true;
+        }
+
         $request->session()->put('applied_coupons', $appliedCoupons);
         $request->session()->put('discount_order', $totalDiscountOrder);
         $request->session()->put('discount_shipping', $totalDiscountShipping);
 
-        return response()->json([
+        $response = [
             'success' => true,
             'message' => 'Áp dụng mã giảm giá thành công',
             'discount_order' => $totalDiscountOrder,
             'discount_shipping' => $totalDiscountShipping,
             'final_price' => $finalPrice,
             'applied_coupons' => $appliedCoupons,
-        ]);
+        ];
+
+        if ($isMaxDiscountReached) {
+            $response['message'] = 'Đã đạt mức giảm tối đa cho đơn hàng!';
+        }
+
+        return response()->json($response);
     }
     // ===================== Function này của Đạt, cấm động ====================== //
     public function removeCoupon(Request $request)
     {
         $couponCode = $request->input('coupon_code');
         $totalPrice = $request->session()->get('total_price', 0);
-
-        $appliedCoupons = $request->session()->get('applied_coupons', []);
-
-        $appliedCoupons = array_filter($appliedCoupons, function ($coupon) use ($couponCode) {
-            return $coupon['code'] !== $couponCode;
-        });
-
-
-        $appliedCoupons = array_values($appliedCoupons);
-        $request->session()->put('applied_coupons', $appliedCoupons);
-
-        $totalPrice = $request->session()->get('total_price', 0);
         $shippingFee = 30000;
 
-        $totalDiscountOrder = array_sum(array_filter(array_column($appliedCoupons, 'discount_amount'), fn($item) => $appliedCoupons[array_search($item, array_column($appliedCoupons, 'discount_amount'))]['discount_target'] == 'order_total'));
-        $totalDiscountShipping = array_sum(array_filter(array_column($appliedCoupons, 'discount_amount'), fn($item) => $appliedCoupons[array_search($item, array_column($appliedCoupons, 'discount_amount'))]['discount_target'] == 'shipping_fee'));
+        $appliedCoupons = $request->session()->get('applied_coupons', []);
+        $appliedCoupons = array_filter($appliedCoupons, fn($coupon) => $coupon['code'] !== $couponCode);
+        $appliedCoupons = array_values($appliedCoupons);
 
+        $totalDiscountOrder = array_sum(array_filter(
+            array_column($appliedCoupons, 'discount_amount'),
+            fn($item) => $appliedCoupons[array_search($item, array_column($appliedCoupons, 'discount_amount'))]['discount_target'] == 'order_total'
+        ));
+        $totalDiscountShipping = array_sum(array_filter(
+            array_column($appliedCoupons, 'discount_amount'),
+            fn($item) => $appliedCoupons[array_search($item, array_column($appliedCoupons, 'discount_amount'))]['discount_target'] == 'shipping_fee'
+        ));
+
+        $totalDiscountOrder = min($totalDiscountOrder, $totalPrice);
         $totalDiscountShipping = min($totalDiscountShipping, $shippingFee);
-        $finalPrice = $totalPrice + $shippingFee - $totalDiscountOrder - $totalDiscountShipping;
 
+        $totalDiscount = $totalDiscountOrder + $totalDiscountShipping;
+        $maxDiscount = $totalPrice + $shippingFee;
+        if ($totalDiscount > $maxDiscount) {
+            $totalDiscount = $maxDiscount;
+            if ($totalDiscountOrder > $totalPrice) {
+                $totalDiscountOrder = $totalPrice;
+                $totalDiscountShipping = $totalDiscount - $totalDiscountOrder;
+            } else {
+                $totalDiscountShipping = $totalDiscount - $totalDiscountOrder;
+            }
+        }
+
+        $finalPrice = $totalPrice + $shippingFee - $totalDiscount;
+        if ($finalPrice < 0) {
+            $finalPrice = 0;
+            $totalDiscount = $totalPrice + $shippingFee;
+            $totalDiscountShipping = min($totalDiscountShipping, $shippingFee);
+            $totalDiscountOrder = $totalDiscount - $totalDiscountShipping;
+        }
+
+        $request->session()->put('applied_coupons', $appliedCoupons);
         $request->session()->put('discount_order', $totalDiscountOrder);
         $request->session()->put('discount_shipping', $totalDiscountShipping);
 
@@ -582,9 +658,9 @@ class CheckoutController extends Controller
     {
         $totalPrice = $request->session()->get('total_price', 0);
         $appliedCoupons = $request->session()->get('applied_coupons', []);
-        $discountOrder = $request->session()->get('discount_order', 0); // Thêm mặc định 0
-        $discountShipping = $request->session()->get('discount_shipping', 0); // Thêm mặc định 0
-        $shippingFee = 30000; // Phí vận chuyển mặc định
+        $discountOrder = $request->session()->get('discount_order', 0);
+        $discountShipping = $request->session()->get('discount_shipping', 0);
+        $shippingFee = 30000;
         $finalPrice = $totalPrice + $shippingFee - $discountOrder - $discountShipping;
 
         return response()->json([
