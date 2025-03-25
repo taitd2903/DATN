@@ -45,7 +45,7 @@
 <div class="col-md-6">
     <br>
     <h1>
-    <b> Sản phẩm{{ $product->name }}</b> </h1>
+    <b> Sản phẩm:{{ $product->name }}</b> </h1>
     <p>Danh mục: {{ $product->category ? $product->category->name : 'Chưa có danh mục' }}</p>
     <!-- <p> Mo ta: {{ $product->description }}</p> -->
 <!-- 
@@ -92,11 +92,18 @@
                 </div>
             </div>
         </div><p><strong>Đang chọn: </strong> <span id="selected-variant-info">Chưa chọn</span></p>
-        <div class="mt-3">
-                    <a href="#" class="text-primary">Hướng dẫn chọn size</a> | 
-                    <a href="#" class="text-primary">Thông số sản phẩm</a>
-                </div>
-     
+
+       <a href="#" class="text-primary" onclick="openSizeGuide()">Hướng dẫn chọn size</a> | 
+<a href="#" class="text-primary">Thông số sản phẩm</a>
+
+<!-- Modal hiển thị ảnh -->
+<div id="sizeGuideModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeSizeGuide()">&times;</span>
+        <img src="../assets/img/bangsize.jpg" alt="Bảng size áo nữ">
+    </div>
+</div>
+     <br>
         <label for="quantity">Số lượng:</label>
         <input type="number" name="quantity" class="form-control w-25 me-2" min="1" value="1" required>
 
@@ -383,7 +390,24 @@
                 });
             });
         });
+
+        function openSizeGuide() {
+    document.getElementById("sizeGuideModal").style.display = "flex";
+}
+
+function closeSizeGuide() {
+    document.getElementById("sizeGuideModal").style.display = "none";
+}
+
+// Đóng modal khi nhấn ra ngoài
+window.onclick = function(event) {
+    let modal = document.getElementById("sizeGuideModal");
+    if (event.target === modal) {
+        modal.style.display = "none";
+    }
+}
         </script>
+        
         
 
 
