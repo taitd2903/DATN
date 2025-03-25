@@ -3,6 +3,84 @@
 @section('content')
 <div class="container mt-4">
     <div class="row">
+        
+         <!-- Bộ lọc sản phẩm -->
+         <form method="GET" action="{{ route('categories.show') }}" class="mb-4">
+    <div class="row g-3 align-items-center">
+        <div class="col-md-4">
+            <input type="text" name="name" class="form-control" placeholder="Tìm kiếm theo tên" value="{{ request('name') }}">
+        </div>
+        <div class="col-md-3">
+            <select name="category" class="form-control">
+                <option value="">Chọn danh mục</option>
+                @foreach($categories as $category)
+                    <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
+                        {{ $category->name }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="gender" class="form-control">
+                <option value="">Chọn giới tính</option>
+                <option value="male" {{ request('gender') == 'male' ? 'selected' : '' }}>Nam</option>
+                <option value="female" {{ request('gender') == 'female' ? 'selected' : '' }}>Nữ</option>
+                <option value="unisex" {{ request('gender') == 'unisex' ? 'selected' : '' }}>Unisex</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Lọc</button>
+        </div>
+    </div>
+</form>
+
+@if($products->isEmpty())
+    <div class="alert alert-warning text-center mt-3">
+        Không tìm thấy sản phẩm nào phù hợp!
+    </div>
+@else
+@endif
+
+ <!-- Start Slider -->
+ <!-- <div id="slides-shop" class="cover-slides">
+        <ul class="slides-container">
+            <li class="text-left">
+                <img src="../assets/img/banner-01.jpg" alt="">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h1 class="m-b-20"><strong>Welcome To <br> Thewayshop</strong></h1>
+                            <p class="m-b-40">See how your users experience your website in realtime or view <br> trends to see any changes in performance over time.</p>
+                            <p><a class="btn hvr-hover" href="#">Shop New</a></p>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="text-center">
+                <img src="../assets/img/banner-02.jpg" alt="">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h1 class="m-b-20"><strong>Welcome To <br> Thewayshop</strong></h1>
+                            <p class="m-b-40">See how your users experience your website in realtime or view <br> trends to see any changes in performance over time.</p>
+                            <p><a class="btn hvr-hover" href="#">Shop New</a></p>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="text-right">
+                <img src="../assets/img/banner-03.jpg" alt="">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h1 class="m-b-20"><strong>Welcome To <br> Thewayshop</strong></h1>
+                            <p class="m-b-40">See how your users experience your website in realtime or view <br> trends to see any changes in performance over time.</p>
+                            <p><a class="btn hvr-hover" href="#">Shop New</a></p>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
         <!-- Sidebar Danh Mục -->
         <div class="col-md-3">
             <h4 class="mb-3">Categories</h4>

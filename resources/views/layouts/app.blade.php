@@ -326,6 +326,20 @@ $(document).ready(function(){
     });
 });
 </script>
+
+<!-- Hiển thị xem sp khi ấn vào icon mắt -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".view-product").forEach(button => {
+            button.addEventListener("click", function (event) {
+                event.preventDefault(); // Ngăn chặn load trang
+                let imageUrl = this.getAttribute("data-image"); 
+                document.getElementById("modalProductImage").setAttribute("src", imageUrl);
+                $("#productImageModal").modal("show"); // Hiển thị modal
+            });
+        });
+    });
+</script>
 </body>
 
 </html>

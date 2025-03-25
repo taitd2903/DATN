@@ -115,7 +115,7 @@
         </div>
         <div class="row special-list">
             @foreach($products as $product)
-            <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-12 special-grid best-seller">
+            <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-12 special-grid best-seller" style="margin-right: 30px">
                 <div class="products-single fix">
                     <div class="box-img-hover">
                         <div class="type-lb">
@@ -126,11 +126,30 @@
                         @else
                             <div class="p-3 text-center text-muted">Chưa có hình ảnh</div>
                         @endif
+
+                        <!-- Modal hiển thị ảnh -->
+<div class="modal fade" id="productImageModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Hình ảnh sản phẩm</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalProductImage" src="" class="img-fluid" alt="Product Image">
+            </div>
+        </div>
+    </div>
+</div>
                         <div class="mask-icon">
                             <ul>
-                                <li><a href="#" data-toggle="tooltip" data-placement="right" title="View"><i class="fas fa-eye"></i></a></li>
-                                <li><a href="#" data-toggle="tooltip" data-placement="right" title="Compare"><i class="fas fa-sync-alt"></i></a></li>
-                                <li><a href="#" data-toggle="tooltip" data-placement="right" title="Add to Wishlist"><i class="far fa-heart"></i></a></li>
+<li>
+    <a href="#" class="view-product" data-image="{{ asset('storage/' . $product->image) }}" data-toggle="tooltip" data-placement="right" title="Xem sản phẩm">
+        <i class="fas fa-eye"></i>
+    </a>
+</li>                                <li><a href="#" data-toggle="tooltip" data-placement="right" title="Thêm vào yêu thích"><i class="far fa-heart"></i></a></li>
                             </ul>
                             <a href="{{ route('products.show', $product->id) }}" class="cart">Xem chi tiết</a>
                         </div>
@@ -251,6 +270,8 @@
         </div>
     </div>
 </section>
+
+
  <!-- about section end -->
  @include('Users.chat')
  @endsection
