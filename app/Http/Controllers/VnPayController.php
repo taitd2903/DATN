@@ -40,9 +40,9 @@ class VnPayController extends Controller
         $note = $request->input('address') . ', ' . $request->input('ward') . ', ' .
             $request->input('district') . ', ' . $request->input('city');
 
-            $appliedCoupons = $request->session()->get('applied_coupons', []);
-            $couponCodes = array_column($appliedCoupons, 'code');
-            $couponCodeString = !empty($couponCodes) ? implode(',', $couponCodes) : null;
+        $appliedCoupons = $request->session()->get('applied_coupons', []);
+        $couponCodes = array_column($appliedCoupons, 'code');
+        $couponCodeString = !empty($couponCodes) ? implode(',', $couponCodes) : null;
         // Lưu đơn hàng vào bảng orders
 
         $order = Order::create([
@@ -58,9 +58,11 @@ class VnPayController extends Controller
             'payment_status' => 'Chưa thanh toán',
             'vnp_txn_ref' => $vnp_TxnRef,
         ]);
-        
+
+        $request->session()->put('pending_order_id', $order->id);
+
         $selectedItems = $request->items ? explode(',', $request->items) : [];
-        
+
         // Lấy sản phẩm trong giỏ hàng chỉ của user hiện tại, lọc theo danh sách được chọn
         $cartItems = CartItem::with(['product', 'variant'])
             ->where('user_id', auth()->id())
@@ -74,41 +76,11 @@ class VnPayController extends Controller
                 'quantity' => $item->quantity,
                 'price' => $item->price,
             ]);
-
-            // Cập nhật tồn kho
-            // if ($item->variant) {
-            //     $variant = $item->variant;
-
-            //     if ($variant->stock_quantity < $item->quantity) {
-            //         return redirect()->route('cart.index')->with('error', 'Biến thể "' . $variant->name . '" không đủ số lượng trong kho.');
-            //     }
-
-            //     $variant->stock_quantity -= $item->quantity;
-            //     $variant->sold_quantity += $item->quantity;
-
-            //     if ($variant->stock_quantity <= 0) {
-            //         $variant->stock_quantity = 0;
-            //     }
-            //     $variant->save();
-            // } else {
-            //     $product = $item->product;
-
-            //     if ($product->stock_quantity < $item->quantity) {
-            //         return redirect()->route('cart.index')->with('error', 'Sản phẩm "' . $product->name . '" không đủ số lượng trong kho.');
-            //     }
-
-            //     $product->stock_quantity -= $item->quantity;
-            //     $product->sold_quantity += $item->quantity;
-
-            //     if ($product->stock_quantity <= 0) {
-            //         $product->stock_quantity = 0;
-            //     }
-
-            //     $product->save();
-            // }
         }
-        // Xóa giỏ hàng sau khi tạo đơn hàng thành công
-        CartItem::where('user_id', Auth::id())->whereIn('id', $selectedItems)->delete();
+       
+
+        // Không xóa giỏ hàng ngay lập tức, chỉ xóa khi thanh toán thành công
+        $request->session()->put('pending_order_id', $order->id);
         $request->session()->put('applied_coupons_for_vnpay', $appliedCoupons);
         // Kiểm tra xem đơn hàng đã được lưu chưa
         if (!$order) {
@@ -208,6 +180,9 @@ class VnPayController extends Controller
             if ($request->query('vnp_ResponseCode') == '00') {
                 // Thanh toán thành công, cập nhật trạng thái đơn hàng
                 $order->update(['payment_status' => 'Đã thanh toán', 'status' => 'Chờ xác nhận']);
+            
+                // Xóa giỏ hàng của user sau khi thanh toán thành công
+                CartItem::where('user_id', $order->user_id)->delete();
 
                 // Trừ kho hàng
                 foreach ($order->orderItems as $item) {
@@ -286,7 +261,7 @@ class VnPayController extends Controller
                     ->where('product_id', $item->product_id)
                     ->where('variant_id', $item->variant_id)
                     ->first();
-        
+
                 if ($existingCartItem) {
                     // Nếu đã có, tăng số lượng
                     $existingCartItem->increment('quantity', $item->quantity);
@@ -302,7 +277,7 @@ class VnPayController extends Controller
                 }
             }
         }
-        
+
         return view('Users.Checkout.invoice', [
             'order' => $order,
             'status' => $request->query('vnp_ResponseCode') == '00' ? 'Thành công' : 'Thất bại'
@@ -318,5 +293,40 @@ class VnPayController extends Controller
         $order->update(['status' => $request->status]);
 
         return redirect()->route('admin.orders.index')->with('success', 'Cập nhật trạng thái thành công.');
+    }
+
+    public function continuePayment(Order $order, Request $request)
+    {
+        // Kiểm tra nếu đơn hàng chưa thanh toán
+        if ($order->payment_status == 'Chưa thanh toán') {
+            // Đưa lại sản phẩm vào giỏ hàng nếu bị xóa
+            foreach ($order->orderItems as $item) {
+                // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
+                $existingCartItem = CartItem::where('user_id', $order->user_id)
+                    ->where('product_id', $item->product_id)
+                    ->where('variant_id', $item->variant_id)
+                    ->first();
+            
+                if (!$existingCartItem) {
+                    // Nếu chưa có trong giỏ hàng thì thêm vào
+                    CartItem::create([
+                        'user_id' => $order->user_id,
+                        'product_id' => $item->product_id,
+                        'variant_id' => $item->variant_id,
+                        'quantity' => $item->quantity,
+                        'price' => $item->price,
+                    ]);
+                }
+            }
+            
+
+            // Xóa session pending order để tránh trùng lặp
+            $request->session()->forget('pending_order_id');
+
+            // Chuyển hướng về trang thanh toán bình thường
+            return redirect()->route('checkout');
+        }
+
+        return redirect()->route('home')->with('error', 'Đơn hàng này đã được xử lý.');
     }
 }

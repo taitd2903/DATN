@@ -120,6 +120,8 @@ Route::get('/vnpay/response', function () {
 })->name('vnpay.response');
 Route::post('/vnpay/payment', [VnPayController::class, 'createPayment'])->name('vnpay.payment');
 Route::get('/vnpay/payment_return', [VnPayController::class, 'paymentReturn'])->name('vnpay.payment_return');
+Route::get('/checkout/continue/{order}', [VnPayController::class, 'continuePayment'])->name('checkout.continue');
+
 
 
 //checkout

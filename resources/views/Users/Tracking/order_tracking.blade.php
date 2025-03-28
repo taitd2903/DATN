@@ -1,13 +1,15 @@
-{{-- @extends('layouts.app')
+@extends('layouts.app')
 
 @section('content')
     <div class="container">
         <h2>Đơn hàng của bạn</h2>
+
         @if (session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
         @elseif (session('error'))
             <div class="alert alert-danger">{{ session('error') }}</div>
         @endif
+
         <table class="table">
             <thead>
                 <tr>
@@ -15,6 +17,7 @@
                     <th>Sản phẩm</th>
                     <th>Ngày đặt</th>
                     <th>Phương thức thanh toán</th>
+                    <th>Trạng thái thanh toán</th>
                     <th>Địa chỉ giao hàng</th>
                     <th>Trạng thái</th>
                     <th>Hành động</th>
@@ -22,29 +25,27 @@
             </thead>
             <tbody>
                 @foreach ($orders as $order)
-                
                     <tr>
                         <td>{{ $order->id }}</td>
                         <td>
                             <ul>
                                 @foreach ($order->orderItems as $item)
-                                    
                                     <li>{{ $item->product->name }} (x{{ $item->quantity }})</li>
                                     <li>{{ $item->variant->size }} - {{ $item->variant->color }}</li>
                                 @endforeach
                             </ul>
                         </td>
                         <td>{{ $order->created_at }}</td>
-                        <td class="text-center">{{ $order->payment_method }}</td> 
+                        <td class="text-center">{{ $order->payment_method }}</td>
+                        <td class="text-center">{{ $order->payment_status }}</td>
                         <td>{{ $order->note }}</td>
                         <td>
                             @php
                                 $statusColors = [
-                                    'Chờ xác nhận' => 'primary', // Xanh dương đậm
-                                    'Đang giao' => 'info', // Xanh dương nhạt
-                                    'Thành công' => 'success', // Xanh lá
-                                    'Đã hủy' => 'danger', // Đỏ
-                                    
+                                    'Chờ xác nhận' => 'primary',
+                                    'Đang giao' => 'info',
+                                    'hoàn thành' => 'success',
+                                    'Đã hủy' => 'danger',
                                 ];
                             @endphp
                             <span class="badge bg-{{ $statusColors[$order->status] ?? 'secondary' }}">
@@ -52,98 +53,34 @@
                             </span>
                         </td>
                         <td>
+                            <a href="{{ route('checkout.invoice', $order->id) }}" class="btn btn-primary btn-sm">Xem chi
+                                tiết</a> <br>
                             @if ($order->status == 'Chờ xác nhận' && $order->payment_status != 'Đã thanh toán')
-                                <form action="{{ route('order.cancel', $order->id) }}" method="POST">
-                                    @csrf
-                                    <button type="submit" class="btn btn-danger btn-sm">Hủy</button>
-                                </form>
+                                @if ($order->payment_method == 'cod')
+                                    <form action="{{ route('order.cancel', $order->id) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="btn btn-danger btn-sm">Hủy</button>
+                                    </form>
+                                @else
+                                    <span class="text-muted">Không thể hủy</span>
+                                @endif
                             @else
                                 <span class="text-muted">Không thể hủy</span>
                             @endif
+
+                                @if ( $order->payment_status == 'Chưa thanh toán')
+                                    
+                                        <a href="{{ route('checkout.continue', $order->id) }}"
+                                            class="btn btn-primary">Tiếp tục thanh toán</a>
+                                    
+                                @endif
+                            
+
                         </td>
+
                     </tr>
                 @endforeach
             </tbody>
         </table>
     </div>
-@endsection --}}
-
-
-@extends('layouts.app')
-
-@section('content')
-<div class="container">
-    <h2>Đơn hàng của bạn</h2>
-
-    @if (session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @elseif (session('error'))
-        <div class="alert alert-danger">{{ session('error') }}</div>
-    @endif
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Sản phẩm</th>
-                <th>Ngày đặt</th>
-                <th>Phương thức thanh toán</th>
-                <th>Trạng thái thanh toán</th>
-                <th>Địa chỉ giao hàng</th>
-                <th>Trạng thái</th>
-                <th>Hành động</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($orders as $order)
-                <tr>
-                    <td>{{ $order->id }}</td>
-                    <td>
-                        <ul>
-                            @foreach ($order->orderItems as $item)
-                                <li>{{ $item->product->name }} (x{{ $item->quantity }})</li>
-                                <li>{{ $item->variant->size }} - {{ $item->variant->color }}</li>
-                            @endforeach
-                        </ul>
-                    </td>
-                    <td>{{ $order->created_at }}</td>
-                    <td class="text-center">{{ $order->payment_method }}</td> 
-                    <td class="text-center">{{ $order->payment_status }}</td> 
-                    <td>{{ $order->note }}</td>
-                    <td>
-                        @php
-                            $statusColors = [
-                                'Chờ xác nhận' => 'primary',
-                                'Đang giao' => 'info',
-                                'hoàn thành' => 'success',
-                                'Đã hủy' => 'danger',
-                            ];
-                        @endphp
-                        <span class="badge bg-{{ $statusColors[$order->status] ?? 'secondary' }}">
-                            {{ $order->status }}
-                        </span>
-                    </td>
-                    <td>
-                        <a href="{{ route('checkout.invoice', $order->id) }}" class="btn btn-primary btn-sm">Xem chi tiết</a> <br>
-                        @if ($order->status == 'Chờ xác nhận' && $order->payment_status != 'Đã thanh toán')
-                            @if ($order->payment_method == 'cod')
-                                <form action="{{ route('order.cancel', $order->id) }}" method="POST">
-                                    @csrf
-                                    <button type="submit" class="btn btn-danger btn-sm">Hủy</button>
-                                </form>
-                            @else
-                            
-                                <span class="text-muted">Không thể hủy</span>
-                            @endif
-                        @else
-                            <span class="text-muted">Không thể hủy</span>
-                        @endif
-                    </td>
-                    
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
-</div>
 @endsection
-
