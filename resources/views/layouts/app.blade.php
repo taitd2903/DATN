@@ -130,7 +130,7 @@
                                 </li>
                             </ul>
                         </li>
-                        <li class="nav-item"><a class="nav-link" href="service.html">Our Service</a></li>
+                        <li class="nav-item"><a class="nav-link" href={{ url('categories') }}>Categories</a></li>
                         <li class="nav-item"><a class="nav-link" href="contact-us.html">Contact Us</a></li>
                       
                     </ul>

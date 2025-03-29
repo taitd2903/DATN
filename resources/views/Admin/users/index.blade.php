@@ -78,7 +78,7 @@
 
                     <!-- Actions: Edit, Delete -->
                     
-                        <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-warning">Edit</a>
+                        {{-- <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-warning">Edit</a> --}}
                         <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')

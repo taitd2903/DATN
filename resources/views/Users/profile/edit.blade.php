@@ -28,7 +28,7 @@
 
             <div class="input-box">
                 <label for="email"><i class="fa-solid fa-envelope"></i> Email</label>
-                <input type="email" id="email" name="email" value="{{ old('email', $user->email) }}" required>
+                <input type="email" id="email" name="email" value="{{ old('email', $user->email) }}" readonly>
                 @error('email')
                 <span class="error">{{ $message }}</span>
                 @enderror
