@@ -86,14 +86,19 @@
                         </tr>
                     @endforeach
                 </tbody>
+              
             </table>
-            <div
+         <div class="select-all-container">
+                 <input type="checkbox" id="select-all">
+                  <label for="select-all">Chọn tất cả</label>
+                </div>
+            <!-- <div
                 style="font-family: Arial, sans-serif; padding: 10px; margin-top: 15px; background-color: #f4f4f4; border: 1px solid #ccc; border-radius: 5px; display: flex; align-items: center; gap: 10px;">
                 <input type="checkbox" id="select-all">Chọn tất cả
-            </div>
+            </div> -->
             <div class="cart-summary">
                 <h3>Tóm tắt đơn hàng</h3>
-                <p>Tạm tính: <span class="total-amount">{{ number_format($total, 0, ',', '.') }} đ</span></p>
+                <b><p>Tạm tính: <span class="total-amount">{{ number_format($total, 0, ',', '.') }} đ</span></p></b>
                 <div class="cart-actions">
                     <a href="{{ route('products.index') }}" class="btn btn-secondary">Tiếp tục mua hàng</a>
                     <a href="{{ route('checkout') }}" class="btn btn-checkout" id="checkout-btn">Thanh toán</a>
