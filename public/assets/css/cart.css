@@ -1,3 +1,4 @@
+
 .cart-container {
     max-width: 900px;
     margin: 20px auto;
@@ -153,6 +154,24 @@
 .select-all-container label {
     font-size: 14px;
     color: #333;
+}
+
+/* dau X */
+.remove-form {
+    display: inline-block;
+}
+
+.remove-form button {
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 20px;
+    cursor: pointer;
+    transition: color 0.2s ease-in-out;
+}
+
+.remove-form button:hover {
+    color: rgb(176, 80, 80);
 }
 @media (max-width: 768px) {
     .cart-table th, .cart-table td {

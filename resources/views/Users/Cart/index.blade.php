@@ -55,7 +55,7 @@
                                     {{ $isOutOfStock ? 'disabled' : '' }}></td>
                             <td><img src="{{ asset('storage/' . $item->variant->image) }}" class="cart-image"></td>
                             <td>
-                                {{ $item->product->name }} ({{ $item->variant->size }} / {{ $item->variant->color }})
+                              <b>  {{ $item->product->name }} ({{ $item->variant->size }} / {{ $item->variant->color }}) </b>
                                 <span class="stock-warning" style="color: red; display: none;"></span>
                             </td>
                             <td>{{ number_format($item->price, 0, ',', '.') }} đ</td>
@@ -75,12 +75,12 @@
                                     <div class="error-message" style="color: red; font-size: 0.9em; margin-top: 5px;"></div>
                                 </form>
                             </td>
-                            <td class="subtotal">{{ number_format($subtotal, 0, ',', '.') }} đ</td>
+                           <td class="subtotal" style="font-weight: bold; color: red;"> {{ number_format($subtotal, 0, ',', '.') }} đ</td>
                             <td>
                                 <form action="{{ route('cart.remove', $item->id) }}" method="POST" class="remove-form">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-danger">×</button>
+                                    <button type="submit" class="btn btn-danger">X</button>
                                 </form>
                             </td>
                         </tr>
