@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/chitietsp.css') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- <link rel="stylesheet" href="{{ asset('assets/css/menu.css') }}"> -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 <hr>
     
 <div class="container">
@@ -15,8 +16,10 @@
         <div class="col-md-6">
             <!-- Ảnh chính ban đầu là ảnh của sản phẩm -->
             <div class="mt-3 d-flex " id="variant-thumbnails" style="margin-left: 120px;">
+                <div class="zoom-box">
                 <img id="variant-image" src="{{ asset('storage/' . $product->image) }}" 
                      alt="{{ $product->name }}" class="img-fluid" width="600px" height="60%">
+                </div>
             </div>
 
             <!-- Ảnh nhỏ: Gồm ảnh sản phẩm chung + ảnh của các biến thể -->
@@ -45,22 +48,32 @@
 <div class="col-md-6">
     <br>
     <h1>
-    <b> Sản phẩm:{{ $product->name }}</b> </h1>
-    <p>Danh mục: {{ $product->category ? $product->category->name : 'Chưa có danh mục' }}</p>
+    <h1 class="product-title">{{ $product->name }}</h1>
+
+    <p class="sku">
+    <strong>Còn:</strong> {{ $product->variants->sum('stock_quantity') }} 
+
+    <span class="rating">
+        ⭐⭐⭐⭐⭐ (0) <span class="reviews">0 Nhận xét</span>
+    </span>
+    </p>
+
+    <p class="price"> 
+        <span id="base-price">{{ number_format($product->base_price,0, ',', '.') }} VNĐ</span>
+        <span id="variant-price" style="font-weight: bold; margin-left: 10px; color: red;"></span>
+    </p>
+
+    <div class="dashed-line"></div>
     <!-- <p> Mo ta: {{ $product->description }}</p> -->
 <!-- 
     <div>
         <img id="product-image" src="{{ $product->image }}" alt="{{ $product->name }}"
             style="max-width: 300px; display: block;">
     </div> -->
-
-    <p><strong>Giá: </strong>
-        <span id="base-price">{{ number_format($product->base_price,0, ',', '.') }} VNĐ</span>
-        <span id="variant-price" style="font-weight: bold; margin-left: 10px; color: red;"></span>
-    </p>
- 
+    
     <p><strong>Tồn kho: </strong> <span id="stock-info">{{ $product->variants->sum('stock_quantity') }}</span></p>
-    <p> Mô Tả: {{ $product->description }}</p>
+
+    <button class="dashed-line-btn"></button>
 
 
     <form action="{{ route('cart.add') }}" method="POST" id="addToCartForm">
@@ -71,8 +84,9 @@
     
         @if($product->variants->whereNotNull('size')->count() > 0) 
         <div>
-        <p class="mt-3"><strong>SIZE</strong></p>
+
             <div id="size-options">
+            <p class="mt-2"><strong>SIZE:</strong></p>
                 @foreach ($product->variants->groupBy('size') as $size => $variants)
                     <button type="button" class="size-btn" data-size="{{ $size }}">{{ $size }}</button>
                 @endforeach
@@ -82,19 +96,43 @@
 
       <br>
         <div>
-        <p><strong>MÀU SẮC</strong></p>
-        <div class="d-flex">
+       
+      
             <div id="color-options">
+            <strong class="mt-2">MÀU SẮC:</strong>
                 @foreach ($product->variants->unique('color') as $variant)
                     <button type="button" class="color-btn"
                         data-color="{{ $variant->color }}">{{ $variant->color }}</button>
                 @endforeach
                 </div>
-            </div>
+          <br>
         </div><p><strong>Đang chọn: </strong> <span id="selected-variant-info">Chưa chọn</span></p>
 
-       <a href="#" class="text-primary" onclick="openSizeGuide()">Hướng dẫn chọn size</a> | 
-<a href="#" class="text-primary">Thông số sản phẩm</a>
+     <br>
+   
+    <label for="quantity" class="quantity-label">Số lượng:</label>
+    
+    <div class="quantity-controls">
+        <button type="button" class="quantity-btn" id="decrease">−</button>
+        <input type="text" id="quantity" name="quantity" value="1" min="1" class="quantity-input" readonly>
+        <button type="button" class="quantity-btn" id="increase">+</button>
+    </div>
+
+        <div class="mt-3 d-flex align-items-center">
+    <!-- Nút yêu thích -->
+    <button type="button" id="favoriteButton" class="favorite-btn">
+        <i class="bi bi-heart"></i>
+    </button>
+
+    <!-- Nút thêm vào giỏ hàng -->
+    <button type="submit" id="addToCartButton" disabled class="btn btn-outline-dark ms-2">
+        THÊM VÀO GIỎ HÀNG
+    </button>
+</div>
+
+<br>
+<a href="#" class="text-primary" onclick="openSizeGuide()">Hướng dẫn chọn size</a> | 
+<a href="#" class="text-primary">Thông tin sản phẩm</a>
 
 <!-- Modal hiển thị ảnh -->
 <div id="sizeGuideModal" class="modal">
@@ -103,14 +141,17 @@
         <img src="../assets/img/bangsize.jpg" alt="Bảng size áo nữ">
     </div>
 </div>
-     <br>
-        <label for="quantity">Số lượng:</label>
-        <input type="number" name="quantity" class="form-control w-25 me-2" min="1" value="1" required>
+<!-- Modal hiển thị ảnh -->
+<div id="sizeGuideModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeSizeGuide()">&times;</span>
+        <img src="../assets/img/bangsize.jpg" alt="Bảng size áo nữ">
+    </div>
+</div>
 
-    <br>
-    <div class="mt-3 d-flex">
-                    <button type="submit" id="addToCartButton" disabled class="btn btn-danger">Thêm vào giỏ hàng</button>
-                </div>
+
+
+                
 {{--========================== Phần này của Đạt thông báo lỗi ============================--}}
                 @if (session('error'))
             <small class="text-danger" id="error-message">{{ session('error') }}</small>
@@ -406,6 +447,57 @@ window.onclick = function(event) {
         modal.style.display = "none";
     }
 }
+
+
+// zoom ảnh
+document.addEventListener("DOMContentLoaded", function () {
+    const image = document.getElementById("variant-image");
+
+    image.addEventListener("mousemove", function (e) {
+        let rect = image.getBoundingClientRect();
+        let x = (e.clientX - rect.left) / rect.width * 100;
+        let y = (e.clientY - rect.top) / rect.height * 100;
+        
+        image.style.transformOrigin = `${x}% ${y}%`;
+    });
+
+    image.addEventListener("mouseleave", function () {
+        image.style.transformOrigin = "center center";
+    });
+});
+
+//nut yeu thich
+document.getElementById("favoriteButton").addEventListener("click", function() {
+    this.classList.toggle("liked");
+    let icon = this.querySelector("i");
+    if (this.classList.contains("liked")) {
+        icon.classList.remove("bi-heart");
+        icon.classList.add("bi-heart-fill");
+    } else {
+        icon.classList.remove("bi-heart-fill");
+        icon.classList.add("bi-heart");
+    }
+});
+
+// so luong
+
+document.addEventListener("DOMContentLoaded", function () {
+    const decreaseBtn = document.getElementById("decrease");
+    const increaseBtn = document.getElementById("increase");
+    const quantityInput = document.getElementById("quantity");
+
+    decreaseBtn.addEventListener("click", function () {
+        let currentValue = parseInt(quantityInput.value);
+        if (currentValue > 1) {
+            quantityInput.value = currentValue - 1;
+        }
+    });
+
+    increaseBtn.addEventListener("click", function () {
+        let currentValue = parseInt(quantityInput.value);
+        quantityInput.value = currentValue + 1;
+    });
+});
         </script>
         
         
