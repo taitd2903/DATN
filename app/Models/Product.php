@@ -25,4 +25,9 @@ class Product extends Model
     {
         return $this->hasMany(ProductVariant::class);
     }
+    public function combos()
+    {
+        return $this->belongsToMany(Combo::class, 'combo_product');
+    }
+
 }

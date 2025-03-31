@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\Banners\BannerController;
 use App\Http\Controllers\Admin\Coupons\CouponController;
 use App\Http\Controllers\Auth\RegisterController;
+// use App\Http\Controllers\ComboController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
@@ -55,6 +56,9 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::resource('products', ProductController::class);
     Route::delete('products/{product}/variants/{variant}', [ProductVariantController::class, 'destroy'])->name('products.variants.destroy');
     // HEAD
+
+    //combo
+    // Route::resource('combos', ComboController::class);
 
     Route::get('products/{id}', [ProductController::class, 'show'])->name('admin.products.show');
 
@@ -182,3 +186,4 @@ Route::middleware('auth')->group(function () {
     Route::post('/chat/send', [ChatController::class, 'sendMessage'])->name('chat.send');
     Route::get('/chat/history', [ChatController::class, 'getHistory'])->name('chat.history');
 });
+

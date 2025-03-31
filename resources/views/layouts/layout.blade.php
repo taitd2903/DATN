@@ -121,7 +121,7 @@
 
 
                     <li>
-                        <a class="nav-link" href="./notifications.html">
+                        <a class="nav-link" href="{{ route('admin.combos.index') }}">
                             <i class="nc-icon nc-cart-simple"></i>
                             <p>Combo</p>
                         </a>
