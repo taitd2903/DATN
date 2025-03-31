@@ -59,7 +59,11 @@ class AuthController extends Controller
         session(['auth_token' => $token]);
         
     
-        return redirect()->intended(route('Users.Products.index'))->with('success', 'Đăng nhập thành công!');
+        if (in_array($user->role, ['admin', 'staff'])) {
+            return redirect()->intended(route('Admin.Dashboard.index'))->with('success', 'Đăng nhập thành công!');
+        } else {
+            return redirect()->intended(route('Users.Products.index'))->with('success', 'Đăng nhập thành công!');
+        }
 
 
     }

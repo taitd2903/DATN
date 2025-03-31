@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('district')->nullable(); 
             $table->string('city')->nullable(); 
             $table->string('country')->default('Vietnam'); 
-            $table->enum('role', ['user', 'admin'])->default('user');
+            $table->enum('role', ['user', 'admin', 'staff'])->default('user');
            
             $table->timestamps();
         });

@@ -121,7 +121,8 @@
 
 
                     <li>
-                        <a class="nav-link" href="{{ route('admin.combos.index') }}">
+                        {{-- admin.combos.index --}}
+                        <a class="nav-link" href="#">
                             <i class="nc-icon nc-cart-simple"></i>
                             <p>Combo</p>
                         </a>

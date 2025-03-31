@@ -40,9 +40,9 @@ class VnPayController extends Controller
         $note = $request->input('address') . ', ' . $request->input('ward') . ', ' .
             $request->input('district') . ', ' . $request->input('city');
 
-            $appliedCoupons = $request->session()->get('applied_coupons', []);
-            $couponCodes = array_column($appliedCoupons, 'code');
-            $couponCodeString = !empty($couponCodes) ? implode(',', $couponCodes) : null;
+        $appliedCoupons = $request->session()->get('applied_coupons', []);
+        $couponCodes = array_column($appliedCoupons, 'code');
+        $couponCodeString = !empty($couponCodes) ? implode(',', $couponCodes) : null;
         // Lưu đơn hàng vào bảng orders
 
         $order = Order::create([
@@ -58,9 +58,11 @@ class VnPayController extends Controller
             'payment_status' => 'Chưa thanh toán',
             'vnp_txn_ref' => $vnp_TxnRef,
         ]);
-        
+
+        $request->session()->put('pending_order_id', $order->id);
+
         $selectedItems = $request->items ? explode(',', $request->items) : [];
-        
+
         // Lấy sản phẩm trong giỏ hàng chỉ của user hiện tại, lọc theo danh sách được chọn
         $cartItems = CartItem::with(['product', 'variant'])
             ->where('user_id', auth()->id())
@@ -74,41 +76,11 @@ class VnPayController extends Controller
                 'quantity' => $item->quantity,
                 'price' => $item->price,
             ]);
-
-            // Cập nhật tồn kho
-            // if ($item->variant) {
-            //     $variant = $item->variant;
-
-            //     if ($variant->stock_quantity < $item->quantity) {
-            //         return redirect()->route('cart.index')->with('error', 'Biến thể "' . $variant->name . '" không đủ số lượng trong kho.');
-            //     }
-
-            //     $variant->stock_quantity -= $item->quantity;
-            //     $variant->sold_quantity += $item->quantity;
-
-            //     if ($variant->stock_quantity <= 0) {
-            //         $variant->stock_quantity = 0;
-            //     }
-            //     $variant->save();
-            // } else {
-            //     $product = $item->product;
-
-            //     if ($product->stock_quantity < $item->quantity) {
-            //         return redirect()->route('cart.index')->with('error', 'Sản phẩm "' . $product->name . '" không đủ số lượng trong kho.');
-            //     }
-
-            //     $product->stock_quantity -= $item->quantity;
-            //     $product->sold_quantity += $item->quantity;
-
-            //     if ($product->stock_quantity <= 0) {
-            //         $product->stock_quantity = 0;
-            //     }
-
-            //     $product->save();
-            // }
         }
-        // Xóa giỏ hàng sau khi tạo đơn hàng thành công
-        CartItem::where('user_id', Auth::id())->whereIn('id', $selectedItems)->delete();
+
+
+        // Không xóa giỏ hàng ngay lập tức, chỉ xóa khi thanh toán thành công
+        $request->session()->put('pending_order_id', $order->id);
         $request->session()->put('applied_coupons_for_vnpay', $appliedCoupons);
         // Kiểm tra xem đơn hàng đã được lưu chưa
         if (!$order) {
@@ -188,6 +160,7 @@ class VnPayController extends Controller
             'isValidSignature' => $isValidSignature
         ]);
     }
+
     public function paymentReturn(Request $request)
     {
         $vnp_HashSecret = config('vnpay.vnp_HashSecret');
@@ -199,29 +172,42 @@ class VnPayController extends Controller
         $isValidSignature = ($secureHash === $request->query('vnp_SecureHash'));
 
         $txnRef = $request->query('vnp_TxnRef');
-        $order = Order::where('vnp_txn_ref', $txnRef)->with('orderItems.product', 'orderItems.variant')->first();
+        $order = Order::where('vnp_txn_ref', $txnRef)
+            ->with('orderItems.product', 'orderItems.variant')
+            ->first();
 
         if (!$order) {
             return redirect()->route('home')->with('error', 'Không tìm thấy đơn hàng.');
         }
+
         DB::transaction(function () use ($request, $order) {
             if ($request->query('vnp_ResponseCode') == '00') {
                 // Thanh toán thành công, cập nhật trạng thái đơn hàng
                 $order->update(['payment_status' => 'Đã thanh toán', 'status' => 'Chờ xác nhận']);
 
+                // Xóa tất cả các đơn hàng "Chưa thanh toán" khác của user này
+                Order::where('user_id', $order->user_id)
+                    ->where('payment_status', 'Chưa thanh toán')
+                    ->where('id', '<>', $order->id) // Không xóa đơn hàng hiện tại
+                    ->delete();
+
+                // Xóa giỏ hàng của user sau khi thanh toán thành công
+                CartItem::where('user_id', $order->user_id)->delete();
+
                 // Trừ kho hàng
                 foreach ($order->orderItems as $item) {
                     if ($item->variant) {
-                        $item->variant->stock_quantity -= $item->quantity;
-                        $item->variant->sold_quantity += $item->quantity;
+                        $item->variant->decrement('stock_quantity', $item->quantity);
+                        $item->variant->increment('sold_quantity', $item->quantity);
                         $item->variant->save();
                     } else {
-                        $item->product->stock_quantity -= $item->quantity;
-                        $item->product->sold_quantity += $item->quantity;
+                        $item->product->decrement('stock_quantity', $item->quantity);
+                        $item->product->increment('sold_quantity', $item->quantity);
                         $item->product->save();
                     }
                 }
-                // Xử lý tăng giảm mã giảm giá của Đạt
+
+                // Xử lý giảm số lần sử dụng mã giảm giá
                 if ($order->coupon_code) {
                     $couponCodes = explode(',', $order->coupon_code);
                     foreach ($couponCodes as $code) {
@@ -229,8 +215,7 @@ class VnPayController extends Controller
                         if (!empty($code)) {
                             $coupon = Coupon::where('code', $code)->first();
                             if ($coupon) {
-                                $coupon->used_count += 1;
-                                $coupon->save();
+                                $coupon->increment('used_count');
 
                                 CouponUsage::create([
                                     'user_id' => $order->user_id,
@@ -243,66 +228,55 @@ class VnPayController extends Controller
                     }
                 }
             } else {
-                // Nếu giao dịch thất bại, hủy đơn hàng và hoàn kho
+                // Nếu thanh toán thất bại, cập nhật trạng thái đơn hàng
                 $order->update(['payment_status' => 'Thất bại', 'status' => 'Hủy']);
 
-                // foreach ($order->orderItems as $item) {
-                //     if ($item->variant) {
-                //         $item->variant->increment('stock_quantity', $item->quantity);
-                //         $item->variant->decrement('sold_quantity', min($item->quantity, $item->variant->sold_quantity));
-                //     } else {
-                //         $item->product->increment('stock_quantity', $item->quantity);
-                //         $item->product->decrement('sold_quantity', min($item->quantity, $item->product->sold_quantity));
-                //     }
-                // }
-                // Back mã giảm giá của Đạt 
-                // if ($order->coupon_code) {
-                //     $couponCodes = explode(',', $order->coupon_code);
-                //     foreach ($couponCodes as $code) {
-                //         $code = trim($code);
-                //         if (!empty($code)) {
-                //             $coupon = Coupon::where('code', $code)->first();
-                //             if ($coupon) {
-                //                 $couponUsage = CouponUsage::where('order_id', $order->id)
-                //                     ->where('user_id', $order->user_id)
-                //                     ->where('coupon_id', $coupon->id)
-                //                     ->first();
-                //                 if ($couponUsage) {
-                //                     $couponUsage->delete();
-                //                     $coupon->used_count = max(0, $coupon->used_count - 1);
-                //                     $coupon->save();
-                //                 }
-                //             }
-                //         }
-                //     }
-                // }
-            }
-        });
-        $request->session()->forget(['applied_coupons', 'applied_coupons_for_vnpay', 'discount', 'total_price']);
-        if ($request->query('vnp_ResponseCode') !== '00') {
-            foreach ($order->orderItems as $item) {
-                // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
-                $existingCartItem = CartItem::where('user_id', $order->user_id)
-                    ->where('product_id', $item->product_id)
-                    ->where('variant_id', $item->variant_id)
-                    ->first();
-        
-                if ($existingCartItem) {
-                    // Nếu đã có, tăng số lượng
-                    $existingCartItem->increment('quantity', $item->quantity);
-                } else {
-                    // Nếu chưa có, thêm mới
-                    CartItem::create([
-                        'user_id' => $order->user_id,
-                        'product_id' => $item->product_id,
-                        'variant_id' => $item->variant_id,
-                        'quantity' => $item->quantity,
-                        'price' => $item->price,
-                    ]);
+
+                // Hoàn lại mã giảm giá nếu có
+                if ($order->coupon_code) {
+                    $couponCodes = explode(',', $order->coupon_code);
+                    foreach ($couponCodes as $code) {
+                        $code = trim($code);
+                        if (!empty($code)) {
+                            $coupon = Coupon::where('code', $code)->first();
+                            if ($coupon) {
+                                $couponUsage = CouponUsage::where('order_id', $order->id)
+                                    ->where('user_id', $order->user_id)
+                                    ->where('coupon_id', $coupon->id)
+                                    ->first();
+                                if ($couponUsage) {
+                                    $couponUsage->delete();
+                                    $coupon->decrement('used_count');
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Trả sản phẩm về giỏ hàng nếu thanh toán thất bại
+                foreach ($order->orderItems as $item) {
+                    $existingCartItem = CartItem::where('user_id', $order->user_id)
+                        ->where('product_id', $item->product_id)
+                        ->where('variant_id', $item->variant_id)
+                        ->first();
+
+                    if ($existingCartItem) {
+                        $existingCartItem->increment('quantity', $item->quantity);
+                    } else {
+                        CartItem::create([
+                            'user_id' => $order->user_id,
+                            'product_id' => $item->product_id,
+                            'variant_id' => $item->variant_id,
+                            'quantity' => $item->quantity,
+                            'price' => $item->price,
+                        ]);
+                    }
                 }
             }
-        }
-        
+        });
+        // Xóa session mã giảm giá
+        $request->session()->forget(['applied_coupons', 'applied_coupons_for_vnpay', 'discount', 'total_price']);
+
         return view('Users.Checkout.invoice', [
             'order' => $order,
             'status' => $request->query('vnp_ResponseCode') == '00' ? 'Thành công' : 'Thất bại'
@@ -318,5 +292,35 @@ class VnPayController extends Controller
         $order->update(['status' => $request->status]);
 
         return redirect()->route('admin.orders.index')->with('success', 'Cập nhật trạng thái thành công.');
+    }
+
+    public function continuePayment(Order $order, Request $request)
+    {
+        if (session()->has('continue_payment_' . $order->id)) {
+            return redirect()->route('checkout')->with('error', 'Bạn đã tiếp tục thanh toán đơn hàng này.');
+        }
+
+        session()->put('continue_payment_' . $order->id, true);
+
+        if ($order->payment_status == 'Chưa thanh toán') {
+            foreach ($order->orderItems as $item) {
+                $existingCartItem = CartItem::where('user_id', $order->user_id)
+                    ->where('product_id', $item->product_id)
+                    ->where('variant_id', $item->variant_id)
+                    ->first();
+
+                if (!$existingCartItem) {
+                    CartItem::create([
+                        'user_id' => $order->user_id,
+                        'product_id' => $item->product_id,
+                        'variant_id' => $item->variant_id,
+                        'quantity' => $item->quantity,
+                        'price' => $item->price,
+                    ]);
+                }
+            }
+            return redirect()->route('checkout');
+        }
+        return redirect()->route('home')->with('error', 'Đơn hàng này đã được xử lý.');
     }
 }

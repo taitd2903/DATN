@@ -4,7 +4,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ocean Sports</title>
+<head>
+    <title>Ocean Sports</title>
+    <link rel="icon" type="image/png" href="{{ asset('assets/img/logo.png') }}">
+</head>
 @vite(['resources/js/app.js'])
 <!-- Favicons -->
 <link rel="icon" href="{{ asset('assets/img/favicon.png') }}">
@@ -127,7 +130,7 @@
                                 </li>
                             </ul>
                         </li>
-                        <li class="nav-item"><a class="nav-link" href="service.html">Our Service</a></li>
+                        <li class="nav-item"><a class="nav-link" href={{ url('categories') }}>Categories</a></li>
                         <li class="nav-item"><a class="nav-link" href="contact-us.html">Contact Us</a></li>
                       
                     </ul>
@@ -172,13 +175,13 @@
         </div>
 
         <ul class="dropdown-menu">
-            @if(auth()->user()->role === 'admin')
-                <li>
-                    <a href="{{ route('admin.dashboard') }}">
-                        <i class="fas fa-user-shield"></i> Chuyển sang Admin
-                    </a>
-                </li>
-            @endif
+            @if(in_array(auth()->user()->role, ['admin', 'staff']))
+            <li>
+                <a href="{{ route('admin.dashboard') }}">
+                    <i class="fas fa-user-shield"></i> Chuyển sang Admin
+                </a>
+            </li>
+        @endif
             <li>
                 <a href="{{ route('users.profile.edit') }}">
                     <i class="fas fa-user-edit"></i> Cập nhật tài khoản

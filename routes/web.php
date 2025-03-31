@@ -49,7 +49,7 @@ Route::controller(AuthController::class)->group(function () {
 Route::middleware(['auth', 'role:admin'])->get('/switch-to-user', [AuthController::class, 'switchToUser'])->name('switch.to.user');
 
 // ========================= QUẢN TRỊ VIÊN (ADMIN) =========================
-Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->group(function () {
+Route::prefix('admin')->middleware(['auth', 'role:admin,staff'])->name('admin.')->group(function () {
     Route::resource('banners', BannerController::class);
     Route::get('/', fn() => view('admin.dashboard'))->name('dashboard');
     Route::resource('categories', CategoryController::class)->except(['show']);
@@ -65,6 +65,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::resource('users', UserController::class);
     Route::resource('coupons', CouponController::class);
     Route::resource('statistics', StatisticsController::class);
+    Route::get('/statistics', [StatisticsController::class, 'index'])->name('statistics.index');
     Route::get('/products/{product}/variants/create', [ProductVariantController::class, 'create'])->name('variants.create');
     Route::post('/products/{product}/variants', [ProductVariantController::class, 'store'])->name('variants.store');
 });
@@ -124,6 +125,8 @@ Route::get('/vnpay/response', function () {
 })->name('vnpay.response');
 Route::post('/vnpay/payment', [VnPayController::class, 'createPayment'])->name('vnpay.payment');
 Route::get('/vnpay/payment_return', [VnPayController::class, 'paymentReturn'])->name('vnpay.payment_return');
+Route::get('/checkout/continue/{order}', [VnPayController::class, 'continuePayment'])->name('checkout.continue');
+
 
 
 //checkout

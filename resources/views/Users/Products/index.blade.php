@@ -1,3 +1,4 @@
+
 <!-- SP -->
 @extends('layouts.app')
 @section('content')
@@ -119,7 +120,7 @@
                 <div class="products-single fix">
                     <div class="box-img-hover">
                         <div class="type-lb">
-                            <p class="sale">Sale</p>
+                            {{-- <p class="sale">Sale</p> --}}
                         </div>
                         @if($product->image)
                             <img src="{{ asset('storage/' . $product->image) }}" class="img-fluid" alt="{{ $product->name }}">

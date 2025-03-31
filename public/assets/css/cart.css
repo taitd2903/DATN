@@ -1,3 +1,4 @@
+
 .cart-container {
     max-width: 900px;
     margin: 20px auto;
@@ -17,8 +18,8 @@
 }
 
 .cart-table th {
-    background-color: #c0392b;
-    color: white;
+    background-color: #ebeaea;
+    color: rgb(127, 126, 126);
     font-weight: bold;
 }
 
@@ -26,25 +27,49 @@
     width: 60px;
     height: 60px;
 }
-
 .quantity-container {
     display: flex;
     align-items: center;
-    justify-content: center;
+    margin-left: 70px;
+    gap: 8px;
 }
 
-.quantity-container button {
-    width: 30px;
-    height: 30px;
+.quantity-container .btn {
     border: none;
-    background: #000;
-    color: white;
+    background: none;
+    font-size: 20px;
+    font-weight: bold;
+    color: #666;
     cursor: pointer;
+    transition: 0.2s;
 }
 
-.quantity-input {
-    width: 40px;
+.quantity-container .btn:hover {
+    color: black;
+}
+
+.quantity-container .btn:disabled {
+    color: #ccc;
+    cursor: not-allowed;
+}
+
+.quantity-container .quantity-input {
+    width: 24px;
+    border: none;
     text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    outline: none;
+    background: none;
+    color: black;
+    appearance: none;
+    -moz-appearance: textfield;
+}
+
+.quantity-container .quantity-input::-webkit-outer-spin-button,
+.quantity-container .quantity-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 .cart-summary {
@@ -63,11 +88,12 @@
     display: flex;
     justify-content: space-between;
     padding: 5px 0;
+    color: red;
 }
 
 .cart-summary .grand-total {
     font-weight: bold;
-    color: red;
+    color: rgb(224, 173, 173);
 }
 
 .cart-actions {
@@ -89,13 +115,13 @@
 }
 
 .btn-black {
-    background: black;
-    color: white;
+    background: rgb(239, 237, 237);
+    color: rgb(3, 3, 3);
 }
 
 .btn-checkout {
-    background: black;
-    color: white;
+    background: rgb(205, 204, 204);
+    color: rgb(8, 8, 8);
     padding: 10px 20px;
 }
 
@@ -105,6 +131,48 @@
     border: 1px solid #ddd;
 }
 
+/* chon all */
+.select-all-container {
+    font-family: Arial, sans-serif;
+    padding: 10px;
+    margin-top: 15px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    width: fit-content;
+    user-select: none;
+}
+
+.select-all-container input {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.select-all-container label {
+    font-size: 14px;
+    color: #333;
+}
+
+/* dau X */
+.remove-form {
+    display: inline-block;
+}
+
+.remove-form button {
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 20px;
+    cursor: pointer;
+    transition: color 0.2s ease-in-out;
+}
+
+.remove-form button:hover {
+    color: rgb(176, 80, 80);
+}
 @media (max-width: 768px) {
     .cart-table th, .cart-table td {
         font-size: 14px;
