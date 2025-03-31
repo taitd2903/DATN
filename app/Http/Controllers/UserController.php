@@ -187,6 +187,8 @@ public function editProfile()
 public function updateProfile(Request $request)
 {
     $user = Auth::user(); // Lấy thông tin người dùng đang đăng nhập
+    
+    
 
     $request->validate([
         'name' => 'required|string|min:3|max:55|regex:/^[a-zA-ZÀ-Ỹà-ỹ0-9\s]+$/u',
