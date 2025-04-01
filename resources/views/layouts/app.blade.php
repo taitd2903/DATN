@@ -257,13 +257,13 @@
         </div>
 
         <ul class="dropdown-menu">
-            @if(auth()->user()->role === 'admin')
-                <li>
-                    <a href="{{ route('admin.dashboard') }}">
-                        <i class="fas fa-user-shield"></i> {{ __('messages.admin_dashboard') }}
-                    </a>
-                </li>
-            @endif
+            @if(in_array(auth()->user()->role, ['admin', 'staff']))
+             <li>
+                 <a href="{{ route('admin.dashboard') }}">
+                     <i class="fas fa-user-shield"></i> Chuyển sang Admin
+                 </a>
+             </li>
+         @endif
             <li>
                 <a href="{{ route('users.profile.edit') }}">
                     <i class="fas fa-user-edit"></i> {{ __('messages.update_account') }}
