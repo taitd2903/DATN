@@ -79,71 +79,21 @@ class UserController extends Controller
      public function update(Request $request, $id)
 {
     $request->validate([
-        'name' => 'required|string|min:3|max:55|regex:/^[a-zA-ZÀ-Ỹà-ỹ0-9\s]+$/u',
-        'email' => [
-            'required',
-            'email',
-           
-            'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/'
-        ],
-        'phone' => [
-            'nullable',
-            'regex:/^(0|\+84)[1-9][0-9]{8}$/',
-            'max:15',
-        ],
-        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        'address' => 'nullable|string|max:50',
-        
-        'ward' => 'nullable|string|max:100',
-        'district' => 'nullable|string|max:100',
-        'city' => 'nullable|string|max:100',
-        'role' => 'required|in:user,admin',
-    ], [
-        'name.required' => 'Tên không được để trống.',
-        'name.min' => 'Tên phải có ít nhất 3 ký tự.',
-        'name.max' => 'Tên không được vượt quá 55 ký tự.',
-        'name.regex' => 'Tên chỉ được chứa chữ cái, số và dấu cách.',
-        'email.required' => 'Email không được để trống.',
-        'email.email' => 'Email không đúng định dạng.',
-        'email.unique' => 'Email đã tồn tại, vui lòng chọn email khác.',
-        'email.regex' => 'Email không hợp lệ, vui lòng kiểm tra lại.',
-        'phone.regex' => 'Số điện thoại phải bắt đầu bằng 0 hoặc +84 và có 10 chữ số.',
-        'image.image' => 'File phải là hình ảnh.',
-        'image.mimes' => 'Ảnh phải là định dạng: jpeg, png, jpg, gif, svg.',
-        'image.max' => 'Ảnh không được vượt quá 2MB.',
+       
+        'role' => 'required|in:user,admin,staff',
     ]);
 
     $user = User::findOrFail($id);
 
     // Cập nhật dữ liệu người dùng
-    $user->name = $request->name;
-    $user->email = $request->email;
-    $user->phone = $request->phone;
-    $user->address = $request->address;
    
-    $user->ward = $request->ward;
-    $user->district = $request->district;
-    $user->city = $request->city;
     $user->role = $request->role;
 
-    // Xử lý ảnh mới
-    if ($request->hasFile('image')) {
-        // Xóa ảnh cũ nếu có
-        if ($user->image) {
-            $oldImagePath = public_path('storage/' . $user->image);
-            if (file_exists($oldImagePath)) {
-                unlink($oldImagePath);
-            }
-        }
-
-        // Upload ảnh mới
-        $imagePath = $request->file('image')->store('images', 'public');
-        $user->image = $imagePath;
-    }
+   
 
     $user->save(); // Lưu dữ liệu
 
-    return redirect()->route('admin.users.index')->with('success', 'User updated successfully.');
+    return redirect()->route('admin.users.index')->with('success', 'cập nhật thành công');
 }
 
  

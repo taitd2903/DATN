@@ -70,20 +70,32 @@
                         @endif
                     </td>
                     <td>
+                        @if($user->role === 'admin')
+                        <a href="">  </a>
+                        @else
                         <a href="{{ route('admin.users.toggleStatus', $user->id) }}" class="btn btn-warning">
                             {{ $user->status === 'active' ? 'Khóa' : 'Mở khóa' }}
                         </a>
+                        @endif
+                    
                       
                   
 
                     <!-- Actions: Edit, Delete -->
-                    
-                        {{-- <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-warning">Edit</a> --}}
+                    @if($user->role === 'admin')
+                        <a href=""> </a>
+                    @else
+                        <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-warning">Edit</a>
+                    @endif
+                    @if($user->role === 'admin')
+                         <a href=""> </a>
+                    @else
                         <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger" onclick="return confirm('bạn có chắc muốn xóa?')">Delete</button>
                         </form>
+                            @endif
                     </td>
                 </tr>
             @endforeach
