@@ -211,23 +211,33 @@
 
 
  <!-- Nút Giỏ Hàng -->
-<li class="cart-icon">
+<!-- <li class="cart-icon">
     <a href="{{ route('cart.index') }}">
         <i class="fas fa-shopping-cart"></i>
         <span class="cart-count"></span>
     </a>
-</li>
+</li> -->
 
 <!-- Nút Sản Phẩm Yêu Thích -->
-<li class="wishlist-icon">
+<!-- <li class="wishlist-icon">
     <a href="#">
         <i class="fas fa-heart"></i>
         <span class="wishlist-count"></span>
     </a>
-</li>
+</li> -->
 
 <!-- Đăng nhập  -->
-<li class="user-dropdown">
+<li class="user-dropdown" style="margin-right: 45px;">
+
+    <a href="{{ route('cart.index') }}">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="cart-count"></span>
+        </a>
+        
+    <a href="#">
+        <i class="fas fa-heart"></i>
+        <span class="wishlist-count"></span>
+    </a>
     @if(Auth::check())
         <div class="user-info">
             @if (!empty(Auth::user()->image) && file_exists(public_path('storage/' . Auth::user()->image)))
@@ -275,7 +285,7 @@
             </li>
         </ul>
     @else
-        <a href="{{ route('login') }}" class="btn-login">{{ __('messages.login') }}</a>
+        <a href="{{ route('login') }}" class="btn-login"><i class="fas fa-user"></i></a>
     @endif
 </li>
 
@@ -419,6 +429,11 @@ $(document).ready(function(){
                 document.getElementById("modalProductImage").setAttribute("src", imageUrl);
                 $("#productImageModal").modal("show"); // Hiển thị modal
             });
+        });
+
+        // Đóng modal khi nhấn nút X
+        document.getElementById("closeModalBtn").addEventListener("click", function () {
+            $("#productImageModal").modal("hide");
         });
     });
 </script>

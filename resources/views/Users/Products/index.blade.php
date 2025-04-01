@@ -77,27 +77,27 @@
     </div> -->
     <!-- End Slider -->
     <div id="slides-shop" class="cover-slides">
-    <ul class="slides-container">
-        @foreach ($banners as $key => $banner)
-            @if ($banner->is_active)
-                <li class="{{ $key == 0 ? 'text-left' : ($key == 1 ? 'text-center' : 'text-right') }}">
-                    <img src="{{ asset('storage/' . $banner->image) }}" alt="Banner {{ $key + 1 }}">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <h1 class="m-b-20"><strong>{{ $banner->title }}</strong></h1>
-                                <p class="m-b-40">{{ $banner->description }}</p>
-                                @if ($banner->link)
-                                    <p><a class="btn hvr-hover" href="{{ $banner->link }}">Shop Now</a></p>
-                                @endif
+        <ul class="slides-container">
+            @foreach ($banners as $key => $banner)
+                @if ($banner->is_active)
+                    <li class="{{ $key == 0 ? 'text-left' : ($key == 1 ? 'text-center' : 'text-right') }}">
+                        <img src="{{ asset('storage/' . $banner->image) }}" alt="{{ __('messages.banner') }} {{ $key + 1 }}">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h1 class="m-b-20"><strong>{{ $banner->title }}</strong></h1>
+                                    <p class="m-b-40">{{ $banner->description }}</p>
+                                    @if ($banner->link)
+                                        <p><a class="btn hvr-hover" href="{{ $banner->link }}">{{ __('messages.shop_now') }}</a></p>
+                                    @endif
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </li>
-            @endif
-        @endforeach
-    </ul>
-</div>
+                    </li>
+                @endif
+            @endforeach
+        </ul>
+    </div>
     <!-- @foreach ($banners as $banner)
     @if ($banner->is_active)
         <img src="{{ asset('storage/' . $banner->image) }}" width="120" height="60" style="object-fit: cover;">
@@ -106,35 +106,34 @@
 
     <!-- SAN PHAM -->
     <div class="products-box">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="title-all text-center">
-                    <h1>Sản phẩm của chúng tôi</h1>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="title-all text-center">
+                        <h1>{{ __('messages.our_products') }}</h1>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="row special-list">
-            @foreach($products as $product)
-            <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-12 special-grid best-seller" style="margin-right: 30px">
-                <div class="products-single fix">
-                    <div class="box-img-hover">
-                        <div class="type-lb">
-                            {{-- <p class="sale">Sale</p> --}}
-                        </div>
-                        @if($product->image)
-                            <img src="{{ asset('storage/' . $product->image) }}" class="img-fluid" alt="{{ $product->name }}">
-                        @else
-                            <div class="p-3 text-center text-muted">Chưa có hình ảnh</div>
-                        @endif
-
-                        <!-- Modal hiển thị ảnh -->
-<div class="modal fade" id="productImageModal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="row special-list">
+                @foreach($products as $product)
+                    <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-12 special-grid best-seller" style="margin-right: 30px">
+                        <div class="products-single fix">
+                            <div class="box-img-hover">
+                                <div class="type-lb">
+                                    {{-- <p class="sale">{{ __('messages.sale') }}</p> --}}
+                                </div>
+                                @if($product->image)
+                                    <img src="{{ asset('storage/' . $product->image) }}" class="img-fluid" alt="{{ $product->name }}">
+                                @else
+                                    <div class="p-3 text-center text-muted">{{ __('messages.no_image') }}</div>
+                                @endif
+                                                       <!-- Modal hiển thị ảnh -->
+                                                       <div class="modal fade" id="productImageModal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Hình ảnh sản phẩm</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <h5 class="modal-title">{{ __('messages.product_image') }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="closeModalBtn">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -144,133 +143,97 @@
         </div>
     </div>
 </div>
-                        <div class="mask-icon">
-                            <ul>
-<li>
-    <a href="#" class="view-product" data-image="{{ asset('storage/' . $product->image) }}" data-toggle="tooltip" data-placement="right" title="Xem sản phẩm">
-        <i class="fas fa-eye"></i>
-    </a>
-</li>                                <li><a href="#" data-toggle="tooltip" data-placement="right" title="Thêm vào yêu thích"><i class="far fa-heart"></i></a></li>
-                            </ul>
-                            <a href="{{ route('products.show', $product->id) }}" class="cart">Xem chi tiết</a>
-                        </div>
-                    </div>
-                    <div class="why-text">
-                        <h4>{{ $product->name }}</h4>
-                        
-                        @php
-                            $minPrice = $product->variants->min('price') ?? 0;
-                            $maxPrice = $product->variants->max('price') ?? 0;
-                        @endphp
-        
-                        <h5 style="font-size: 12px;">
-                            {{ number_format($minPrice, 0, ',', '.') }} VND - {{ number_format($maxPrice, 0, ',', '.') }} VND
-                        </h5>
-                    </div>
-                </div>
-            </div>
-            @endforeach
-        </div>
-    </div>
-</div>
-
-<!-- BST -->
-<div class="latest-blog">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="title-all text-center">
-                    <h1>Sản phẩm bán chạy</h1>
-                    <p>Top sản phẩm bán chạy theo từng danh mục.</p>
-                </div>
-            </div>
-        </div>
-
-        {{-- Hiển thị sản phẩm đại diện của danh mục cha --}}
-        @foreach($representativeProductsByParentCategory as $parentCategoryId => $representativeProduct)
-        
-            @if($representativeProduct)
-                <div class="category-section">
-                    <h2 class="text-center">{{ $categories->find($parentCategoryId)->name }}</h2>
-                    <div class="row">
-                        <div class="col-md-6 col-lg-4 col-xl-4">
-                            <div class="blog-box">
-                                <div class="blog-img">
-                                    <img src="{{ asset('storage/' . $representativeProduct->image) }}" class="img-fluid" alt="{{ $representativeProduct->name }}">
-                                </div>
-                                <div class="blog-content">
-                                    <div class="title-blog">
-                                        <h3>{{ $representativeProduct->name }}</h3>
-                                        <p>Giá: {{ number_format($representativeProduct->min_price, 0, ',', '.') }} - {{ number_format($representativeProduct->max_price, 0, ',', '.') }} VNĐ</p>
-                                        <p>Giá trung bình: {{ number_format($representativeProduct->avg_price, 0, ',', '.') }} VNĐ</p>
-                                        
-                                        <p>Đã bán: {{ $representativeProduct->variants->sum('sold_quantity') }} sản phẩm</p>
-                                    </div>
-                                    <ul class="option-blog">
-                                        <li><a href="#" data-toggle="tooltip" data-placement="right" title="Likes"><i class="far fa-heart"></i></a></li>
-                                        <li><a href="#" data-toggle="tooltip" data-placement="right" title="Views"><i class="fas fa-eye"></i></a></li>
-                                        <li><a href="#" data-toggle="tooltip" data-placement="right" title="Comments"><i class="far fa-comments"></i></a></li>
+                                <div class="mask-icon">
+                                    <ul>
+                                        <li>
+                                            <a href="#" class="view-product" data-image="{{ asset('storage/' . $product->image) }}" data-toggle="tooltip" data-placement="right" title="{{ __('messages.view_product') }}">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </li>
+                                        <li><a href="#" data-toggle="tooltip" data-placement="right" title="{{ __('messages.add_to_favorite') }}"><i class="far fa-heart"></i></a></li>
                                     </ul>
+                                    <a href="{{ route('products.show', $product->id) }}" class="cart">{{ __('messages.view_details') }}</a>
                                 </div>
+                            </div>
+                            <div class="why-text">
+                                <h4>{{ $product->name }}</h4>
+                                @php
+                                    $minPrice = $product->variants->min('price') ?? 0;
+                                    $maxPrice = $product->variants->max('price') ?? 0;
+                                @endphp
+                                <h5 style="font-size: 12px;">
+                                    {{ number_format($minPrice, 0, ',', '.') }} VND - {{ number_format($maxPrice, 0, ',', '.') }} VND
+                                </h5>
                             </div>
                         </div>
                     </div>
-                </div>
-            @endif
-        @endforeach
+                @endforeach
+            </div>
+        </div>
+    </div>
 
-        {{-- Hiển thị sản phẩm bán chạy theo từng danh mục con --}}
-        {{-- @foreach($categories as $category)
-            @if(isset($topSellingProductsByCategory[$category->id]) && $topSellingProductsByCategory[$category->id]->isNotEmpty())
-                <div class="category-section">
-                    <h2 class="text-center">{{ $category->name }}</h2>
-                    <div class="row">
-                        @foreach($topSellingProductsByCategory[$category->id] as $topSellingProduct)
+
+<!-- BST -->
+ <div class="latest-blog">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="title-all text-center">
+                        <h1>{{ __('messages.best_selling_products') }}</h1>
+                        <p>{{ __('messages.top_selling_products_by_category') }}</p>
+                    </div>
+                </div>
+            </div>
+
+            @foreach($representativeProductsByParentCategory as $parentCategoryId => $representativeProduct)
+                @if($representativeProduct)
+                    <div class="category-section">
+                        <h2 class="text-center">{{ $categories->find($parentCategoryId)->name }}</h2>
+                        <div class="row">
                             <div class="col-md-6 col-lg-4 col-xl-4">
                                 <div class="blog-box">
                                     <div class="blog-img">
-                                        <img src="{{ asset('storage/' . $topSellingProduct->image) }}" class="img-fluid" alt="{{ $topSellingProduct->name }}">
+                                        <img src="{{ asset('storage/' . $representativeProduct->image) }}" class="img-fluid" alt="{{ $representativeProduct->name }}">
                                     </div>
                                     <div class="blog-content">
                                         <div class="title-blog">
-                                            <h3>{{ $topSellingProduct->name }}</h3>
-                                            <p>Giá: {{ number_format($topSellingProduct->min_price, 0, ',', '.') }} - {{ number_format($topSellingProduct->max_price, 0, ',', '.') }} VNĐ</p>
-                                            <p>Đã bán: {{ $topSellingProduct->variants->sum('sold_quantity') }} sản phẩm</p>
+                                            <h3>{{ $representativeProduct->name }}</h3>
+                                            <p>{{ __('messages.price') }}: {{ number_format($representativeProduct->min_price, 0, ',', '.') }} - {{ number_format($representativeProduct->max_price, 0, ',', '.') }} VNĐ</p>
+                                            <p>{{ __('messages.avg_price') }}: {{ number_format($representativeProduct->avg_price, 0, ',', '.') }} VNĐ</p>
+                                            <p>{{ __('messages.sold') }}: {{ $representativeProduct->variants->sum('sold_quantity') }} {{ __('messages.products') }}</p>
                                         </div>
                                         <ul class="option-blog">
-                                            <li><a href="#" data-toggle="tooltip" data-placement="right" title="Likes"><i class="far fa-heart"></i></a></li>
-                                            <li><a href="#" data-toggle="tooltip" data-placement="right" title="Views"><i class="fas fa-eye"></i></a></li>
-                                            <li><a href="#" data-toggle="tooltip" data-placement="right" title="Comments"><i class="far fa-comments"></i></a></li>
+                                            <li><a href="#" data-toggle="tooltip" data-placement="right" title="{{ __('messages.likes') }}"><i class="far fa-heart"></i></a></li>
+                                            <li><a href="#" data-toggle="tooltip" data-placement="right" title="{{ __('messages.views') }}"><i class="fas fa-eye"></i></a></li>
+                                            <li><a href="#" data-toggle="tooltip" data-placement="right" title="{{ __('messages.comments') }}"><i class="far fa-comments"></i></a></li>
                                         </ul>
                                     </div>
                                 </div>
                             </div>
-                        @endforeach
+                        </div>
                     </div>
-                </div>
-            @endif
-        @endforeach --}}
+                @endif
+            @endforeach
+        </div>
     </div>
-</div>
 
 
     <!-- End Blog  -->
 
      <!-- about section start -->
-  <section class="about">
-    <div class="about-container">
-        <div class="about-text">
-            <h2>Thời trang phong cách</h2>
-            <p>Full cleaning and housekeeping services for companies and households.</p>
-            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text.</p>
-            <a href="#" class="btn">Xem thêm Thời trang</a>
-            <!-- CHỖ NÀY CHUYỂN HƯỚNG SANG TRANG SẢN PHẨM -->
+     <section class="about">
+        <div class="about-container">
+            <div class="about-text">
+                <h2>{{ __('messages.fashion_style') }}</h2>
+                <p>{{ __('messages.fashion_trend_2025') }}</p>
+                <p>{{ __('messages.fashion_lifetime') }}</p>
+                <a href="#" class="btn">{{ __('messages.view_more_fashion') }}</a>
+            </div>
+            <div class="about-image">
+                <img src="../assets/img/hi.jpg" alt="{{ __('messages.fashion_image') }}">
+            </div>
         </div>
-        <div class="about-image">
-            <img src="../assets/img/hi.jpg" alt="Coffee and Book">
-        </div>
-    </div>
-</section>
+    </section>
 
 
  <!-- about section end -->

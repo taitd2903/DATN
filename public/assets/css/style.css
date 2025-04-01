@@ -2836,3 +2836,119 @@ body {
     font-size: 25px;
     cursor: pointer;
 }
+
+/* 📌 Đảm bảo các icon nằm trên cùng một hàng */
+.user-dropdown {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Khoảng cách giữa các icon */
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* 🌟 Căn chỉnh icon */
+.user-dropdown a {
+    text-decoration: none;
+    color: black;
+    font-size: 20px;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* 🎭 User info (Avatar & Dropdown) */
+.user-info {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    gap: 5px;
+}
+
+/* 🌟 Avatar user */
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* 🌟 Menu dropdown */
+.user-dropdown .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    width: 200px;
+    display: none;
+    flex-direction: column;
+    padding: 10px 0;
+    z-index: 100;
+}
+
+.user-dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+/* 🌟 Căn chỉnh item trong dropdown */
+.dropdown-menu li {
+    padding: 10px 15px;
+    white-space: nowrap;
+}
+
+.dropdown-menu li a {
+    color: black;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* 🟢 Responsive cho màn hình nhỏ */
+@media (max-width: 768px) {
+    .user-dropdown {
+        gap: 10px;
+        justify-content: flex-start; /* Căn trái icon */
+        margin-left: 15px; /* Dịch toàn bộ nhóm icon sang trái */
+    }
+
+    .user-dropdown a {
+        font-size: 18px;
+    }
+
+    .cart-count, .wishlist-count {
+        width: 16px;
+        height: 16px;
+        font-size: 10px;
+        top: -3px;
+        right: -5px;
+    }
+}
+
+@media (max-width: 480px) {
+    .user-dropdown {
+        gap: 8px;
+        margin-left: 200px; /* Dịch sang trái thêm trên mobile */
+        margin-top: -30px;
+    }
+
+    .user-dropdown a {
+        font-size: 16px;
+    }
+
+    .cart-count, .wishlist-count {
+        width: 14px;
+        height: 14px;
+        font-size: 9px;
+    }
+
+    .user-avatar {
+        width: 28px;
+        height: 28px;
+    }
+
+    .dropdown-menu {
+        width: 180px;
+    }
+}
