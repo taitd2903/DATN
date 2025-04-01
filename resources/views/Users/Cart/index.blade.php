@@ -100,8 +100,15 @@
                 <h3>Tóm tắt đơn hàng</h3>
                 <b><p>Tạm tính: <span class="total-amount">{{ number_format($total, 0, ',', '.') }} đ</span></p></b>
                 <div class="cart-actions">
-                    <a href="{{ route('products.index') }}" class="btn btn-secondary">Tiếp tục mua hàng</a>
-                    <a href="{{ route('checkout') }}" class="btn btn-checkout" id="checkout-btn">Thanh toán</a>
+                    <!-- <a href="{{ route('products.index') }}" class="btn btn-secondary">Tiếp tục mua hàng</a> -->
+                
+                    <a class="back-btn" href="{{ route('products.index') }}">
+                    <i class="fas fa-arrow-left"></i> Tiếp tục mua hàng
+                </a>
+                <a class="back-btn" href="{{ route('checkout') }}" id="checkout-btn">
+                    Thanh toán <i class="fas fa-arrow-right"></i>
+                </a>
+                    <!-- <a href="{{ route('checkout') }}" class="btn btn-checkout" id="checkout-btn">Thanh toán</a> -->
                 </div>
             </div>
         @else

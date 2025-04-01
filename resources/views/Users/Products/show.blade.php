@@ -15,7 +15,7 @@
     <div class="row">
         <div class="col-md-6">
             <!-- Ảnh chính ban đầu là ảnh của sản phẩm -->
-            <div class="mt-3 d-flex " id="variant-thumbnails" style="margin-left: 120px;">
+            <div class="mt-3 d-flex " id="variant-thumbnails">
                 <div class="zoom-box">
                 <img id="variant-image" src="{{ asset('storage/' . $product->image) }}" 
                      alt="{{ $product->name }}" class="img-fluid" width="600px" height="60%">
@@ -23,7 +23,7 @@
             </div>
 
             <!-- Ảnh nhỏ: Gồm ảnh sản phẩm chung + ảnh của các biến thể -->
-            <div class="mt-3 d-flex" style="margin-left: 120px;">
+            <div class="mt-3 d-flex" style="max-width: 600px">
              
 
                     <div class="mt-3 d-flex" id="variant-thumbnails">
@@ -181,9 +181,10 @@
 
     </form>
     </div>
-
-    <a class="btn btn-primary" href="{{ route('products.index') }}">Quay lại danh sách sản phẩm</a>
-
+<br>
+    <a class="back-btn" href="{{ route('products.index') }}">
+    <i class="fas fa-arrow-left"></i> Quay lại danh sách sản phẩm
+</a>
      
 
 

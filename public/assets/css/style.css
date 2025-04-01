@@ -2952,3 +2952,29 @@ body {
         width: 180px;
     }
 }
+
+
+/* nút quay lại */
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #333; 
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;
+    border: 0.1px solid #ccc;
+}
+
+.back-btn:hover {
+    background: linear-gradient(to right, #e0e0e0, #c0c0c0); /* Màu hover mềm mại */
+    color: black;
+}
+
+/* Icon mũi tên */
+.back-btn i {
+    font-size: 16px;
+}
