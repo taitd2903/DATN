@@ -3,140 +3,127 @@
 @section('content')
     <link rel="stylesheet" href="{{ asset('assets/css/thanhtoan.css') }}">
 
+    <div class="checkout-container py-5" >
+        <div class="container">
+            <div class="row g-4">
+                <!-- Billing Info -->
+                <div class="col-lg-6">
+                    <div class="card shadow-lg border-0 p-4" style="border-radius: 20px;">
+                        <h3 class="fw-bold text-primary mb-4">Thông Tin Thanh Toán</h3>
+                        @if ($errors->any())
+                            <div class="alert alert-danger animate__animated animate__fadeIn">
+                                <ul class="mb-0">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+                        <form id="checkoutForm" action="{{ route('checkout.placeOrder') }}" method="POST">
+                            @csrf
+                            <div class="form-group mb-3">
+                                <input type="text" id="name" name="name" value="{{ Auth::user()->name }}"
+                                    class="form-control shadow-sm" placeholder="Họ và tên *" required>
+                            </div>
+                            <div class="form-group mb-3">
+                                <input type="text" id="phone" name="phone" value="{{ Auth::user()->phone }}"
+                                    class="form-control shadow-sm" placeholder="Số điện thoại *" required>
+                            </div>
+                            <div class="form-group mb-3">
+                                <input type="email" id="email" name="email" value="{{ Auth::user()->email }}"
+                                    class="form-control shadow-sm" placeholder="Email *" required>
+                            </div>
+                            <div class="form-group mb-3">
+                                <select id="province" name="city" onchange="loadDistricts()"
+                                    class="form-control shadow-sm" required>
+                                    <option value="">Chọn tỉnh/thành phố</option>
+                                </select>
+                                <input type="hidden" name="province_name" id="province_name">
+                            </div>
+                            <div class="form-group mb-3">
+                                <select id="district" name="district" onchange="loadWards()"
+                                    class="form-control shadow-sm" required>
+                                    <option value="">Chọn quận/huyện</option>
+                                </select>
+                                <input type="hidden" name="district_name" id="district_name">
+                            </div>
+                            <div class="form-group mb-3">
+                                <select id="ward" name="ward" class="form-control shadow-sm" required>
+                                    <option value="">Chọn xã/phường</option>
+                                </select>
+                                <input type="hidden" name="ward_name" id="ward_name">
+                            </div>
+                            <div class="form-group mb-3">
+                                <input type="text" id="address" name="address" value="{{ old('address') }}"
+                                    class="form-control shadow-sm" placeholder="Địa chỉ cụ thể *" required>
+                            </div>
+                        </form>
+                    </div>
+                </div>
 
-    <div class="checkout-container">
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
+                <!-- Order Summary -->
+                <div class="col-lg-6">
+                    <div class="card shadow-lg border-0 p-4" style="border-radius: 20px;">
+                        <h3 class="fw-bold text-primary mb-4">Đơn Hàng Của Bạn</h3>
+                        <div class="order-items mb-4">
+                            @foreach ($cartItems as $item)
+                                <div class="order-item d-flex align-items-center mb-3 animate__animated animate__fadeIn">
+                                    <img src="{{ $item->product->image_url }}" alt="{{ $item->product->name }}"
+                                        class="rounded me-3" style="width: 70px; height: 70px; object-fit: cover; transition: transform 0.3s ease;">
+                                    <div class="flex-grow-1">
+                                        <p class="mb-1"><strong>{{ $item->product->name }}</strong></p>
+                                        <p class="mb-1">Giá: {{ number_format($item->price, 0, ',', '.') }} VND</p>
+                                        <p class="mb-1">Số lượng: {{ $item->quantity }}</p>
+                                        <p class="mb-0">Size: {{ $item->variant->size ?? 'Không có' }} | Màu: {{ $item->variant->color ?? 'Không có' }}</p>
+                                    </div>
+                                </div>
+                                <hr class="my-2">
+                            @endforeach
+                        </div>
+
+                        <!-- Coupon Section -->
+                        <div class="coupon-section mb-4">
+                            <h4 class="fw-semibold">Mã Giảm Giá</h4>
+                            <div class="input-group mb-2">
+                                <input type="text" id="coupon_code" name="coupon_code" class="form-control shadow-sm"
+                                    placeholder="Nhập mã giảm giá">
+                                <button type="button" id="apply_coupon_btn" class="btn btn-primary">Áp dụng</button>
+                            </div>
+                            <div id="applied_coupons" class="mt-2"></div>
+                            <div id="coupon_message" class="mt-2"></div>
+                        </div>
+
+                        <!-- Price Summary -->
+                        <div class="price-summary mb-4">
+                            <p>Tổng tiền trước giảm: <span id="total_price">{{ number_format($totalPrice, 0, ',', '.') }} VNĐ</span></p>
+                            <p>Phí vận chuyển: <span id="shipping_fee">{{ number_format(30000, 0, ',', '.') }} VNĐ</span></p>
+                            <p>Số tiền giảm: <span id="discount_amount">0 VNĐ</span></p>
+                            <h4 class="fw-bold text-success">Thành tiền: <span id="final_price">{{ number_format($totalPrice + 30000, 0, ',', '.') }} VNĐ</span></h4>
+                        </div>
+
+                        <!-- Payment Methods -->
+                        <div class="payment-methods">
+                            <input type="hidden" name="final_price" id="hidden_final_price" value="{{ $totalPrice + 30000 }}">
+                            <h4 class="fw-semibold mb-3">Phương Thức Thanh Toán</h4>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="payment_method" value="cod" id="cod" checked>
+                                <label class="form-check-label" for="cod">Thanh toán khi nhận hàng (COD)</label>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="radio" name="payment_method" value="vnpay" id="vnpay">
+                                <label class="form-check-label" for="vnpay">Thanh toán qua VNPAY</label>
+                            </div>
+                            <input type="hidden" name="items" id="selectitem" value="{{ $items }}">
+                            <button id="paymentButton" type="submit" class="btn btn-success w-100 py-2">Thanh Toán Ngay</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-        @endif
-        <div class="billing-info">
-            <h3>THÔNG TIN THANH TOÁN</h3>
-
-            <form id="checkoutForm" action="{{ route('checkout.placeOrder') }}" method="POST">
-                @csrf
-
-                <div class="form-group">
-                    <!-- <label for="name">Họ và tên *</label> -->
-                    <input type="text" id="name" name="name" value="{{ Auth::user()->name }}"
-                        placeholder="Họ và tên *">
-                </div>
-
-                <div class="form-group">
-                    <!-- <label for="phone">Số điện thoại *</label> -->
-                    <input type="text" id="phone" name="phone" value="{{ Auth::user()->phone }}"
-                        placeholder="Số điện thoại *">
-                </div>
-
-                <div class="form-group">
-                    <!-- <label for="email">Địa chỉ Email</label> -->
-                    <input type="email" id="email" name="email" value="{{ Auth::user()->email }}"
-                        placeholder="Email *">
-                </div>
-
-
-
-                <div class="form-group">
-                    <!-- <label for="province">Tỉnh/Thành phố:</label> -->
-                    <select id="province" name="city" onchange="loadDistricts()">
-                        <option value="">Chọn tỉnh/thành phố</option>
-                    </select>
-                    <input type="hidden" name="province_name" id="province_name" placeholder="Tình/Thành phố *">
-                </div>
-
-                <div class="form-group">
-                    <!-- <label for="district">Quận/Huyện:</label> -->
-                    <select id="district" name="district" onchange="loadWards()">
-                        <option value="">Chọn quận/huyện</option>
-                    </select>
-                    <input type="hidden" name="district_name" id="district_name">
-                </div>
-
-                <div class="form-group">
-                    <!-- <label for="ward">Xã/Phường:</label> -->
-                    <select id="ward" name="ward">
-                        <option value="">Chọn xã/phường</option>
-                    </select>
-                    <input type="hidden" name="ward_name" id="ward_name">
-                </div>
-
-                <div class="form-group">
-                    <!-- <label for="address">Địa chỉ cụ thể *</label> -->
-                    <input type="text" id="address" name="address" value="{{ old('address') }}"
-                        placeholder="Địa chỉ cụ thể *">
-                </div>
-
-
-
-                <div class="textarea-group">
-                    <textarea placeholder="Ghi chú về đơn hàng..."></textarea>
-                </div>
         </div>
-
-
-        <div class="order-summary">
-            <h3>ĐƠN HÀNG CỦA BẠN</h3>
-
-            @foreach ($cartItems as $item)
-                <div class="order-item">
-                    <p> Sản phẩm: <b> {{ $item->product->name }} </b></p>
-                    <p> Giá: <b> {{ number_format($item->price, 0, ',', '.') }} VND </b></p>
-                </div>
-
-                <p>Số lượng: {{ $item->quantity }} </p>
-                <p> Size: {{ $item->variant->size ?? 'Không có' }} </p>
-                <p> Màu sắc: {{ $item->variant->color ?? 'Không có' }} </p>
-                <hr>
-            @endforeach
-
-            <div class="order-total">
-                <p>Tổng cộng: {{ number_format($totalPrice, 0, ',', '.') }} VND</p>
-            </div>
-
-
-            <!-- Nhập mã giảm giá -->
-            <h4>Nhập mã giảm giá</h4>
-            <input type="text" id="coupon_code" name="coupon_code" class="form-control" placeholder="Mã giảm giá">
-            <button type="button" id="apply_coupon_btn" class="btn btn-primary mt-2">Áp dụng</button>
-            <div id="applied_coupons" class="mt-2">
-                {{-- List mã giảm giá --}}
-            </div> {{-- Đừng Xoá nữa nha sửa 2 lần cái thẻ div này rùi đó mấy ní --}}
-            <div id="coupon_message" class="mt-2"></div>
-
-            <div class="price-summary mt-4">
-                <p>Tổng tiền trước giảm: <span id="total_price">{{ number_format($totalPrice, 0, ',', '.') }} VNĐ</span>
-                </p>
-                <p>Phí vận chuyển: <span id="shipping_fee">{{ number_format(30000, 0, ',', '.') }} VNĐ</span></p>
-                <p>Số tiền giảm: <span id="discount_amount">0 VNĐ</span></p>
-                <h4>Thành tiền: <span id="final_price">{{ number_format($totalPrice + 30000, 0, ',', '.') }} VNĐ</span></h4>
-            </div>
-
-
-            <!-- Hidden input để lưu finalPrice cho form thanh toán -->
-            <div class="payment-methods">
-                <input type="hidden" name="final_price" id="hidden_final_price" value="{{ $totalPrice }}">
-
-                <h4>Chọn phương thức thanh toán:</h4>
-
-                <input type="radio" name="payment_method" value="cod" checked> Thanh toán khi nhận hàng (COD)
-                <br>
-                <input type="radio" name="payment_method" value="vnpay"> Thanh toán qua VNPAY
-
-            </div>
-            <input type="hidden" name="items" id="selectitem" value="{{ $items }}">
-
-            <button id="paymentButton" type="submit" class="btn btn-success">Thanh toán</button>
-
-            </form>
-        </div>
-
     </div>
 
-    {{-- chọn nút thanh toán --}}
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('checkoutForm');
@@ -160,68 +147,35 @@
                         district: formData.get('district_name'),
                         ward: formData.get('ward_name'),
                         address: formData.get('address'),
-                        note: form.querySelector('textarea').value,
+                        note: form.querySelector('textarea')?.value || '',
                         coupon_code: formData.get('coupon_code'),
                         items: formData.get('items')
                     };
 
-                    console.log('Data sent to VNPAY:', data); // Ghi log để kiểm tra dữ liệu gửi đi
-
                     fetch('{{ route('vnpay.payment') }}', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            },
-                            body: JSON.stringify(data)
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            console.log('Response from server:', data); // Ghi log để kiểm tra phản hồi
-                            if (data.success && data.payment_url) {
-                                window.location.href = data.payment_url;
-                            } else {
-                                alert('Có lỗi xảy ra khi tạo thanh toán VNPAY: ' + (data.message ||
-                                    'Không rõ lỗi'));
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            alert('Đã có lỗi xảy ra. Vui lòng thử lại.');
-                        });
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify(data)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success && data.payment_url) {
+                            window.location.href = data.payment_url;
+                        } else {
+                            alert('Có lỗi xảy ra khi tạo thanh toán VNPAY: ' + (data.message || 'Không rõ lỗi'));
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Đã có lỗi xảy ra. Vui lòng thử lại.');
+                    });
                 }
             });
 
-            // Giữ nguyên logic áp dụng mã giảm giá
-        });
-    </script>
-    {{-- Đừng xoá style này nha mấy ní --}}
-    <style>
-        #applied_coupons {
-            display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
-            /* Cho phép wrap nếu danh sách dài */
-            gap: 10px;
-            /* Khoảng cách giữa các mã */
-        }
-
-        .applied-coupon {
-            display: flex;
-            align-items: center;
-        }
-
-        .applied-coupon .badge {
-            font-size: 14px;
-        }
-
-        .remove-coupon {
-            cursor: pointer;
-        }
-    </style>
-    {{-- Đừng xoá Script này nha mấy ní --}}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
+            // Coupon Logic
             const applyCouponBtn = document.getElementById('apply_coupon_btn');
             const couponCodeInput = document.getElementById('coupon_code');
             const couponMessage = document.getElementById('coupon_message');
@@ -230,7 +184,6 @@
             const discountAmountElement = document.getElementById('discount_amount');
             const finalPriceElement = document.getElementById('final_price');
             const hiddenFinalPrice = document.getElementById('hidden_final_price');
-
             let totalPrice = {{ $totalPrice }};
 
             function displayAppliedCoupons(coupons) {
@@ -238,13 +191,11 @@
                 if (coupons && coupons.length > 0) {
                     coupons.forEach(coupon => {
                         const couponDiv = document.createElement('div');
-                        couponDiv.classList.add('applied-coupon', 'd-flex', 'align-items-center', 'mb-1');
-                        const targetText = coupon.discount_target === 'shipping_fee' ? ' (Phí vận chuyển)' :
-                            ' (Tổng đơn)';
+                        couponDiv.classList.add('applied-coupon', 'd-flex', 'align-items-center', 'mb-1', 'animate__animated', 'animate__fadeIn');
                         couponDiv.innerHTML = `
-                <span id="dcc" class="badge">${coupon.code}</span>
-                <button id="ngg" type="button" class="btn btn-danger btn-sm remove-coupon" data-code="${coupon.code}">X</button>
-            `;
+                            <span class="badge bg-success me-2">${coupon.code}</span>
+                            <button type="button" class="btn btn-danger btn-sm remove-coupon" data-code="${coupon.code}">X</button>
+                        `;
                         appliedCouponsDiv.appendChild(couponDiv);
                     });
 
@@ -259,96 +210,72 @@
 
             function loadAppliedCoupons() {
                 fetch('{{ route('checkout.getAppliedCoupons') }}', {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            totalPrice = data.total_price || 0;
-                            const shippingFee = 30000;
-                            const discountOrder = data.discount_order || 0;
-                            const discountShipping = data.discount_shipping || 0;
-                            const totalDiscount = discountOrder + discountShipping;
-                            discountAmountElement.textContent = `${totalDiscount.toLocaleString('vi-VN')} VNĐ`;
-                            finalPriceElement.textContent =
-                                `${(totalPrice + shippingFee - totalDiscount).toLocaleString('vi-VN')} VNĐ`;
-                            hiddenFinalPrice.value = totalPrice + shippingFee - totalDiscount;
-                            displayAppliedCoupons(data.applied_coupons || []);
-                        } else {
-                            discountAmountElement.textContent = '0 VNĐ';
-                            finalPriceElement.textContent =
-                                `${(totalPrice + 30000).toLocaleString('vi-VN')} VNĐ`;
-                            hiddenFinalPrice.value = totalPrice + 30000;
-                            displayAppliedCoupons([]);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Lỗi khi lấy danh sách mã giảm giá:', error);
-                        discountAmountElement.textContent = '0 VNĐ';
-                        finalPriceElement.textContent = `${(totalPrice + 30000).toLocaleString('vi-VN')} VNĐ`;
-                        hiddenFinalPrice.value = totalPrice + 30000;
-                    });
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        totalPrice = data.total_price || 0;
+                        const shippingFee = 30000;
+                        const totalDiscount = (data.discount_order || 0) + (data.discount_shipping || 0);
+                        discountAmountElement.textContent = `${totalDiscount.toLocaleString('vi-VN')} VNĐ`;
+                        finalPriceElement.textContent = `${(totalPrice + shippingFee - totalDiscount).toLocaleString('vi-VN')} VNĐ`;
+                        hiddenFinalPrice.value = totalPrice + shippingFee - totalDiscount;
+                        displayAppliedCoupons(data.applied_coupons || []);
+                    }
+                });
             }
 
             loadAppliedCoupons();
 
             applyCouponBtn.addEventListener('click', function() {
                 const couponCode = couponCodeInput.value.trim();
-
                 fetch('{{ route('checkout.applyCoupon') }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: JSON.stringify({
-                            coupon_code: couponCode
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        couponMessage.innerHTML = `<div class="alert alert-${data.success ? 'success' : 'danger'}">${data.message}</div>`;
-                        if (data.success) {
-                            discountAmountElement.textContent = `${(data.discount_order + data.discount_shipping).toLocaleString('vi-VN')} VNĐ`;
-                            finalPriceElement.textContent = `${data.final_price.toLocaleString('vi-VN')} VNĐ`;
-                            hiddenFinalPrice.value = data.final_price;
-                            displayAppliedCoupons(data.applied_coupons);
-                        }
-                    })
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ coupon_code: couponCode })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    couponMessage.innerHTML = `<div class="alert alert-${data.success ? 'success' : 'danger'} animate__animated animate__fadeIn">${data.message}</div>`;
+                    if (data.success) {
+                        discountAmountElement.textContent = `${(data.discount_order + data.discount_shipping).toLocaleString('vi-VN')} VNĐ`;
+                        finalPriceElement.textContent = `${data.final_price.toLocaleString('vi-VN')} VNĐ`;
+                        hiddenFinalPrice.value = data.final_price;
+                        displayAppliedCoupons(data.applied_coupons);
+                    }
+                });
             });
 
             function removeCoupon(couponCode) {
                 fetch('{{ route('checkout.removeCoupon') }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: JSON.stringify({
-                            coupon_code: couponCode
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        couponMessage.innerHTML = `<div class="alert alert-${data.success ? 'success' : 'danger'}">${data.message}</div>`;
-                        if (data.success) {
-                            discountAmountElement.textContent = `${(data.discount_order + data.discount_shipping).toLocaleString('vi-VN')} VNĐ`;
-                            finalPriceElement.textContent = `${data.final_price.toLocaleString('vi-VN')} VNĐ`;
-                            hiddenFinalPrice.value = data.final_price;
-                            displayAppliedCoupons(data.applied_coupons);
-                        }
-                    })
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ coupon_code: couponCode })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    couponMessage.innerHTML = `<div class="alert alert-${data.success ? 'success' : 'danger'} animate__animated animate__fadeIn">${data.message}</div>`;
+                    if (data.success) {
+                        discountAmountElement.textContent = `${(data.discount_order + data.discount_shipping).toLocaleString('vi-VN')} VNĐ`;
+                        finalPriceElement.textContent = `${data.final_price.toLocaleString('vi-VN')} VNĐ`;
+                        hiddenFinalPrice.value = data.final_price;
+                        displayAppliedCoupons(data.applied_coupons);
+                    }
+                });
             }
-        });
-    </script>
 
-    {{-- Đổ dữ liệu API về tỉnh ,thành phố, xã --}}
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
+            // Province/District/Ward Logic
             fetch("https://provinces.open-api.vn/api/p/")
                 .then(response => response.json())
                 .then(data => {
@@ -357,59 +284,87 @@
                         let option = new Option(province.name, province.code);
                         provinceSelect.add(option);
                     });
-                })
-                .catch(error => console.error("Lỗi tải dữ liệu tỉnh:", error));
-        });
+                });
 
-        function loadDistricts() {
-            let provinceSelect = document.getElementById("province");
-            let provinceCode = provinceSelect.value;
-            let provinceName = provinceSelect.options[provinceSelect.selectedIndex].text;
-            document.getElementById("province_name").value = provinceName; // Gán tên tỉnh vào input ẩn
+            window.loadDistricts = function() {
+                let provinceSelect = document.getElementById("province");
+                let provinceCode = provinceSelect.value;
+                let provinceName = provinceSelect.options[provinceSelect.selectedIndex].text;
+                document.getElementById("province_name").value = provinceName;
 
-            let districtSelect = document.getElementById("district");
-            districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
+                let districtSelect = document.getElementById("district");
+                districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
 
-            if (!provinceCode) return;
+                if (!provinceCode) return;
 
-            fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`)
-                .then(response => response.json())
-                .then(data => {
-                    data.districts.forEach(district => {
-                        let option = new Option(district.name, district.code);
-                        districtSelect.add(option);
+                fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.districts.forEach(district => {
+                            let option = new Option(district.name, district.code);
+                            districtSelect.add(option);
+                        });
                     });
-                })
-                .catch(error => console.error("Lỗi tải dữ liệu quận:", error));
-        }
+            };
 
-        function loadWards() {
-            let districtSelect = document.getElementById("district");
-            let districtCode = districtSelect.value;
-            let districtName = districtSelect.options[districtSelect.selectedIndex].text;
-            document.getElementById("district_name").value = districtName; // Gán tên quận vào input ẩn
+            window.loadWards = function() {
+                let districtSelect = document.getElementById("district");
+                let districtCode = districtSelect.value;
+                let districtName = districtSelect.options[districtSelect.selectedIndex].text;
+                document.getElementById("district_name").value = districtName;
 
-            let wardSelect = document.getElementById("ward");
-            wardSelect.innerHTML = '<option value="">Chọn xã/phường</option>';
+                let wardSelect = document.getElementById("ward");
+                wardSelect.innerHTML = '<option value="">Chọn xã/phường</option>';
 
-            if (!districtCode) return;
+                if (!districtCode) return;
 
-            fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`)
-                .then(response => response.json())
-                .then(data => {
-                    data.wards.forEach(ward => {
-                        let option = new Option(ward.name, ward.code);
-                        wardSelect.add(option);
+                fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.wards.forEach(ward => {
+                            let option = new Option(ward.name, ward.code);
+                            wardSelect.add(option);
+                        });
                     });
-                })
-                .catch(error => console.error("Lỗi tải dữ liệu phường:", error));
-        }
+            };
 
-        document.getElementById("ward").addEventListener("change", function() {
-            let wardName = this.options[this.selectedIndex].text;
-            document.getElementById("ward_name").value = wardName; // Gán tên xã vào input ẩn
+            document.getElementById("ward").addEventListener("change", function() {
+                let wardName = this.options[this.selectedIndex].text;
+                document.getElementById("ward_name").value = wardName;
+            });
         });
     </script>
-    </div>
+
+    <style>
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1) !important;
+        }
+        .form-control, .btn {
+            transition: all 0.3s ease;
+        }
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+        .btn:hover {
+            transform: scale(1.05);
+        }
+        .order-item img:hover {
+            transform: scale(1.1);
+        }
+        .applied-coupon {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .badge {
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+    </style>
     @include('Users.chat')
 @endsection
