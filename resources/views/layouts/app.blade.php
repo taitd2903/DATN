@@ -7,20 +7,6 @@
 <head>
     <title>Ocean Sports</title>
     <link rel="icon" type="image/png" href="{{ asset('assets/img/logo.png') }}">
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-    <!-- AOS -->
-    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
-    <!-- Swiper -->
-    <link href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" rel="stylesheet">
-    <!-- Glightbox -->
-    <link href="https://cdn.jsdelivr.net/npm/glightbox@3.2.0/dist/css/glightbox.min.css" rel="stylesheet">
-    <!-- Nice Select -->
-    <link href="https://cdn.jsdelivr.net/npm/nice-select2@2.1.0/dist/css/nice-select2.min.css" rel="stylesheet">
 </head>
 @vite(['resources/js/app.js'])
 <!-- Favicons -->
@@ -68,6 +54,78 @@
 <body>
 
  <!-- Start Main Top -->
+ <div class="main-top">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                    <div class="text-slid-box">
+                        <div id="offer-box" class="carouselTicker">
+                            <ul class="offer-box">
+                                <li>
+                                    <i class="fab fa-opencart"></i> {{ __('messages.sale_10') }}
+                                </li>
+                                <li>
+                                    <i class="fab fa-opencart"></i> {{ __('messages.sale_50_80') }}
+                                </li>
+                                <li>
+                                    <i class="fab fa-opencart"></i>{{ __('messages.sale_20') }}
+                                </li>
+                                <li>
+                                    <i class="fab fa-opencart"></i> {{ __('messages.sale_50') }}
+                                </li>
+                                <li>
+                                    <i class="fab fa-opencart"></i> Giảm 10%! Thời trang nam
+                                </li>
+                                <li>
+                                    <i class="fab fa-opencart"></i> 50% - 80% của thời trang
+                                </li>
+                                <li>
+                                    <i class="fab fa-opencart"></i> 20% Vợt cầu lông
+                                </li>
+                                <li>
+                                    <i class="fab fa-opencart"></i> Giảm 50% đồ thể thao
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                    <div class="custom-select-box">
+                    <select style="color: white"  id="language-switcher" class="form-control" onchange="changeLanguage(this.value)">
+    <option value="en" {{ app()->getLocale() == 'en' ? 'selected' : '' }}>🇺🇸 English</option>
+    <option value="vi" {{ app()->getLocale() == 'vi' ? 'selected' : '' }}>🇻🇳 Tiếng Việt</option>
+</select>
+
+<script>
+    function changeLanguage(locale) {
+        window.location.href = "/lang/" + locale;
+    }
+</script>
+
+<script>
+    function changeLanguage(locale) {
+        window.location.href = "/lang/" + locale;
+    }
+</script>
+                   
+         </div>
+                    <div class="right-phone-box">
+                        <p>Gọi tôi :- <a href="#"> +11 900 800 100</a></p>
+                    </div>
+                    <!-- <div class="our-link">
+                        <ul>
+                            <li><a href="#">Tài khoản của tôi</a></li>
+                            <li><a href="#">Địa chỉ của chúng tôi</a></li>
+                            <li><a href="#">Liên hệ với chúng tôi</a></li>
+                        </ul>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Main Top -->
+
+ <!-- Start Main Top -->
  <header class="main-header" style="margin-top: -5px">
         <!-- Start Navigation -->
         <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-default bootsnav">
@@ -91,11 +149,11 @@
                 <!-- Collect the nav links, forms, and other content for toggling -->
                 <div class="collapse navbar-collapse" id="navbar-menu" >
                     <ul class="nav navbar-nav ml-auto" data-in="fadeInDown" data-out="fadeOutUp">
-                        <li class="nav-item active"><a class="nav-link" href="index.html">Home</a></li>
-                        <li class="nav-item"><a class="nav-link" href="about.html">About Us</a></li>
+                        <li class="nav-item active"><a class="nav-link" href="index.html">{{ __('messages.home') }}</a></li>
+                        <li class="nav-item"><a class="nav-link" href="about.html">{{ __('messages.about') }}</a></li>
 
                         <li class="dropdown megamenu-fw">
-                            <a href="#" class="nav-link dropdown-toggle arrow" data-toggle="dropdown">Product</a>
+                            <a href="#" class="nav-link dropdown-toggle arrow" data-toggle="dropdown">{{ __('messages.products') }}</a>
                             <ul class="dropdown-menu megamenu-content" role="menu">
                                 <li>
                                    
@@ -104,38 +162,38 @@
                                          <div class="col-menu col-md-3">
                                              <h6 class="title">Top</h6>
                                         <ul class="menu-col">
-                                             <li><a href="shop.html">Jackets</a></li>
-                                              <li><a href="shop.html">Shirts</a></li>
-                                         <li><a href="shop.html">Sweaters & Cardigans</a></li>
-                                            <li><a href="shop.html">T-shirts</a></li>
+                                             <li><a href="shop.html">Áo</a></li>
+                                              <li><a href="shop.html">Sơ mi</a></li>
+                                         <li><a href="shop.html">thể thao</a></li>
+                                            <li><a href="shop.html">bóng chuyền</a></li>
                                         </ul>
                                         </div>
                                         <!-- end col-3 -->
                                         <div class="col-menu col-md-3">
-                                <h6 class="title">Bottom</h6>
+                                <h6 class="title">Bóng đá</h6>
                                 <ul class="menu-col">
-                                    <li><a href="shop.html">Swimwear</a></li>
-                                    <li><a href="shop.html">Skirts</a></li>
-                                    <li><a href="shop.html">Jeans</a></li>
-                                    <li><a href="shop.html">Trousers</a></li>
+                                    <li><a href="shop.html">Bộ thể thap</a></li>
+                                    <li><a href="shop.html">Áo đá bóng</a></li>
+                                    <li><a href="shop.html">Quần đá bóng</a></li>
+                                    <li><a href="shop.html">Phụ kiện</a></li>
                                 </ul>
                             </div>
                             <div class="col-menu col-md-3">
-                                <h6 class="title">Clothing</h6>
+                                <h6 class="title">Giảm giá</h6>
                                 <ul class="menu-col">
-                                    <li><a href="shop.html">Top Wear</a></li>
-                                    <li><a href="shop.html">Party wear</a></li>
-                                    <li><a href="shop.html">Bottom Wear</a></li>
-                                    <li><a href="shop.html">Indian Wear</a></li>
+                                    <li><a href="shop.html">Quần áo</a></li>
+                                    <li><a href="shop.html">Giày dép</a></li>
+                                    <li><a href="shop.html">Thể thao</a></li>
+                                    <li><a href="shop.html">Đá bóng</a></li>
                                 </ul>
                             </div>
                             <div class="col-menu col-md-3">
-                                <h6 class="title">Accessories</h6>
+                                <h6 class="title">Giảm</h6>
                                 <ul class="menu-col">
-                                    <li><a href="shop.html">Bags</a></li>
-                                    <li><a href="shop.html">Sunglasses</a></li>
-                                    <li><a href="shop.html">Fragrances</a></li>
-                                    <li><a href="shop.html">Wallets</a></li>
+                                    <li><a href="shop.html">Túi</a></li>
+                                    <li><a href="shop.html">Vợt</a></li>
+                                    <li><a href="shop.html">Đá bóng</a></li>
+                                    <li><a href="shop.html">Đá bóng</a></li>
                                 </ul>
                             </div>
                                         <!-- end col-3 -->
@@ -144,8 +202,8 @@
                                 </li>
                             </ul>
                         </li>
-                        <li class="nav-item"><a class="nav-link" href={{ url('categories') }}>Categories</a></li>
-                        <li class="nav-item"><a class="nav-link" href="contact-us.html">Contact Us</a></li>
+                        <li class="nav-item"><a class="nav-link" href={{ url('categories') }}>{{ __('messages.categories') }}</a></li>
+                        <li class="nav-item"><a class="nav-link" href="contact-us.html">{{ __('messages.contact') }}</a></li>
                       
                     </ul>
                 </div>
@@ -189,27 +247,27 @@
         </div>
 
         <ul class="dropdown-menu">
-            @if(in_array(auth()->user()->role, ['admin', 'staff']))
-            <li>
-                <a href="{{ route('admin.dashboard') }}">
-                    <i class="fas fa-user-shield"></i> Chuyển sang Admin
-                </a>
-            </li>
-        @endif
+            @if(auth()->user()->role === 'admin')
+                <li>
+                    <a href="{{ route('admin.dashboard') }}">
+                        <i class="fas fa-user-shield"></i> {{ __('messages.admin_dashboard') }}
+                    </a>
+                </li>
+            @endif
             <li>
                 <a href="{{ route('users.profile.edit') }}">
-                    <i class="fas fa-user-edit"></i> Cập nhật tài khoản
+                    <i class="fas fa-user-edit"></i> {{ __('messages.update_account') }}
                 </a>
             </li>
             <li>
                 <a href="{{ route('order.tracking') }}">
-                    <i class="fas fa-user-edit"></i> Đơn hàng
+                    <i class="fas fa-user-edit"></i>{{ __('messages.orders') }}
                 </a>
             </li>
             <li>
                 <a href="{{ route('logout') }}"
                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                    <i class="fas fa-sign-out-alt"></i>{{ __('messages.logout') }}
                 </a>
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                     @csrf
@@ -217,7 +275,7 @@
             </li>
         </ul>
     @else
-        <a href="{{ route('login') }}" class="btn-login">Đăng nhập</a>
+        <a href="{{ route('login') }}" class="btn-login">{{ __('messages.login') }}</a>
     @endif
 </li>
 
@@ -250,63 +308,70 @@
     
      <!-- Start Footer  -->
      <footer>
-        <div class="footer-main">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-4 col-md-12 col-sm-12">
-                        <div class="footer-widget">
-                            <h4>About ThewayShop</h4>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+    <div class="footer-main">
+        <div class="container">
+            <div class="row">
+                <!-- Cột 1: Về Chúng Tôi -->
+                <div class="col-lg-4 col-md-12 col-sm-12">
+                    <div class="footer-widget">
+                        <h4>{{ __('messages.about_us') }}</h4>
+                        <p>{{ __('messages.new_products') }}</p>
+                        <ul class="social-icons">
+                            <li><a href="#"><i class="fab fa-facebook" aria-hidden="true"></i></a></li>
+                            <li><a href="#"><i class="fab fa-twitter" aria-hidden="true"></i></a></li>
+                            <li><a href="#"><i class="fab fa-linkedin" aria-hidden="true"></i></a></li>
+                            <li><a href="#"><i class="fab fa-google-plus" aria-hidden="true"></i></a></li>
+                            <li><a href="#"><i class="fa fa-rss" aria-hidden="true"></i></a></li>
+                            <li><a href="#"><i class="fab fa-pinterest-p" aria-hidden="true"></i></a></li>
+                            <li><a href="#"><i class="fab fa-whatsapp" aria-hidden="true"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Cột 2: Thông tin liên hệ -->
+                <div class="col-lg-4 col-md-12 col-sm-12">
+                    <div class="footer-link">
+                        <h4>{{ __('messages.contact_info') }}</h4>
+                        <ul>
+                            <li><a href="#">{{ __('messages.about_us') }}</a></li>
+                            <li><a href="#">{{ __('messages.services') }}</a></li>
+                            <li><a href="#">{{ __('messages.address') }}</a></li>
+                            <li><a href="#">{{ __('messages.additional_services') }}</a></li>
+                            <li><a href="#">{{ __('messages.privacy_policy') }}</a></li>
+                            <li><a href="#">{{ __('messages.information') }}</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Cột 3: Liên hệ với chúng tôi -->
+                <div class="col-lg-4 col-md-12 col-sm-12">
+                    <div class="footer-link-contact">
+                        <h4>{{ __('messages.contact_us') }}</h4>
+                        <ul>
+                            <li>
+                                <p><i class="fas fa-map-marker-alt"></i> {{ __('messages.address_details', ['address' => 'Số 2, 17 Kiều Mai, KS 67213']) }}</p>
+                            </li>
+                            <li>
+                                <p><i class="fas fa-phone-square"></i> {{ __('messages.phone') }}: 
+                                    <a href="tel:+1-888705770">+1-888 705 770</a>
                                 </p>
-                            <ul>
-                                <li><a href="#"><i class="fab fa-facebook" aria-hidden="true"></i></a></li>
-                                <li><a href="#"><i class="fab fa-twitter" aria-hidden="true"></i></a></li>
-                                <li><a href="#"><i class="fab fa-linkedin" aria-hidden="true"></i></a></li>
-                                <li><a href="#"><i class="fab fa-google-plus" aria-hidden="true"></i></a></li>
-                                <li><a href="#"><i class="fa fa-rss" aria-hidden="true"></i></a></li>
-                                <li><a href="#"><i class="fab fa-pinterest-p" aria-hidden="true"></i></a></li>
-                                <li><a href="#"><i class="fab fa-whatsapp" aria-hidden="true"></i></a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-12 col-sm-12">
-                        <div class="footer-link">
-                            <h4>Information</h4>
-                            <ul>
-                                <li><a href="#">About Us</a></li>
-                                <li><a href="#">Customer Service</a></li>
-                                <li><a href="#">Our Sitemap</a></li>
-                                <li><a href="#">Terms &amp; Conditions</a></li>
-                                <li><a href="#">Privacy Policy</a></li>
-                                <li><a href="#">Delivery Information</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-12 col-sm-12">
-                        <div class="footer-link-contact">
-                            <h4>Contact Us</h4>
-                            <ul>
-                                <li>
-                                    <p><i class="fas fa-map-marker-alt"></i>Address: Michael I. Days 3756 <br>Preston Street Wichita,<br> KS 67213 </p>
-                                </li>
-                                <li>
-                                    <p><i class="fas fa-phone-square"></i>Phone: <a href="tel:+1-888705770">+1-888 705 770</a></p>
-                                </li>
-                                <li>
-                                    <p><i class="fas fa-envelope"></i>Email: <a href="mailto:contactinfo@gmail.com">contactinfo@gmail.com</a></p>
-                                </li>
-                            </ul>
-                        </div>
+                            </li>
+                            <li>
+                                <p><i class="fas fa-envelope"></i> {{ __('messages.email') }}: 
+                                    <a href="mailto:contactinfo@gmail.com">contactinfo@gmail.com</a>
+                                </p>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
-    </footer>
+    </div>
+</footer>
     <!-- End Footer  -->
    <!-- Start copyright  -->
    <div class="footer-copyright">
-        <p class="footer-company">All Rights Reserved. &copy; 2018 <a href="#">ThewayShop</a> Design By :
-            <a href="https://html.design/">html design</a></p>
+        <p class="footer-company">Tất cả tạo nên thương hiệu &copy; 2018 <a href="#">OceanSport</a> 
     </div>
     <!-- End copyright  -->
 
@@ -354,30 +419,6 @@ $(document).ready(function(){
                 document.getElementById("modalProductImage").setAttribute("src", imageUrl);
                 $("#productImageModal").modal("show"); // Hiển thị modal
             });
-        });
-    });
-</script>
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<!-- AOS -->
-<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
-<!-- Swiper -->
-<script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
-<!-- Glightbox -->
-<script src="https://cdn.jsdelivr.net/npm/glightbox@3.2.0/dist/js/glightbox.min.js"></script>
-<!-- Nice Select -->
-<script src="https://cdn.jsdelivr.net/npm/nice-select2@2.1.0/dist/js/nice-select2.min.js"></script>
-<!-- Owl Carousel -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css" rel="stylesheet">
-<script>
-    $(document).ready(function(){
-        $('.owl-carousel').owlCarousel({
-            loop: true,
-            margin: 10,
-            nav: true,
-            items: 1
         });
     });
 </script>

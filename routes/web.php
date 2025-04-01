@@ -23,6 +23,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\Admin\Reviews\AdminReviewController;
 use App\Http\Controllers\ChatController;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Session;
 
 /*
 |--------------------------------------------------------------------------
@@ -190,3 +192,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/chat/history', [ChatController::class, 'getHistory'])->name('chat.history');
 });
 
+// ==========================language=========================//
+Route::get('lang/{locale}', function ($locale) {
+    if (in_array($locale, ['en', 'vi'])) {
+        Session::put('locale', $locale);
+        App::setLocale($locale);
+    }
+    return back();
+})->name('change.language');
