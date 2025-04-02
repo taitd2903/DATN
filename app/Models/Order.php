@@ -45,4 +45,18 @@ class Order extends Model
     {
         return $this->belongsTo(User::class, 'status_updated_by');
     }
+    public function statusUpdatedBy()
+    {
+        return $this->belongsTo(User::class, 'status_updated_by');
+    }
+
+    public function deliveringBy()
+    {
+        return $this->belongsTo(User::class, 'delivering_by');
+    }
+
+    public function completedBy()
+    {
+        return $this->belongsTo(User::class, 'completed_by');
+    }
 }

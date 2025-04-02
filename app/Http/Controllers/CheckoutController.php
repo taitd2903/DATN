@@ -312,15 +312,19 @@ class CheckoutController extends Controller
         $order->status = $request->status;
         $order->status_updated_at = now();
         $order->status_updated_by = Auth::id();
+        $order->status_updated_by = Auth::id(); // Ai cập nhật trạng thái
 
         // Nếu chuyển sang "Đang giao" và chưa có thời gian giao hàng
         if ($request->status === 'Đang giao' && !$order->delivering_at) {
             $order->delivering_at = now();
+            $order->delivering_by = Auth::id(); // Lưu ID người cập nhật
         }
 
         // Nếu chuyển sang "Hoàn thành" và chưa có thời gian hoàn thành
         if ($request->status === 'Hoàn thành' && !$order->completed_at) {
             $order->completed_at = now();
+            $order->completed_by = Auth::id(); // Lưu ID người cập nhật
+    
         }
 
         $order->save();
