@@ -25,7 +25,10 @@
                         </div>
                         <div class="row g-3 text-muted">
                             <div class="col-md-6">
-                                <p class="mb-2"><i class="fas fa-calendar-alt me-2"></i> Ngày đặt: <strong>{{ $order->created_at->format('d/m/Y H:i') }}</strong></p>
+                                <p class="mb-2"><i class="fas fa-calendar-alt me-2"></i> Ngày đặt hàng: <strong>{{ $order->created_at->format('d/m/Y H:i') }}</strong></p>
+                                <p class="mb-2"><i class="fas fa-shipping-fast me-2"></i> Giao hàng: <span class="badge bg-info px-2 py-1">{{ $order->delivering_at }}</span></p>
+                                <p class="mb-2"><i class="fas fa-check-circle me-2"></i> Hoàn thành: <span class="badge bg-info px-2 py-1">{{ $order->completed_at }}</span></p>
+                                
                                 <p class="mb-2"><i class="fas fa-wallet me-2"></i> Thanh toán: <span class="badge bg-info px-2 py-1">{{ $order->payment_method }}</span></p>
                             </div>
                             <div class="col-md-6">

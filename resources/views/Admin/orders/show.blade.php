@@ -41,6 +41,12 @@
                         <li><strong>Trạng thái thanh toán:</strong> {{ strtoupper($order->payment_status) }}</li>
                         <li><strong>Tổng tiền:</strong> <span class="text-danger fw-bold">{{ number_format($order->total_price, 0, ',', '.') }} VND</span></li>    
                         <li><strong>Ngày đặt hàng:</strong> {{ $order->created_at->format('d/m/Y H:i') }}</li>
+                        <li><strong>Ngày giao hàng:</strong> {{ $order->delivering_at }}</li>
+                        <li><strong>Ngày hoàn thành giao hàng:</strong> {{ $order->completed_at }}</li>
+                        <li><strong>Thời gian cập nhập trạng thái:</strong> {{ $order->status_updated_at }}</li>
+                        <li><strong>Tên người cập nhập đơn hàng:</strong> {{ $order->updatedBy->name ?? 'Không xác định' }}</li>
+                        
+
                     </ul>
                 </div>
             </div>

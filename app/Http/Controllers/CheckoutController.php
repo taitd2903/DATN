@@ -269,32 +269,18 @@ class CheckoutController extends Controller
             foreach ($order->orderItems as $item) {
                 if ($item->variant) {
                     $variant = $item->variant;
-
-                    // Hoàn kho: cộng lại stock_quantity, trừ sold_quantity
                     $variant->stock_quantity += $item->quantity;
-                    $variant->sold_quantity -= $item->quantity;
-
-                    // Đảm bảo sold_quantity không âm
-                    if ($variant->sold_quantity < 0) {
-                        $variant->sold_quantity = 0;
-                    }
-
+                    $variant->sold_quantity = max(0, $variant->sold_quantity - $item->quantity);
                     $variant->save();
                 } else {
                     $product = $item->product;
-
-                    // Hoàn kho: cộng lại stock_quantity, trừ sold_quantity
                     $product->stock_quantity += $item->quantity;
-                    $product->sold_quantity -= $item->quantity;
-
-                    // Đảm bảo sold_quantity không âm
-                    if ($product->sold_quantity < 0) {
-                        $product->sold_quantity = 0;
-                    }
-
+                    $product->sold_quantity = max(0, $product->sold_quantity - $item->quantity);
                     $product->save();
                 }
             }
+
+            // Hoàn lại mã giảm giá nếu có
             if ($order->coupon_code) {
                 $couponCodes = explode(',', $order->coupon_code);
                 foreach ($couponCodes as $code) {
@@ -317,20 +303,31 @@ class CheckoutController extends Controller
             }
         }
 
-        // Cập nhật trạng thái đơn hàng ship COD nếu mà hoàn thành thì chuyển sang thanh toán thành công
-
+        // Nếu đơn hàng là ship COD và hoàn thành, cập nhật trạng thái thanh toán
         if ($order->payment_method === 'cod' && $request->status === 'Hoàn thành') {
-            $order->update([
-                'status' => $request->status,
-                'payment_status' => 'Đã thanh toán',
-            ]);
-        } else {
-            // Cập nhật trạng thái đơn hàng bình thường
-            $order->update(['status' => $request->status]);
+            $order->payment_status = 'Đã thanh toán';
         }
+
+        // Cập nhật trạng thái mới
+        $order->status = $request->status;
+        $order->status_updated_at = now();
+        $order->status_updated_by = Auth::id();
+
+        // Nếu chuyển sang "Đang giao" và chưa có thời gian giao hàng
+        if ($request->status === 'Đang giao' && !$order->delivering_at) {
+            $order->delivering_at = now();
+        }
+
+        // Nếu chuyển sang "Hoàn thành" và chưa có thời gian hoàn thành
+        if ($request->status === 'Hoàn thành' && !$order->completed_at) {
+            $order->completed_at = now();
+        }
+
+        $order->save();
 
         return redirect()->route('admin.orders.index')->with('success', 'Cập nhật trạng thái thành công!');
     }
+
 
     public function show(Order $order)
     {

@@ -20,7 +20,12 @@ class Order extends Model
         'payment_status',
         'note',
         'vnp_txn_ref',
-        'coupon_code'
+        'coupon_code',
+        'status_updated_at',
+        'status_updated_by',
+        'delivering_at',
+        'completed_at'
+
     ];
 
     public function orderItems()
@@ -35,5 +40,9 @@ class Order extends Model
     public function couponUsages()
     {
         return $this->hasMany(CouponUsage::class);
+    }
+    public function updatedBy()
+    {
+        return $this->belongsTo(User::class, 'status_updated_by');
     }
 }
