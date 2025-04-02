@@ -5,7 +5,7 @@
 
 
     <div class="checkout-container">
-        @if ($errors->any())
+        {{-- @if ($errors->any())
             <div class="alert alert-danger">
                 <ul>
                     @foreach ($errors->all() as $error)
@@ -13,7 +13,7 @@
                     @endforeach
                 </ul>
             </div>
-        @endif
+        @endif --}}
         <div class="billing-info">
             <h3>THÔNG TIN THANH TOÁN</h3>
 
@@ -24,12 +24,19 @@
                     <!-- <label for="name">Họ và tên *</label> -->
                     <input type="text" id="name" name="name" value="{{ Auth::user()->name }}"
                         placeholder="Họ và tên *">
+                        @error('name')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
+
                 </div>
 
                 <div class="form-group">
                     <!-- <label for="phone">Số điện thoại *</label> -->
                     <input type="text" id="phone" name="phone" value="{{ Auth::user()->phone }}"
                         placeholder="Số điện thoại *">
+                        @error('phone')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="form-group">

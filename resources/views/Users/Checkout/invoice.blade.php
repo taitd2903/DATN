@@ -36,8 +36,8 @@
                                 <div class="bg-white p-4 rounded-3 shadow-sm">
                                     <h5 class="text-primary fw-semibold mb-3">Thông Tin Thanh Toán</h5>
                                     <div class="d-flex flex-column gap-2">
-                                        <div><strong>Phương thức:</strong> {{ strtoupper($order->payment_method) }}</div>
-                                        <div><strong>Trạng thái:</strong> {{ strtoupper($order->payment_status) }}</div>
+                                        <div><strong>Phương thức:</strong> {{ ($order->payment_method) }}</div>
+                                        <div><strong>Trạng thái:</strong> {{ ($order->payment_status) }}</div>
                                         <div><strong>Tổng tiền:</strong> 
                                             <span class="text-success fw-bold">{{ number_format($order->total_price, 0, ',', '.') }} VND</span>
                                         </div>

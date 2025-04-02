@@ -40,8 +40,8 @@
                             <strong>Trạng thái:</strong>
                             <span class="badge bg-{{ $order->status == 'Thành công' ? 'success' : 'info' }} py-1 px-2">{{ $order->status }}</span>
                         </li>
-                        <li class="list-group-item py-2 d-flex justify-content-between"><strong>Phương thức thanh toán:</strong> <span>{{ strtoupper($order->payment_method) }}</span></li>
-                        <li class="list-group-item py-2 d-flex justify-content-between"><strong>Trạng thái thanh toán:</strong> <span>{{ strtoupper($order->payment_status) }}</span></li>
+                        <li class="list-group-item py-2 d-flex justify-content-between"><strong>Phương thức thanh toán:</strong> <span>{{ ($order->payment_method) }}</span></li>
+                        <li class="list-group-item py-2 d-flex justify-content-between"><strong>Trạng thái thanh toán:</strong> <span>{{ ($order->payment_status) }}</span></li>
                         <li class="list-group-item py-2 d-flex justify-content-between"><strong>Tổng tiền:</strong> <span class="text-danger fw-bold">{{ number_format($order->total_price, 0, ',', '.') }} VND</span></li>
                         <li class="list-group-item py-2 d-flex justify-content-between"><strong>Ngày đặt hàng:</strong> <span>{{ $order->created_at->format('d/m/Y H:i') }}</span></li>
                         <li class="list-group-item py-2 d-flex justify-content-between"><strong>Ngày giao hàng:</strong> <span>{{ $order->delivering_at ?? 'Chưa cập nhật' }}</span></li>
