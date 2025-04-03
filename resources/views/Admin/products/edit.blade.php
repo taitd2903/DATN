@@ -68,24 +68,24 @@
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Giá gốc:</label>
-                        <input type="number" step="0.01" name="variants[{{ $index }}][original_price]" class="form-control" value="{{ old('variants.' . $index . '.original_price', $variant->original_price) }}" required>
+                        <input type="number" step="0.01" name="variants[{{ $index }}][original_price]" class="form-control" value="{{ old('variants.' . $index . '.original_price', $variant->original_price) }}" required max="100000000000">
                     </div>
                 </div>
 
                 <div class="row g-3 mt-2">
                     <div class="col-md-4">
                         <label class="form-label">Giá bán:</label>
-                        <input type="number" step="0.01" name="variants[{{ $index }}][price]" class="form-control" value="{{ old('variants.' . $index . '.price', $variant->price) }}" required>
+                        <input type="number" step="0.01" name="variants[{{ $index }}][price]" class="form-control" value="{{ old('variants.' . $index . '.price', $variant->price) }}" required max="100000000000">
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Tồn kho:</label>
-                        <input type="number" name="variants[{{ $index }}][stock_quantity]" class="form-control" value="{{ old('variants.' . $index . '.stock_quantity', $variant->stock_quantity) }}" required min="0">
+                        <input type="number" name="variants[{{ $index }}][stock_quantity]" class="form-control" value="{{ old('variants.' . $index . '.stock_quantity', $variant->stock_quantity) }}" required min="0"  max="1000000000">
                     </div>
                  
 
                     <div class="col-md-2" style="display: none;">
                         <label>Số lượng đã bán:</label>
-                        <input type="hidden" name="variants[{{ $index }}][sold_quantity]" value="{{ $variant->sold_quantity ?? 0 }}">
+                        <input type="hidden" name="variants[{{ $index }}][sold_quantity]" value="{{ $variant->sold_quantity ?? 0 }}"  max="1000000000">
                     </div>
 
 

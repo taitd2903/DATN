@@ -9,7 +9,11 @@
         </div>
         <a href="{{ route('admin.products.create') }}" class="btn btn-primary">Thêm sản phẩm</a>
     </div>
-
+@if(session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
     <div class="mb-3 d-flex gap-2">
         <input type="text" id="filter-name" class="form-control w-20" placeholder="Lọc theo tên sản phẩm...">
         <select id="filter-category" class="form-control w-20">

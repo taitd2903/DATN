@@ -205,7 +205,7 @@ public function destroy(Product $product) {
     $product->is_delete = true;
     $product->save();
 
-    return redirect()->route('admin.products.index')->with('success', 'Sản phẩm đã được đánh dấu là xóa!');
+    return redirect()->route('admin.products.index')->with('success', 'Sản phẩm đã được cho vào thùng rác!');
 }
 
 

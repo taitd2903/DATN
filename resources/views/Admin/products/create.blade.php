@@ -95,21 +95,21 @@ function addVariant() {
 
             <div class="col-md-2">
                 <label>Giá gốc:</label>
-                <input type="number" class="form-control" step="0.01" name="variants[${variantIndex}][original_price]" required>
+                <input type="number" class="form-control" step="0.01" name="variants[${variantIndex}][original_price]" required min="0" max="100000000000">
             </div>
 
             <div class="col-md-2">
                 <label>Giá bán:</label>
-                <input type="number" class="form-control" step="0.01" name="variants[${variantIndex}][price]" required>
+                <input type="number" class="form-control" step="0.01" name="variants[${variantIndex}][price]" required min="0" max="100000000000">
             </div>
 
             <div class="col-md-2">
                 <label>Số lượng tồn kho:</label>
-                <input type="number" class="form-control" name="variants[${variantIndex}][stock_quantity]" required min="0">
+                <input type="number" class="form-control" name="variants[${variantIndex}][stock_quantity]" required min="0" max="1000000000">
             </div>
 <div class="col-md-2" style="display: none;">
     <label>Số lượng đã bán:</label>
-    <input type="hidden" name="variants[${variantIndex}][sold_quantity]" value="0">
+    <input type="hidden" name="variants[${variantIndex}][sold_quantity]" value="0"max="1000000000">
 </div>
             <div class="col-md-2">
                 <label>Ảnh biến thể:</label>

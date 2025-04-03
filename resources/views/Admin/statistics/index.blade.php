@@ -9,10 +9,7 @@
         <!-- Tabs Navigation -->
         <ul class="nav nav-tabs" id="statsTabs" role="tablist">
             <li class="nav-item">
-                <a class="nav-link active" id="overview-tab" data-toggle="tab" href="#overview" role="tab">Tổng quan</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="revenue-tab" data-toggle="tab" href="#revenue" role="tab">Doanh thu</a>
+                <a class="nav-link active" id="revenue-tab" data-toggle="tab" href="#revenue" role="tab">Doanh thu</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" id="category-revenue-tab" data-toggle="tab" href="#category-revenue" role="tab">Doanh thu theo danh mục</a>
@@ -23,49 +20,14 @@
             <li class="nav-item">
                 <a class="nav-link" id="top-selling-tab" data-toggle="tab" href="#top-selling" role="tab">Sản phẩm bán chạy</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" id="overview-tab" data-toggle="tab" href="#overview" role="tab">Tổng quan</a>
+            </li>
         </ul>
 
         <div class="tab-content mt-3" id="statsTabsContent">
-            <!-- Tổng quan -->
-            <div class="tab-pane fade show active" id="overview" role="tabpanel">
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="card border-left-primary shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Tổng sản phẩm</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalProducts }}</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card border-left-success shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Tổng danh mục</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalCategory }}</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card border-left-info shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Tổng số lượng trong kho</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalStock }}</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card border-left-warning shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Tổng đã bán</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalSoldFiltered }}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Doanh thu -->
-            <div class="tab-pane fade" id="revenue" role="tabpanel">
+            <div class="tab-pane fade show active" id="revenue" role="tabpanel">
                 <h2 class="h4 mt-4">Doanh thu</h2>
                 <div class="mb-3">
                     <label for="filterDate" class="form-label">Lọc theo ngày:</label>
@@ -73,6 +35,8 @@
                 </div>
                 <canvas id="revenueChart"></canvas>
             </div>
+
+        
 
             <!-- Doanh thu theo danh mục -->
             <div class="tab-pane fade" id="category-revenue" role="tabpanel">
@@ -141,6 +105,44 @@
                         @endforeach
                     </tbody>
                 </table>
+            </div>
+
+                <!-- Tổng quan -->
+                <div class="tab-pane fade" id="overview" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="card border-left-primary shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Tổng sản phẩm</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalProducts }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-left-success shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Tổng danh mục</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalCategory }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-left-info shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Tổng số lượng trong kho</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalStock }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-left-warning shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Tổng đã bán</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalSoldFiltered }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     @else
