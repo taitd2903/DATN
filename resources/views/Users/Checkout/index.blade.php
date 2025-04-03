@@ -5,15 +5,7 @@
 
 
     <div class="checkout-container">
-        {{-- @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif --}}
+      
         <div class="billing-info">
             <h3>THÔNG TIN THANH TOÁN</h3>
 
@@ -36,46 +28,44 @@
                         placeholder="Số điện thoại *">
                         @error('phone')
                         <div class="text-danger">{{ $message }}</div>
-                    @enderror
+                        @enderror
                 </div>
 
                 <div class="form-group">
                     <!-- <label for="email">Địa chỉ Email</label> -->
                     <input type="email" id="email" name="email" value="{{ Auth::user()->email }}"
                         placeholder="Email *">
+                        @error('Email')
+                        <div class="text-danger">{{ $message }}</div>
+                        @enderror
                 </div>
 
-
-
                 <div class="form-group">
-                    <!-- <label for="province">Tỉnh/Thành phố:</label> -->
-                    <select id="province" name="city" onchange="loadDistricts()">
-                        <option value="">Chọn tỉnh/thành phố</option>
+                    <label for="province">Tỉnh/Thành phố</label>
+                    <select id="province" name="city" class="form-control" >
+                        <option value="" disabled selected>Chọn tỉnh/thành phố</option>
                     </select>
-                    <input type="hidden" name="province_name" id="province_name" placeholder="Tình/Thành phố *">
                 </div>
-
+            
                 <div class="form-group">
-                    <!-- <label for="district">Quận/Huyện:</label> -->
-                    <select id="district" name="district" onchange="loadWards()">
-                        <option value="">Chọn quận/huyện</option>
+                    <label for="district">Quận/Huyện</label>
+                    <select id="district" name="district" class="form-control" >
+                        <option value="" disabled selected>Chọn quận/huyện</option>
                     </select>
-                    <input type="hidden" name="district_name" id="district_name">
                 </div>
-
+            
                 <div class="form-group">
-                    <!-- <label for="ward">Xã/Phường:</label> -->
-                    <select id="ward" name="ward">
-                        <option value="">Chọn xã/phường</option>
+                    <label for="ward">Xã/Phường</label>
+                    <select id="ward" name="ward" class="form-control" >
+                        <option value="" disabled selected>Chọn xã/phường</option>
                     </select>
-                    <input type="hidden" name="ward_name" id="ward_name">
                 </div>
-
+            
                 <div class="form-group">
-                    <!-- <label for="address">Địa chỉ cụ thể *</label> -->
-                    <input type="text" id="address" name="address" value="{{ old('address') }}"
-                        placeholder="Địa chỉ cụ thể *">
+                    <label for="address">Địa chỉ chi tiết</label>
+                    <input type="text" id="address" name="address" class="form-control" value="{{ $user->address ?? '' }}" >
                 </div>
+              
                 <div class="commitment">
                     <p><strong>🔒 Cam kết bảo mật:</strong> Mọi thông tin của bạn sẽ được bảo vệ tuyệt đối và chỉ sử dụng để xử lý đơn hàng.</p>
                     <p>✅ Giao hàng nhanh chóng – Thanh toán an toàn – Hỗ trợ tận tình.</p>
@@ -367,67 +357,127 @@
 
     {{-- Đổ dữ liệu API về tỉnh ,thành phố, xã --}}
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        // Hàm hiển thị loading indicator (tùy chọn)
+        function showLoading(selectElement, isLoading) {
+            if (isLoading) {
+                selectElement.disabled = true;
+                selectElement.innerHTML = '<option value="" disabled selected>Đang tải...</option>';
+            } else {
+                selectElement.disabled = false;
+            }
+        }
+    
+        // Load tỉnh/thành phố
+        document.addEventListener('DOMContentLoaded', () => {
+            const provinceSelect = document.getElementById("province");
+            const districtSelect = document.getElementById("district");
+            const wardSelect = document.getElementById("ward");
+    
+            // Hiển thị loading
+            showLoading(provinceSelect, true);
+    
             fetch("https://provinces.open-api.vn/api/p/")
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) throw new Error('Không thể tải danh sách tỉnh/thành phố');
+                    return response.json();
+                })
                 .then(data => {
-                    let provinceSelect = document.getElementById("province");
+                    provinceSelect.innerHTML = '<option value="" disabled selected>Chọn tỉnh/thành phố</option>';
                     data.forEach(province => {
                         let option = new Option(province.name, province.code);
                         provinceSelect.add(option);
+                        if (province.code == "{{ $user->city ?? '' }}") {
+                            option.selected = true;
+                            loadDistricts(province.code);
+                        }
                     });
                 })
-                .catch(error => console.error("Lỗi tải dữ liệu tỉnh:", error));
+                .catch(error => {
+                    console.error(error);
+                    provinceSelect.innerHTML = '<option value="" disabled selected>Lỗi tải dữ liệu</option>';
+                })
+                .finally(() => {
+                    showLoading(provinceSelect, false);
+                });
+    
+            // Thêm sự kiện change ngay từ đầu
+            provinceSelect.addEventListener('change', (e) => {
+                districtSelect.innerHTML = '<option value="" disabled selected>Chọn quận/huyện</option>';
+                wardSelect.innerHTML = '<option value="" disabled selected>Chọn xã/phường</option>';
+                if (e.target.value) {
+                    loadDistricts(e.target.value);
+                }
+            });
+    
+            districtSelect.addEventListener('change', (e) => {
+                wardSelect.innerHTML = '<option value="" disabled selected>Chọn xã/phường</option>';
+                if (e.target.value) {
+                    loadWards(e.target.value);
+                }
+            });
         });
-
-        function loadDistricts() {
-            let provinceSelect = document.getElementById("province");
-            let provinceCode = provinceSelect.value;
-            let provinceName = provinceSelect.options[provinceSelect.selectedIndex].text;
-            document.getElementById("province_name").value = provinceName; // Gán tên tỉnh vào input ẩn
-
-            let districtSelect = document.getElementById("district");
-            districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
-
-            if (!provinceCode) return;
-
-            fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`)
-                .then(response => response.json())
+    
+        // Load quận/huyện
+        function loadDistricts(cityCode) {
+            const districtSelect = document.getElementById("district");
+            showLoading(districtSelect, true);
+    
+            fetch(`https://provinces.open-api.vn/api/p/${cityCode}?depth=2`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Không thể tải danh sách quận/huyện');
+                    return response.json();
+                })
                 .then(data => {
+                    districtSelect.innerHTML = '<option value="" disabled selected>Chọn quận/huyện</option>';
                     data.districts.forEach(district => {
                         let option = new Option(district.name, district.code);
                         districtSelect.add(option);
+                        if (district.code == "{{ $user->district ?? '' }}") {
+                            option.selected = true;
+                            loadWards(district.code);
+                        }
                     });
                 })
-                .catch(error => console.error("Lỗi tải dữ liệu quận:", error));
+                .catch(error => {
+                    console.error(error);
+                    districtSelect.innerHTML = '<option value="" disabled selected>Lỗi tải dữ liệu</option>';
+                })
+                .finally(() => {
+                    showLoading(districtSelect, false);
+                });
         }
-
-        function loadWards() {
-            let districtSelect = document.getElementById("district");
-            let districtCode = districtSelect.value;
-            let districtName = districtSelect.options[districtSelect.selectedIndex].text;
-            document.getElementById("district_name").value = districtName; // Gán tên quận vào input ẩn
-
-            let wardSelect = document.getElementById("ward");
-            wardSelect.innerHTML = '<option value="">Chọn xã/phường</option>';
-
-            if (!districtCode) return;
-
+    
+        // Load xã/phường
+        function loadWards(districtCode) {
+            const wardSelect = document.getElementById("ward");
+            showLoading(wardSelect, true);
+    
             fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) throw new Error('Không thể tải danh sách xã/phường');
+                    return response.json();
+                })
                 .then(data => {
+                    wardSelect.innerHTML = '<option value="" disabled selected>Chọn xã/phường</option>';
                     data.wards.forEach(ward => {
                         let option = new Option(ward.name, ward.code);
                         wardSelect.add(option);
+                        if (ward.code == "{{ $user->ward ?? '' }}") {
+                            option.selected = true;
+                        }
                     });
                 })
-                .catch(error => console.error("Lỗi tải dữ liệu phường:", error));
+                .catch(error => {
+                    console.error(error);
+                    wardSelect.innerHTML = '<option value="" disabled selected>Lỗi tải dữ liệu</option>';
+                })
+                .finally(() => {
+                    showLoading(wardSelect, false);
+                });
         }
-
-        document.getElementById("ward").addEventListener("change", function() {
-            let wardName = this.options[this.selectedIndex].text;
-            document.getElementById("ward_name").value = wardName; // Gán tên xã vào input ẩn
-        });
+    
+        // Bật/tắt chỉnh sửa địa chỉ
+        
     </script>
     </div>
     @include('Users.chat')

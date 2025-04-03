@@ -28,7 +28,13 @@
                                         <div><i class="fas fa-user me-2 text-muted"></i> {{ $order->user->name }}</div>
                                         <div><i class="fas fa-envelope me-2 text-muted"></i> {{ $order->user->email }}</div>
                                         <div><i class="fas fa-phone me-2 text-muted"></i> {{ $order->customer_phone ?? 'Chưa cập nhật' }}</div>
-                                        <div><i class="fas fa-map-marker-alt me-2 text-muted"></i> {{ $order->note ?? 'Chưa có địa chỉ' }}</div>
+                                        <div>
+                                            <i class="fas fa-map-marker-alt me-2 text-muted"></i>
+                                            <span id="full-address">
+                                                {{ implode(', ', array_filter([$order->customer_address, $order->ward, $order->district, $order->city])) ?? 'Chưa có địa chỉ' }}
+
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

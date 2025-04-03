@@ -159,6 +159,9 @@ class CheckoutController extends Controller
             'customer_address' => $request->address,
             'payment_status' => "Chưa thanh toán",
             'coupon_code' => $couponCodeString,
+            'city' => $request->city,
+            'district' => $request->district,
+            'ward' => $request->ward,
         ]);
 
         // Lưu sản phẩm vào order_items và cập nhật kho hàng
