@@ -47,7 +47,9 @@
                                         {{ $order->payment_status }}
                                     </span>
                                 </p>
-                                <p class="mb-2"><i class="fas fa-map-marker-alt me-2"></i> Địa chỉ: {{ $order->note }}
+                                <p class="mb-2"><i class="fas fa-map-marker-alt me-2"></i> Địa chỉ: 
+                             {{ $order->customer_address}}, <span id="ward-name"></span> ,<span id="district-name"></span>, <span id="city-name"></span>
+
                                 </p>
                             </div>
                         </div>
@@ -187,3 +189,59 @@
     <!-- Thêm Animate.css từ CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 @endsection
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+    // Lấy mã từ các phần tử HTML (hoặc lấy từ PHP như sau)
+    const cityCode = "{{ $order->city }}";
+    const districtCode = "{{ $order->district }}";
+    const wardCode = "{{ $order->ward }}";
+
+    // Hàm lấy tên tỉnh/thành phố từ mã cityCode
+    fetch(`https://provinces.open-api.vn/api/p/`)
+        .then(response => response.json())
+        .then(data => {
+            let cityName = "";
+            data.forEach(province => {
+                if (province.code == cityCode) {
+                    cityName = province.name;
+                }
+            });
+            // Cập nhật tên tỉnh/thành phố
+            document.getElementById("city-name").innerText = cityName;
+        })
+        .catch(error => console.error("Lỗi tải dữ liệu tỉnh/thành phố:", error));
+
+    // Hàm lấy tên quận/huyện từ mã districtCode
+    fetch(`https://provinces.open-api.vn/api/p/${cityCode}?depth=2`)
+        .then(response => response.json())
+        .then(data => {
+            let districtName = "";
+            data.districts.forEach(district => {
+                if (district.code == districtCode) {
+                    districtName = district.name;
+                }
+            });
+            // Cập nhật tên quận/huyện
+            document.getElementById("district-name").innerText = districtName;
+        })
+        .catch(error => console.error("Lỗi tải dữ liệu quận/huyện:", error));
+
+    // Hàm lấy tên xã/phường từ mã wardCode
+    fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`)
+        .then(response => response.json())
+        .then(data => {
+            let wardName = "";
+            data.wards.forEach(ward => {
+                if (ward.code == wardCode) {
+                    wardName = ward.name;
+                }
+            });
+            // Cập nhật tên xã/phường
+            document.getElementById("ward-name").innerText = wardName;
+        })
+        .catch(error => console.error("Lỗi tải dữ liệu xã/phường:", error));
+});
+
+</script>
