@@ -92,8 +92,8 @@
                 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                     <div class="custom-select-box">
                     <select style="color: white"  id="language-switcher" class="form-control" onchange="changeLanguage(this.value)">
-    <option value="en" {{ app()->getLocale() == 'en' ? 'selected' : '' }}>🇺🇸 English</option>
-    <option value="vi" {{ app()->getLocale() == 'vi' ? 'selected' : '' }}>🇻🇳 Tiếng Việt</option>
+    <option value="en" {{ app()->getLocale() == 'en' ? 'selected' : '' }}>🇺🇸 </option>
+    <option value="vi" {{ app()->getLocale() == 'vi' ? 'selected' : '' }}>🇻🇳</option>
 </select>
 
 <script>
@@ -132,26 +132,19 @@
             <div class="container">
                 <!-- Start Header Navigation -->
 
-                <div class="navbar-header" style="margin-right:150px">
-                <a href="{{ url('/') }}" class="logo d-flex align-items-center me-auto me-xl-0">
-                     <h1 class="sitename">OceanSport</h1>
-                      <span>.</span>
-                 </a>
-                </div>
-         <div class="navbar-header">
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbars-rs-food" aria-expanded="false" aria-label="Toggle navigation">
+               <!-- Start Header Navigation -->
+               <div class="navbar-header">
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbars-rs-food" aria-expanded="false" aria-label="Toggle navigation">
                     <i class="fa fa-bars"></i>
                 </button>
-
+                    <a class="navbar-brand" href="{{ url('/') }}"><img src="{{ asset('assets/img/logoo.png') }}" class="logo" alt=""></a>
                 </div>
                 <!-- End Header Navigation -->
 
                 <!-- Collect the nav links, forms, and other content for toggling -->
-                <div class="collapse navbar-collapse" id="navbar-menu" >
+                <div class="collapse navbar-collapse" id="navbar-menu">
                     <ul class="nav navbar-nav ml-auto" data-in="fadeInDown" data-out="fadeOutUp">
                         <li class="nav-item active"><a class="nav-link" href="index.html">{{ __('messages.home') }}</a></li>
-                        <li class="nav-item"><a class="nav-link" href="about.html">{{ __('messages.about') }}</a></li>
-
                         <li class="dropdown megamenu-fw">
                             <a href="#" class="nav-link dropdown-toggle arrow" data-toggle="dropdown">{{ __('messages.products') }}</a>
                             <ul class="dropdown-menu megamenu-content" role="menu">
@@ -210,34 +203,18 @@
                 <!-- /.navbar-collapse -->
 
 
- <!-- Nút Giỏ Hàng -->
-<!-- <li class="cart-icon">
-    <a href="{{ route('cart.index') }}">
-        <i class="fas fa-shopping-cart"></i>
-        <span class="cart-count"></span>
-    </a>
-</li> -->
-
-<!-- Nút Sản Phẩm Yêu Thích -->
-<!-- <li class="wishlist-icon">
-    <a href="#">
-        <i class="fas fa-heart"></i>
-        <span class="wishlist-count"></span>
-    </a>
-</li> -->
+                <div class="attr-nav">
+                    <ul>
+                        <li class="search"><a href="#"> <i class="fas fa-heart"></i></a></li>
+                        <li class="side-menu"><a href="{{ route('cart.index') }}">
+						<i class="fa fa-shopping-bag"></i>
+                            <span class="badge">3</span>
+					</a></li>
+                    
 
 <!-- Đăng nhập  -->
-<li class="user-dropdown" style="margin-right: 45px;">
+<li class="user-dropdown">
 
-    <a href="{{ route('cart.index') }}">
-            <i class="fas fa-shopping-cart"></i>
-            <span class="cart-count"></span>
-        </a>
-        
-    <a href="#">
-        <i class="fas fa-heart"></i>
-        <span class="wishlist-count"></span>
-    </a>
     @if(Auth::check())
         <div class="user-info">
             @if (!empty(Auth::user()->image) && file_exists(public_path('storage/' . Auth::user()->image)))
@@ -285,25 +262,15 @@
             </li>
         </ul>
     @else
-        <a href="{{ route('login') }}" class="btn-login"><i class="fas fa-user"></i></a>
+    <li class="btn-login hide-on-mobile"><a href="{{ route('login') }}"><i class="fas fa-user"></i></a></li>
+
     @endif
 </li>
+</div>
 
 
             </div>
         </nav>
-        <!-- End Navigation -->
-          <!-- Start Top Search -->
-    <div class="top-search">
-        <div class="container">
-            <div class="input-group">
-                <span class="input-group-addon"><i class="fa fa-search"></i></span>
-                <input type="text" class="form-control" placeholder="Search">
-                <span class="input-group-addon close-search"><i class="fa fa-times"></i></span>
-            </div>
-        </div>
-    </div>
-    <!-- End Top Search -->
    
     </header>
     <!-- End Main Top -->

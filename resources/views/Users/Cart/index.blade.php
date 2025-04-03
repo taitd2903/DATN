@@ -4,8 +4,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <div class="cart-container">
-        <h2 style="text-align:center">GIỎ HÀNG CỦA BẠN</h2>
-        <br>
+    <h2 style="text-align:center">{{ __('messages.your_cart') }}</h2>
+            <br>
 
         @if (session('success'))
             <div class="alert alert-success" id="success-message">
@@ -33,13 +33,13 @@
             <table class="cart-table">
                 <thead>
                     <tr>
-                        <th></th>
-                        <th>Ảnh</th>
-                        <th>Sản phẩm</th>
-                        <th>Giá</th>
-                        <th>Số lượng</th>
-                        <th>Tổng</th>
-                        <th></th>
+                    <th></th>
+                    <th>{{ __('messages.image') }}</th>
+                    <th>{{ __('messages.product') }}</th>
+                    <th>{{ __('messages.price') }}</th>
+                    <th>{{ __('messages.quantity') }}</th>
+                    <th>{{ __('messages.total') }}</th>
+                    <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -90,29 +90,29 @@
             </table>
          <div class="select-all-container">
                  <input type="checkbox" id="select-all">
-                  <label for="select-all">Chọn tất cả</label>
+                  <label for="select-all">{{ __('messages.select_all') }}</label>
                 </div>
             <!-- <div
                 style="font-family: Arial, sans-serif; padding: 10px; margin-top: 15px; background-color: #f4f4f4; border: 1px solid #ccc; border-radius: 5px; display: flex; align-items: center; gap: 10px;">
                 <input type="checkbox" id="select-all">Chọn tất cả
             </div> -->
             <div class="cart-summary">
-                <h3>Tóm tắt đơn hàng</h3>
-                <b><p>Tạm tính: <span class="total-amount">{{ number_format($total, 0, ',', '.') }} đ</span></p></b>
+                <h3>{{ __('messages.order_summary') }}</h3>
+                <b><p>{{ __('messages.subtotal') }}: <span class="total-amount">{{ number_format($total, 0, ',', '.') }} đ</span></p></b>
                 <div class="cart-actions">
                     <!-- <a href="{{ route('products.index') }}" class="btn btn-secondary">Tiếp tục mua hàng</a> -->
                 
                     <a class="back-btn" href="{{ route('products.index') }}">
-                    <i class="fas fa-arrow-left"></i> Tiếp tục mua hàng
+                    <i class="fas fa-arrow-left"></i> {{ __('messages.continue_shopping') }}
                 </a>
                 <a class="back-btn" href="{{ route('checkout') }}" id="checkout-btn">
-                    Thanh toán <i class="fas fa-arrow-right"></i>
+                {{ __('messages.checkout') }} <i class="fas fa-arrow-right"></i>
                 </a>
                     <!-- <a href="{{ route('checkout') }}" class="btn btn-checkout" id="checkout-btn">Thanh toán</a> -->
                 </div>
             </div>
         @else
-            <p>Giỏ hàng của bạn đang trống.</p>
+            <p>{{ __('messages.cart_empty') }}</p>
         @endif
     </div>
 
