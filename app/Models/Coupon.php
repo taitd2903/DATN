@@ -28,6 +28,7 @@ class Coupon extends Model
         'gender',
         'minimum_order_value',
         'discount_target',
+        'is_delete'
     ];
 
     protected $casts = [

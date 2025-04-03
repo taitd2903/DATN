@@ -20,6 +20,7 @@ class CouponController extends Controller
         $query->when($request->status !== null && $request->status !== '', function ($q) use ($request) {
             return $q->where('status', $request->status);
         });
+        $query->where('is_delete', false);
         $coupons = $query->orderBy('created_at', 'desc')->paginate(10);
         return view('Admin.Coupons.index', compact('coupons'));
     }
@@ -175,10 +176,10 @@ class CouponController extends Controller
 
     public function destroy(Coupon $coupon)
     {
-        $coupon->users()->detach();
-        $coupon->delete();
+        $coupon->is_delete = true;
+        $coupon->save();
 
-        return redirect()->route('admin.coupons.index')->with('success', 'Coupon đã xoá thành công!');
+        return redirect()->route('admin.coupons.index')->with('success', 'Coupon đã được chuyển vào thùng rác!');
     }
 
     public function isEligibleForCoupon(User $user, Coupon $coupon)

@@ -12,7 +12,9 @@
         <li class="nav-item">
             <a class="nav-link" id="product-tab" data-toggle="tab" href="#product" role="tab">Sản phẩm</a>
         </li>
-        
+        <li class="nav-item">
+            <a class="nav-link" id="coupon-tab" data-toggle="tab" href="#coupon" role="tab">Mã giảm giá</a>
+        </li>
     </ul>
 
     <div class="tab-content mt-3" id="statsTabsContent">
@@ -71,6 +73,40 @@
                 </tbody>
             </table>
         </div>
+        <!-- Mã giảm giá -->
+        <div class="tab-pane fade" id="coupon" role="tabpanel">
+            <h2 class="h4 mt-4">Mã giảm giá</h2>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Mã giảm giá</th>
+                        <th>Mô tả</th>
+                        <th>Giá trị giảm</th>
+                        <th>Trạng thái</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($coupons as $coupon)
+                        <tr>
+                            <td>{{ $coupon->code }}</td>
+                            <td>{{ $coupon->description ?? 'Không có mô tả' }}</td>
+                            <td>{{ number_format($coupon->discount_value, 0, ',', '.') }} {{ $coupon->discount_type == 1 ? '%' : 'VND' }}</td>
+                            <td>{{ $coupon->is_delete ? 'Đã xóa' : 'Còn hoạt động' }}</td>
+                            <td>
+                                <form action="{{ route('admin.trash.restore', $coupon->id) }}" method="POST" style="display:inline;">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit" class="btn btn-success btn-sm">Khôi phục</button>
+                                </form>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
     </div>
 </div>
 @endsection

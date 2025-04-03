@@ -79,6 +79,28 @@ class CheckoutController extends Controller
             return redirect()->route('cart.index')->with('error', 'Giỏ hàng trống.');
         }
 
+        $priceChanged = false;
+        $changedItems = [];
+        foreach ($cartItems as $item) {
+            if ($item->variant) {
+                $variant = ProductVariant::find($item->variant_id);
+                $lastUpdated = $variant->updated_at;
+            } else {
+                $lastUpdated = $item->product->updated_at;
+            }
+    
+            if ($lastUpdated > $item->created_at) {
+                $priceChanged = true;
+                $changedItems[] = $item->product->name;
+                break;
+            }
+        }
+    
+        if ($priceChanged) {
+            $message = 'Giá của sản phẩm "' . implode(', ', $changedItems) . '" đã thay đổi. Vui lòng kiểm tra lại giỏ hàng.';
+            return redirect()->route('cart.index')->with('error', $message);
+        }
+
         $totalPrice = $cartItems->sum(fn($item) => $item->price * $item->quantity);
         $shippingFee = 30000;
         $appliedCoupons = $request->session()->get('applied_coupons', []);

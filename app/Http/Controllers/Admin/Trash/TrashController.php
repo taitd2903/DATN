@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Trash;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\Coupon;
 use Illuminate\Http\Request;
 
 class TrashController extends Controller
@@ -12,7 +13,8 @@ class TrashController extends Controller
     {
         $products = Product::where('is_delete', true)->get();
         $categories = Category::whereNull('parent_id')->with('children')->get();
-        return view('Admin.trash.index', compact('products', 'categories'));
+        $coupons = Coupon::where('is_delete', true)->get();
+        return view('Admin.trash.index', compact('products', 'categories', 'coupons'));
     }
 
 
@@ -25,6 +27,12 @@ class TrashController extends Controller
             $product->is_delete = false;
             $product->save();
             return redirect()->route('admin.trash.index')->with('success', 'Sản phẩm đã được phục hồi!');
+        }
+        $coupon = Coupon::where('id', $id)->where('is_delete', true)->first();
+        if ($coupon) {
+            $coupon->is_delete = false;
+            $coupon->save();
+            return redirect()->route('admin.trash.index')->with('success', 'Mã giảm giá đã được phục hồi!');
         }
         return redirect()->route('admin.trash.index')->with('error', 'Sản phẩm này không thể phục hồi vì không tồn tại hoặc không bị xóa!');
     }
