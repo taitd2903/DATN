@@ -41,7 +41,7 @@ class CartController extends Controller
         $newQuantity = $currentQuantity + $request->quantity;
 
         if ($variant->stock_quantity < $newQuantity) {
-            return redirect()->back()->with('error', "Bạn đã có {$variant->stock_quantity} sản phẩm trong giỏ hàng.");
+            return redirect()->back()->with('error', "Vui lòng kiểm tra lại số lượng tồn kho!");
         }
 
         if ($cartItem) {

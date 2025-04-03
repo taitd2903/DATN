@@ -13,8 +13,8 @@ class CouponController extends Controller
     public function index(Request $request)
     {
         Coupon::where('status', 1)
-        ->where('end_date', '<', Carbon::today())
-        ->update(['status' => 2]);
+            ->where('end_date', '<', Carbon::today())
+            ->update(['status' => 2]);
 
         $query = Coupon::query();
         $query->when($request->status !== null && $request->status !== '', function ($q) use ($request) {
@@ -26,19 +26,23 @@ class CouponController extends Controller
 
     public function create()
     {
-        // Lấy danh sách người dùng để hiển thị nếu chọn "Người dùng cụ thể"
         $users = User::select('id', 'name', 'email')->get();
         return view('Admin.Coupons.create', compact('users'));
     }
 
     public function store(Request $request)
     {
-        // Validate dữ liệu đầu vào
         $request->validate([
             'code' => 'required|string|max:255|unique:coupons,code',
             'description' => 'nullable|string',
             'discount_type' => 'required|integer|in:1,2',
-            'discount_value' => 'required|numeric|min:0',
+            'discount_value' => ['required','numeric','min:0',
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->discount_type == 1 && $value > 100) {
+                        $fail('Giá trị giảm không được vượt quá 100%.');
+                    }
+                },
+            ],
             'start_date' => 'required|date|after_or_equal:today',
             'end_date' => 'required|date|after:start_date',
             'usage_limit' => 'required|integer|min:1',
@@ -47,7 +51,7 @@ class CouponController extends Controller
             'max_discount_amount' => 'nullable|integer|min:0',
             'minimum_order_value' => 'nullable|numeric|min:0',
             'user_voucher_limit' => 'required|integer|in:1,2,3', // 1: Tất cả, 2: Người cụ thể, 3: Giới tính
-            'selected_users' => 'nullable|array',  // Danh sách ID người dùng (chỉ khi chọn "Người dùng cụ thể")
+            'selected_users' => 'nullable|array',
             'title' => 'nullable|string|max:255',
             'discount_target' => 'required|in:order_total,shipping_fee',
         ], [
@@ -81,10 +85,8 @@ class CouponController extends Controller
             'minimum_order_value.min' => 'Giá trị tối thiểu đơn hàng không thể nhỏ hơn 0.',
         ]);
 
-        // Tạo coupon mới
         $coupon = Coupon::create($request->except('selected_users'));
 
-        // Nếu chọn "Người dùng cụ thể", gán danh sách người dùng vào bảng trung gian coupon_user
         if ($request->user_voucher_limit == 2 && $request->has('selected_users')) {
             $coupon->users()->sync($request->selected_users);
         }
@@ -94,20 +96,25 @@ class CouponController extends Controller
 
     public function edit(Coupon $coupon)
     {
-        // Lấy danh sách người dùng cho mục chọn "Người dùng cụ thể"
         $users = User::select('id', 'name', 'email')->get();
         return view('Admin.Coupons.edit', compact('coupon', 'users'));
     }
 
     public function update(Request $request, Coupon $coupon)
     {
-        // Validate dữ liệu đầu vào
         $request->validate([
             'code' => 'required|string|max:255|unique:coupons,code,' . $coupon->id,
             'description' => 'nullable|string',
             'discount_type' => 'required|integer|in:1,2',
-            'discount_value' => 'required|numeric|min:0',
-            'start_date' => 'required','date',
+            'discount_value' => ['required','numeric','min:0',
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->discount_type == 1 && $value > 100) {
+                        $fail('Giá trị giảm không được vượt quá 100%.');
+                    }
+                },
+            ],
+            'start_date' => 'required',
+            'date',
             function ($attribute, $value, $fail) use ($coupon) {
                 if ($value != $coupon->start_date && $value < now()->toDateString()) {
                     $fail('Ngày bắt đầu phải từ hôm nay trở đi khi thay đổi.');
@@ -119,7 +126,7 @@ class CouponController extends Controller
             'status' => 'required|integer|in:1,2',
             'max_discount_amount' => 'nullable|integer|min:0',
             'user_voucher_limit' => 'required|integer|in:1,2,3', // 1: Tất cả, 2: Người cụ thể, 3: Giới tính
-            'selected_users' => 'nullable|array',  // Danh sách ID người dùng (chỉ khi chọn "Người dùng cụ thể")
+            'selected_users' => 'nullable|array',
             'title' => 'nullable|string|max:255',
             'discount_target' => 'required|in:order_total,shipping_fee',
         ], [
@@ -153,16 +160,13 @@ class CouponController extends Controller
             'minimum_order_value.min' => 'Giá trị tối thiểu đơn hàng không thể nhỏ hơn 0.',
         ]);
 
-        // Cập nhật dữ liệu
         $coupon->update($request->except('selected_users'));
 
-        // Nếu loại giới hạn người dùng thay đổi, cần cập nhật lại danh sách
-        if ($request->user_voucher_limit == 2) { // Chọn "Người dùng cụ thể"
+        if ($request->user_voucher_limit == 2) {
             if ($request->has('selected_users')) {
-                $coupon->users()->sync($request->selected_users); // Cập nhật danh sách người dùng
+                $coupon->users()->sync($request->selected_users);
             }
         } else {
-            // Nếu chuyển sang "Tất cả" hoặc "Giới tính", xóa danh sách người dùng cũ
             $coupon->users()->detach();
         }
 
@@ -171,26 +175,19 @@ class CouponController extends Controller
 
     public function destroy(Coupon $coupon)
     {
-        // Xóa danh sách người dùng trước khi xóa coupon
         $coupon->users()->detach();
         $coupon->delete();
 
         return redirect()->route('admin.coupons.index')->with('success', 'Coupon đã xoá thành công!');
     }
 
-    /**
-     * Kiểm tra xem người dùng có đủ điều kiện sử dụng coupon không
-     */
     public function isEligibleForCoupon(User $user, Coupon $coupon)
     {
         if ($coupon->user_voucher_limit == 1) {
-            // 1: Áp dụng cho tất cả người dùng
             return true;
         } elseif ($coupon->user_voucher_limit == 2) {
-            // 2: Chỉ áp dụng cho người dùng cụ thể
             return $coupon->users->contains($user->id);
         } elseif ($coupon->user_voucher_limit == 3) {
-            // 3: Áp dụng theo giới tính
             return $user->gender === ($coupon->gender == 'male' ? 'male' : 'female');
         }
 
