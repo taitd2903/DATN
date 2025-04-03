@@ -200,7 +200,7 @@ public function updateProfile(Request $request)
 
     $user->save(); // Lưu dữ liệu
 
-    return redirect('/')->with('success', 'Profile updated successfully.');
+    return redirect('/')->with('success', 'cập nhật tài khoản thành công!');
 
 }
 public function getDistricts($city)
