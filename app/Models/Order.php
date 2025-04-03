@@ -60,4 +60,8 @@ class Order extends Model
     {
         return $this->belongsTo(User::class, 'completed_by');
     }
+    public function returns()
+    {
+        return $this->hasMany(OrderReturn::class,'order_id');
+    }
 }

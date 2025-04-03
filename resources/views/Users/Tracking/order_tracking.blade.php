@@ -73,6 +73,17 @@
                             <a href="{{ route('checkout.invoice', $order->id) }}" class="btn btn-primary btn-sm px-4 py-2">
                                 <i class="fas fa-file-invoice me-2"></i> Xem chi tiết
                             </a>
+                            @if ($order->status == 'Hoàn thành' && now()->diffInDays($order->completed_at) <= 7)
+    @if($order->return_request_status=='') <!-- Kiểm tra xem đơn hàng đã có yêu cầu hoàn hàng chưa -->
+    
+        <a href="{{ route('returns.create', $order->id) }}" class="btn btn-warning btn-sm px-4 py-2">
+
+            <i class="fas fa-undo-alt me-2"></i> Yêu cầu hoàn hàng 
+        </a>
+    @else
+        <span class="text-muted">Bạn đã yêu cầu hoàn hàng cho đơn này.</span>
+    @endif
+@endif
                             @if ($order->status == 'Chờ xác nhận' && $order->payment_status != 'Đã thanh toán')
                                 @if ($order->payment_method == 'cod')
                                     <form action="{{ route('order.cancel', $order->id) }}" method="POST" class="d-inline">

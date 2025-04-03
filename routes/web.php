@@ -26,6 +26,7 @@ use App\Http\Controllers\Admin\Reviews\AdminReviewController;
 use App\Http\Controllers\ChatController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Session;
+use App\Http\Controllers\Admin\Returns\AdminReturnController;
 
 /*
 |--------------------------------------------------------------------------
@@ -154,6 +155,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/reviews/approved', [AdminReviewController::class, 'approved'])->name('reviews.approved'); // hien thi danh gia da duyet
     Route::post('/reviews/{id}/approve', [AdminReviewController::class, 'approve'])->name('reviews.approve');
     Route::delete('/reviews/{id}', [AdminReviewController::class, 'destroy'])->name('reviews.destroy');
+
+    
+    // check đơn hoàn 
+    Route::get('/returns', [AdminReturnController::class, 'index'])->name('returns.index');
+    Route::patch('/returns/{id}/approve', [AdminReturnController::class, 'approve'])->name('returns.approve');
+    Route::patch('/returns/{id}/reject', [AdminReturnController::class, 'reject'])->name('returns.reject');
+    Route::patch('/returns/{id}/update-process', [AdminReturnController::class, 'updateReturnProcess'])->name('returns.update_process');
+   
 });
 // phần user người mua show ra
 Route::middleware(['auth'])->group(function () {
@@ -203,3 +212,18 @@ Route::get('lang/{locale}', function ($locale) {
     }
     return back();
 })->name('change.language');
+
+// hoàn hàng
+
+
+
+use App\Http\Controllers\OrderReturnController;
+
+
+// Routes dành cho người dùng
+Route::middleware(['auth'])->group(function () {
+    Route::get('/returns', [OrderReturnController::class, 'index'])->name('returns.index');
+    Route::get('/returns/create/{order_id}', [OrderReturnController::class, 'create'])->name('returns.create');
+    Route::post('/returns', [OrderReturnController::class, 'store'])->name('returns.store');
+    Route::get('/returns/{id}', [OrderReturnController::class, 'show'])->name('returns.show');
+});
