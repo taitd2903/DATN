@@ -1,6 +1,7 @@
  @extends('layouts.layout')
 
 @section('content') 
+
 @if(session('error'))
     <div class="alert alert-danger">
         {{ session('error') }}
@@ -19,6 +20,7 @@
 @endif
 
 <div class="container">
+    @if (Auth::user()->role === 'admin')
     <h2>Quản lý tài khoản</h2>
 
 
@@ -104,5 +106,13 @@
 
     {{-- <!-- Pagination -->
     {{ $users->links() }} --}}
+    @else
+    <script>
+        alert("bạn không có quyền truy cập! vui lòng liên hệ với admin.")
+        window.history.back();
+    </script>
+    
+    
+@endif
 </div>
 @endsection 

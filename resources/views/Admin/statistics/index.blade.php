@@ -145,12 +145,11 @@
                 </div>
             </div>
         </div>
-    @else
-        <!-- Thông báo cho staff khi không có quyền -->
-        <div class="alert alert-danger" role="alert">
-            Bạn không có quyền truy cập phần thống kê. Vui lòng liên hệ Admin để biết thêm chi tiết.
-        </div>
-        <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary">Quay lại Dashboard</a>
+        @else
+        <script>
+            alert("bạn không có quyền truy cập! vui lòng liên hệ với admin.")
+            window.history.back();
+        </script>
     @endif
 </div>
 

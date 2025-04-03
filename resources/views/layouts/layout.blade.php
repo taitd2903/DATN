@@ -63,12 +63,15 @@
                             <p>Thống kê</p>
                         </a>
                     </li>
+                  
                     <li>
                         <a class="nav-link" href="{{ route('admin.users.index') }}">
                             <i class="nc-icon nc-circle-09"></i>
                             <p>Người dùng</p>
                         </a>
                     </li>
+                   
+             
 
                     <li class="nav-item ">
                         <a class="nav-link" href="{{ route('admin.categories.index') }}">
