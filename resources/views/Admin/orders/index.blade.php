@@ -14,7 +14,7 @@
                 <th>ID</th>
                 <th>Khách hàng</th>
                 <th>Số điện thoại</th>
-                <th>Địa chỉ</th>
+                {{-- <th>Địa chỉ</th> --}}
                 <th>Phương thức thanh toán</th>
                 <th>Trạng thái thanh toán</th>
                 <th>Tổng tiền</th>
@@ -28,7 +28,7 @@
                 <td>{{ $orders->firstItem() + $index }}</td>
                 <td class="customer_name">{{ $order->customer_name }}</td>
                 <td class="customer_phone">{{ $order->customer_phone }}</td>
-                <td class="customer_address">{{ $order->customer_address}}, <span id="ward-name"></span> ,<span id="district-name"></span>, <span id="city-name"></span></td> <!-- Đổi class này thành 'customer_address' nếu chứa địa chỉ -->
+                {{-- <td class="customer_address">{{ $order->customer_address}}, <span id="ward-name"></span> ,<span id="district-name"></span>, <span id="city-name"></span></td>  --}}
                 <td>
                     @if ($order->payment_method == 'cod')
                         COD

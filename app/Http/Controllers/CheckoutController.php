@@ -244,9 +244,10 @@ class CheckoutController extends Controller
     // Hiển thị danh sách đơn hàng
     public function orderList()
     {
-        $orders = Order::oldest()->paginate(10); // Sắp xếp theo thời gian tạo đơn (cũ nhất trước)
+        $orders = Order::orderBy('created_at', 'desc')->paginate(10);
         return view('admin.orders.index', compact('orders'));
     }
+
 
     // Trang chỉnh sửa trạng thái đơn hàng
     public function editStatus(Order $order)
@@ -327,7 +328,7 @@ class CheckoutController extends Controller
         if ($request->status === 'Hoàn thành' && !$order->completed_at) {
             $order->completed_at = now();
             $order->completed_by = Auth::id(); // Lưu ID người cập nhật
-    
+
         }
 
         $order->save();

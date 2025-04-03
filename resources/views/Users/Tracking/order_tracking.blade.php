@@ -47,10 +47,10 @@
                                         {{ $order->payment_status }}
                                     </span>
                                 </p>
-                                <p class="mb-2"><i class="fas fa-map-marker-alt me-2"></i> Địa chỉ: 
+                                {{-- <p class="mb-2"><i class="fas fa-map-marker-alt me-2"></i> Địa chỉ: 
                              {{ $order->customer_address}}, <span id="ward-name"></span> ,<span id="district-name"></span>, <span id="city-name"></span>
 
-                                </p>
+                                </p> --}}
                             </div>
                         </div>
 
