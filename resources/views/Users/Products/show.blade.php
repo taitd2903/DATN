@@ -40,7 +40,7 @@
             </div>
         </div>
 @else
-    <p>Chưa có hình ảnh</p>
+    <p>{{ __('messages.no_image') }}</p>
 @endif
 
 
@@ -51,10 +51,10 @@
     <h1 class="product-title">{{ $product->name }}</h1>
 
     <p class="sku">
-    <strong>Còn:</strong> {{ $product->variants->sum('stock_quantity') }} 
+    <strong>{{ __('messages.out_of_stock') }}:</strong> {{ $product->variants->sum('stock_quantity') }} 
 
     <span class="rating">
-        ⭐⭐⭐⭐⭐ (0) <span class="reviews">0 Nhận xét</span>
+        ⭐⭐⭐⭐⭐ (0) <span class="reviews">0 {{ __('messages.reviews') }}</span>
     </span>
     </p>
 
@@ -71,7 +71,7 @@
             style="max-width: 300px; display: block;">
     </div> -->
     
-    <p><strong>Tồn kho: </strong> <span id="stock-info">{{ $product->variants->sum('stock_quantity') }}</span></p>
+    <p><strong>{{ __('messages.stock') }}: </strong> <span id="stock-info">{{ $product->variants->sum('stock_quantity') }}</span></p>
 
     <button class="dashed-line-btn"></button>
 
@@ -86,7 +86,7 @@
         <div>
 
             <div id="size-options">
-            <p class="mt-2"><strong>SIZE:</strong></p>
+            <p class="mt-2"><strong>{{ __('messages.size') }}:</strong></p>
                 @foreach ($product->variants->groupBy('size') as $size => $variants)
                     <button type="button" class="size-btn" data-size="{{ $size }}">{{ $size }}</button>
                 @endforeach
@@ -99,18 +99,18 @@
        
       
             <div id="color-options">
-            <strong class="mt-2">MÀU SẮC:</strong>
+            <strong class="mt-2">{{ __('messages.color') }}:</strong>
                 @foreach ($product->variants->unique('color') as $variant)
                     <button type="button" class="color-btn"
                         data-color="{{ $variant->color }}">{{ $variant->color }}</button>
                 @endforeach
                 </div>
           <br>
-        </div><p><strong>Đang chọn: </strong> <span id="selected-variant-info">Chưa chọn</span></p>
+        </div><p><strong>{{ __('messages.selected_variant') }}:  </strong> <span id="selected-variant-info">{{ __('messages.not_selected') }}</span></p>
 
      <br>
    
-    <label for="quantity" class="quantity-label">Số lượng:</label>
+    <label for="quantity" class="quantity-label">{{ __('messages.quantity') }}:</label>
     
     <div class="quantity-controls">
         <button type="button" class="quantity-btn" id="decrease">−</button>
@@ -126,30 +126,21 @@
 
     <!-- Nút thêm vào giỏ hàng -->
     <button type="submit" id="addToCartButton" disabled class="btn btn-outline-dark ms-2">
-        THÊM VÀO GIỎ HÀNG
+    {{ __('messages.add_to_cart') }}
     </button>
 </div>
 
 <br>
-<a href="#" class="text-primary" onclick="openSizeGuide()">Hướng dẫn chọn size</a> | 
-<a href="#" class="text-primary">Thông tin sản phẩm</a>
+<a href="#" class="text-primary" onclick="openSizeGuide()">{{ __('messages.size_guide') }}</a> | 
+<a href="#" class="text-primary">{{ __('messages.product_info') }}</a>
 
-<!-- Modal hiển thị ảnh -->
+<!-- Modal hiển thị bảng size -->
 <div id="sizeGuideModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeSizeGuide()">&times;</span>
         <img src="../assets/img/bangsize.jpg" alt="Bảng size áo nữ">
     </div>
 </div>
-<!-- Modal hiển thị ảnh -->
-<div id="sizeGuideModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeSizeGuide()">&times;</span>
-        <img src="../assets/img/bangsize.jpg" alt="Bảng size áo nữ">
-    </div>
-</div>
-
-
 
                 
 {{--========================== Phần này của Đạt thông báo lỗi ============================--}}
@@ -183,7 +174,7 @@
     </div>
 <br>
     <a class="back-btn" href="{{ route('products.index') }}">
-    <i class="fas fa-arrow-left"></i> Quay lại danh sách sản phẩm
+    <i class="fas fa-arrow-left"></i> {{ __('messages.back_to_list') }}
 </a>
      
 
@@ -192,35 +183,35 @@
 
 
 
-<h4 class="mt-4">Đánh giá sản phẩm</h4>
+<h4 class="mt-4">{{ __('messages.product_review') }}</h4>
 
 @if ($userCanReview)
     <form action="{{ route('product.review.store', ['id' => $product->id]) }}" method="POST" enctype="multipart/form-data">
         @csrf
-        <label>Đánh giá của bạn:</label>
+        <label>{{ __('messages.your_review') }}</label>
         <select name="rating" required>
-            <option value="5">⭐⭐⭐⭐⭐5 Sao</option>
-            <option value="4">⭐⭐⭐⭐4 Sao</option>
-            <option value="3">⭐⭐⭐3 Sao</option>
-            <option value="2">⭐⭐2 Sao</option>
-            <option value="1">⭐1 Sao</option>
+            <option value="5">⭐⭐⭐⭐⭐{{ __('messages.rating') }}</option>
+            <option value="4">⭐⭐⭐⭐4 {{ __('messages.rating') }}</option>
+            <option value="3">⭐⭐⭐3 {{ __('messages.rating') }}</option>
+            <option value="2">⭐⭐2 {{ __('messages.rating') }}</option>
+            <option value="1">⭐1 {{ __('messages.rating') }}</option>
         </select>
-        <textarea name="comment" class="form-control" placeholder="Viết đánh giá của bạn..." required></textarea>
+        <textarea name="comment" class="form-control" placeholder="{{ __('messages.write_review') }}" required></textarea>
 
         {{-- Upload ảnh --}}
-        <label class="mt-2">Tải lên ảnh (tối đa 5 ảnh):</label>
+        <label class="mt-2">{{ __('messages.upload_images') }}:</label>
         <input type="file" name="images[]" class="form-control" multiple accept="image/*" onchange="previewImages(event)">
         <div id="image-preview" class="mt-2"></div>
 
         {{-- Upload video --}}
-        <label class="mt-2">Tải lên video (tối đa 3 giây):</label>
+        <label class="mt-2">{{ __('messages.upload_video') }}</label>
         <input type="file" name="video" class="form-control" accept="video/mp4" onchange="previewVideo(event)">
         <div id="video-preview" class="mt-2"></div>
 
-        <button type="submit" class="btn btn-primary mt-2">Gửi đánh giá</button>
+        <button type="submit" class="btn btn-primary mt-2">{{ __('messages.submit_review') }}</button>
     </form>
 @else
-    <p><i>Chỉ mua hàng mới có thể đánh giá.</i></p>
+<p><i>{{ __('messages.only_purchased') }}</i></p>
 @endif
 
 {{-- Script để xem trước ảnh và video trước khi upload --}}

@@ -8,11 +8,11 @@
          <form method="GET" action="{{ route('categories.show') }}" class="mb-4">
     <div class="row g-3 align-items-center">
         <div class="col-md-4">
-            <input type="text" name="name" class="form-control" placeholder="Tìm kiếm theo tên" value="{{ request('name') }}">
+            <input type="text" name="name" class="form-control" placeholder="{{ __('messages.search_by_name') }}" value="{{ request('name') }}">
         </div>
         <div class="col-md-3">
             <select name="category" class="form-control">
-                <option value="">Chọn danh mục</option>
+                <option value="">{{ __('messages.select_category') }}</option>
                 @foreach($categories as $category)
                     <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
                         {{ $category->name }}
@@ -22,21 +22,21 @@
         </div>
         <div class="col-md-3">
             <select name="gender" class="form-control">
-                <option value="">Chọn giới tính</option>
-                <option value="male" {{ request('gender') == 'male' ? 'selected' : '' }}>Nam</option>
-                <option value="female" {{ request('gender') == 'female' ? 'selected' : '' }}>Nữ</option>
-                <option value="unisex" {{ request('gender') == 'unisex' ? 'selected' : '' }}>Unisex</option>
+                <option value="">{{ __('messages.select_gender') }}</option>
+                <option value="male" {{ request('gender') == 'male' ? 'selected' : '' }}>{{ __('messages.male') }}</option>
+                <option value="female" {{ request('gender') == 'female' ? 'selected' : '' }}>{{ __('messages.female') }}</option>
+                <option value="unisex" {{ request('gender') == 'unisex' ? 'selected' : '' }}>{{ __('messages.unisex') }}</option>
             </select>
         </div>
         <div class="col-md-2">
-            <button type="submit" class="btn btn-primary w-100">Lọc</button>
+            <button type="submit" class="btn btn-primary w-100">{{ __('messages.filter') }}</button>
         </div>
     </div>
 </form>
 
 @if($products->isEmpty())
     <div class="alert alert-warning text-center mt-3">
-        Không tìm thấy sản phẩm nào phù hợp!
+    {{ __('messages.no_products_found') }}
     </div>
 @else
 @endif
@@ -115,7 +115,7 @@
 
         <!-- Danh sách sản phẩm -->
         <div class="col-md-9">
-            <h2 class="mb-3">Products</h2>
+            <h2 class="mb-3">{{ __('messages.products') }}</h2>
             <div class="row">
                 @foreach($products as $product)
                 <div class="col-md-4 mb-4">
@@ -124,7 +124,7 @@
                         class="card-img-top product-img" alt="{{ $product->name }}">
                         <div class="card-body text-center">
                             <h5 class="card-title">{{ $product->name }}</h5>
-                            <p class="text-muted">Giới tính: {{ ucfirst($product->gender) }}</p>
+                            <p class="text-muted">{{ __('messages.gender') }}: {{ ucfirst($product->gender) }}</p>
                             
                             @php
                                 $minPrice = $product->variants->min('price') ?? 0;
@@ -135,7 +135,7 @@
                                 {{ number_format($minPrice, 0, ',', '.') }}VND - {{ number_format($maxPrice, 0, ',', '.') }} VND
                             </p>
             
-                            <a href="{{ route('products.show', $product->id) }}" class="btn btn-success">Xem chi tiết</a>
+                            <a href="{{ route('products.show', $product->id) }}" class="btn btn-success">{{ __('messages.view_details') }}</a>
                         </div>
                     </div>
                 </div>
