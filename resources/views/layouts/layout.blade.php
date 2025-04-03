@@ -106,12 +106,7 @@
                             <p>quản lý đánh giá</p>
                         </a>
                     </li>
-                    <li>
-                        <a class="nav-link" href="{{ route('admin.coupons.index') }}">
-                            <i class="nc-icon nc-pin-3"></i>
-                            <p>Hóa đơn</p>
-                        </a>
-                    </li>
+               
                     <li>
                         <a class="nav-link" href="{{ route('admin.orders.index') }}">
                             <i class="nc-icon nc-cart-simple"></i> <!-- Đổi icon thành giỏ hàng -->
@@ -120,25 +115,31 @@
                     </li>
 
 
-                    <li>
+                    <!-- <li>
                         {{-- admin.combos.index --}}
                         <a class="nav-link" href="#">
                             <i class="nc-icon nc-cart-simple"></i>
                             <p>Combo</p>
                         </a>
-                    </li>
-                    <li>
+                    </li> -->
+                    <!-- <li>
                         <a class="nav-link" href="./notifications.html">
                             <i class="nc-icon nc-bell-55"></i>
                             <p>Thông báo</p>
                         </a>
-                    </li>
+                    </li> -->
                     <!-- <li class="nav-item active active-pro">
                          <a class="nav-link active" href="upgrade.html">
                              <i class="nc-icon nc-alien-33"></i>
                              <p>Upgrade to PRO</p>
                          </a>
                      </li> -->
+                     <li>
+                        <a class="nav-link" href="{{ route('admin.trash.index') }}">
+                            <i class="nc-icon nc-pin-3"></i>
+                            <p>Thùng rác</p>
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>

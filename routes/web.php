@@ -13,6 +13,7 @@ use App\Http\Controllers\Users\ProductController as UserProductController;
 use App\Http\Controllers\Users\ProductFilterController;
 use App\Http\Controllers\Admin\Products\ProductVariantController;
 use App\Http\Controllers\Admin\Statistics\StatisticsController;
+use App\Http\Controllers\Admin\Trash\TrashController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\VnPayController;
@@ -61,6 +62,8 @@ Route::prefix('admin')->middleware(['auth', 'role:admin,staff'])->name('admin.')
 
     //combo
     // Route::resource('combos', ComboController::class);
+    Route::resource('trash', TrashController::class);
+    Route::patch('/trash/restore/{id}', [TrashController::class, 'restore'])->name('trash.restore');
 
     Route::get('products/{id}', [ProductController::class, 'show'])->name('admin.products.show');
 

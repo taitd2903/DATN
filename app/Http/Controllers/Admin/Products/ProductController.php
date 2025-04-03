@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Storage;
 class ProductController extends Controller {
 
     public function index() {
-        $products = Product::with('category', 'variants')->get();
+        $products = Product::with('category', 'variants') ->where('is_delete', false)->get();
         $categories = Category::all();
 
         foreach ($products as $product) {
@@ -182,23 +182,34 @@ class ProductController extends Controller {
 
         return redirect()->route('admin.products.index')->with('success', 'Sản phẩm đã được cập nhật!');
     }
+// xóa cứng
+    // public function destroy(Product $product) {
+        
+    //     if ($product->image) {
+    //         Storage::disk('public')->delete($product->image);
+    //     }
 
-    public function destroy(Product $product) {
-        // Xóa ảnh sản phẩm nếu có
-        if ($product->image) {
-            Storage::disk('public')->delete($product->image);
-        }
+    //     // Xóa ảnh biến thể
+    //     foreach ($product->variants as $variant) {
+    //         if ($variant->image) {
+    //             Storage::disk('public')->delete($variant->image);
+    //         }
+    //     }
 
-        // Xóa ảnh biến thể
-        foreach ($product->variants as $variant) {
-            if ($variant->image) {
-                Storage::disk('public')->delete($variant->image);
-            }
-        }
+    //     $product->delete();
+    //     return redirect()->route('admin.products.index')->with('success', 'Sản phẩm đã được xóa!');
+    // }
 
-        $product->delete();
-        return redirect()->route('admin.products.index')->with('success', 'Sản phẩm đã được xóa!');
-    }
+// xóa mềm
+public function destroy(Product $product) {
+    $product->is_delete = true;
+    $product->save();
+
+    return redirect()->route('admin.products.index')->with('success', 'Sản phẩm đã được đánh dấu là xóa!');
+}
+
+
+
 
     public function show($id) {
         $product = Product::with('variants', 'category')->findOrFail($id);
