@@ -59,9 +59,14 @@
     </p>
 
     <p class="price"> 
-        <span id="base-price">{{ number_format($product->base_price,0, ',', '.') }} VNĐ</span>
-        <span id="variant-price" style="font-weight: bold; margin-left: 10px; color: red;"></span>
+        @if($product->base_price !== null && $product->base_price !== "")
+            <span id="base-price">{{ number_format($product->base_price, 0, ',', '.') }} VNĐ</span>
+        @endif
+        <span id="variant-price" style="font-weight: bold; margin-left: 10px; color: red;">
+            {{ number_format($minPrice, 0, ',', '.') }} - {{ number_format($maxPrice, 0, ',', '.') }} VNĐ
+        </span>
     </p>
+    
 
     <div class="dashed-line"></div>
     <!-- <p> Mo ta: {{ $product->description }}</p> -->

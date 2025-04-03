@@ -87,7 +87,8 @@ class ProductController extends Controller {
     $product = Product::with('category', 'variants')->findOrFail($id);
     $reviews = Review::where('product_id', $id)->latest()->get();
     $userHasPurchased = auth()->check() ? $this->hasPurchasedProduct($id) : false;
-    
+    $minPrice = $product->variants->min('price');
+    $maxPrice = $product->variants->max('price');
     // Lấy đơn hàng gần nhất của user (nếu có)
     $order = DB::table('orders')
         ->join('order_items', 'orders.id', '=', 'order_items.order_id')
@@ -107,7 +108,7 @@ class ProductController extends Controller {
             ->exists();
     }
 
-    return view('users.products.show', compact('product', 'reviews', 'userCanReview'));
+    return view('users.products.show', compact('product', 'reviews', 'userCanReview','minPrice' ,'maxPrice'));
 }
 
 
