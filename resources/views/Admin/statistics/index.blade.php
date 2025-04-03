@@ -9,7 +9,7 @@
         <!-- Tabs Navigation -->
         <ul class="nav nav-tabs" id="statsTabs" role="tablist">
             <li class="nav-item">
-                <a class="nav-link active" id="revenue-tab" data-toggle="tab" href="#revenue" role="tab">Doanh thu</a>
+                <a class="nav-link active" id="revenue-tab" data-toggle="tab" href="#revenue" role="tab">Doanh thu tổng</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" id="category-revenue-tab" data-toggle="tab" href="#category-revenue" role="tab">Doanh thu theo danh mục</a>
