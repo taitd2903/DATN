@@ -14,7 +14,7 @@ class ProductController extends Controller {
     public function index(Request $request) {
         $categories = Category::all(); 
         $banners = Banner::all();
-        $products = Product::with('category', 'variants');
+        $products = Product::with('category', 'variants') ->where('is_delete', false);
         if ($request->has('name') && $request->name != '') {
             $products->where('name', 'like', '%' . $request->name . '%');
         }
