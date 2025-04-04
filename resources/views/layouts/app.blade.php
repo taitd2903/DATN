@@ -31,7 +31,6 @@
 
 
 </head>
-<body>
 
 <!-- Nội dung trang -->
 
@@ -127,7 +126,7 @@
 <!-- End Main Top -->
 
 <!-- Start Main Top -->
-<header class="main-header" style="margin-top: -5px">
+<header class="main-header" >
     <!-- Start Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-default bootsnav">
         <div class="container">
