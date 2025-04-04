@@ -22,8 +22,8 @@ class CheckoutController extends Controller
         $items = $request->query('items');
         // Lấy sản phẩm trong giỏ hàng chỉ của user hiện tại, lọc theo danh sách được chọn
         $cartItems = CartItem::with(['product', 'variant'])
-//            ->where('user_id', auth()->id())
-//            ->whereIn('id', $selectedItems) // Lọc theo ID sản phẩm được chọn
+            ->where('user_id', auth()->id())
+            ->whereIn('id', $selectedItems) // Lọc theo ID sản phẩm được chọn
             ->get();
 
         if ($cartItems->isEmpty()) {
