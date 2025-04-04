@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container-fluid">
-    <h1 class="h3 mb-4 text-gray-800">Quản lý sản phẩm và danh mục</h1>
+    <h1 class="h3 mb-4 text-gray-800">Quản lý thùng rác</h1>
 
     <!-- Tabs Navigation -->
     <ul class="nav nav-tabs" id="statsTabs" role="tablist">

@@ -56,13 +56,18 @@ class CategoryController extends Controller {
         $category = Category::findOrFail($id);
     
         if ($category->children->count() > 0) {
+            // Nếu là danh mục cha, không cho đổi danh mục cha
             $categories = []; 
         } else {
-            $categories = Category::where('id', '!=', $id)->get();
+            // Nếu là danh mục con, chỉ cho chọn danh mục cha (cấp 1)
+            $categories = Category::where('id', '!=', $id)
+                ->whereNull('parent_id') // chỉ lấy danh mục không có cha
+                ->get();
         }
     
         return view('Admin.Categories.edit', compact('category', 'categories'));
     }
+    
     
     public function update(Request $request, $id) {
         $category = Category::findOrFail($id);

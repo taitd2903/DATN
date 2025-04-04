@@ -108,7 +108,8 @@ class StatisticsController extends Controller
             }
         }
 
-        $categories = Category::all();
+        $categories = Category::with('children')->whereNull('parent_id')->get();
+
 
         return view('Admin.statistics.profit', compact(
             'productProfits',

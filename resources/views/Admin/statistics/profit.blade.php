@@ -27,14 +27,31 @@
                 <div class="col-md-3">
                     <label>Danh mục:</label>
                     <select name="category_id" class="form-control">
-                        <option value="">-- Chọn danh mục --</option>
+                        <option value="">Tất cả danh mục</option>
                         @foreach ($categories as $category)
                             <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
                                 {{ $category->name }}
                             </option>
+                
+                            @if ($category->children)
+                                @foreach ($category->children as $child)
+                                    <option value="{{ $child->id }}" {{ request('category_id') == $child->id ? 'selected' : '' }}>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;|__ {{ $child->name }}
+                                    </option>
+                
+                                    @if ($child->children)
+                                        @foreach ($child->children as $grandchild)
+                                            <option value="{{ $grandchild->id }}" {{ request('category_id') == $grandchild->id ? 'selected' : '' }}>
+                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|____ {{ $grandchild->name }}
+                                            </option>
+                                        @endforeach
+                                    @endif
+                                @endforeach
+                            @endif
                         @endforeach
                     </select>
                 </div>
+                
             </div>
 
             <div class="row mt-3">
