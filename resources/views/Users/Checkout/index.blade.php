@@ -4,140 +4,145 @@
     <link rel="stylesheet" href="{{ asset('assets/css/thanhtoan.css') }}">
 
 
-    <div class="checkout-container">
-      
-        <div class="billing-info">
-            <h3>THÔNG TIN THANH TOÁN</h3>
+    <div class="container my-5">
+        <div class="row g-4">
+            <!-- Thông tin thanh toán -->
+            <div class="col-lg-7">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h3 class="card-title mb-4 fw-bold">Thông tin thanh toán</h3>
+                        <form id="checkoutForm" action="{{ route('checkout.placeOrder') }}" method="POST">
+                            @csrf
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label for="name" class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="name" name="name" value="{{ Auth::user()->name }}" placeholder="Nhập họ và tên" required>
+                                    @error('name')
+                                    <div class="text-danger small mt-1">{{ $message }}</div>
+                                    @enderror
+                                </div>
 
-            <form id="checkoutForm" action="{{ route('checkout.placeOrder') }}" method="POST">
-                @csrf
+                                <div class="col-md-6">
+                                    <label for="phone" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="phone" name="phone" value="{{ Auth::user()->phone }}" placeholder="Nhập số điện thoại" required>
+                                    @error('phone')
+                                    <div class="text-danger small mt-1">{{ $message }}</div>
+                                    @enderror
+                                </div>
 
-                <div class="form-group">
-                    <!-- <label for="name">Họ và tên *</label> -->
-                    <input type="text" id="name" name="name" value="{{ Auth::user()->name }}"
-                        placeholder="Họ và tên *">
-                        @error('name')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
+                                <div class="col-md-6">
+                                    <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                                    <input type="email" class="form-control" id="email" name="email" value="{{ Auth::user()->email }}" placeholder="Nhập email" required>
+                                    @error('email')
+                                    <div class="text-danger small mt-1">{{ $message }}</div>
+                                    @enderror
+                                </div>
 
-                </div>
+                                <div class="col-md-4">
+                                    <label for="province" class="form-label">Tỉnh/Thành phố</label>
+                                    <select id="province" name="city" class="form-select">
+                                        <option value="" disabled selected>Chọn tỉnh/thành phố</option>
+                                    </select>
+                                </div>
 
-                <div class="form-group">
-                    <!-- <label for="phone">Số điện thoại *</label> -->
-                    <input type="text" id="phone" name="phone" value="{{ Auth::user()->phone }}"
-                        placeholder="Số điện thoại *">
-                        @error('phone')
-                        <div class="text-danger">{{ $message }}</div>
-                        @enderror
-                </div>
+                                <div class="col-md-4">
+                                    <label for="district" class="form-label">Quận/Huyện</label>
+                                    <select id="district" name="district" class="form-select">
+                                        <option value="" disabled selected>Chọn quận/huyện</option>
+                                    </select>
+                                </div>
 
-                <div class="form-group">
-                    <!-- <label for="email">Địa chỉ Email</label> -->
-                    <input type="email" id="email" name="email" value="{{ Auth::user()->email }}"
-                        placeholder="Email *">
-                        @error('Email')
-                        <div class="text-danger">{{ $message }}</div>
-                        @enderror
-                </div>
+                                <div class="col-md-4">
+                                    <label for="ward" class="form-label">Xã/Phường</label>
+                                    <select id="ward" name="ward" class="form-select">
+                                        <option value="" disabled selected>Chọn xã/phường</option>
+                                    </select>
+                                </div>
 
-                <div class="form-group">
-                    <label for="province">Tỉnh/Thành phố</label>
-                    <select id="province" name="city" class="form-control" >
-                        <option value="" disabled selected>Chọn tỉnh/thành phố</option>
-                    </select>
-                </div>
-            
-                <div class="form-group">
-                    <label for="district">Quận/Huyện</label>
-                    <select id="district" name="district" class="form-control" >
-                        <option value="" disabled selected>Chọn quận/huyện</option>
-                    </select>
-                </div>
-            
-                <div class="form-group">
-                    <label for="ward">Xã/Phường</label>
-                    <select id="ward" name="ward" class="form-control" >
-                        <option value="" disabled selected>Chọn xã/phường</option>
-                    </select>
-                </div>
-            
-                <div class="form-group">
-                    <label for="address">Địa chỉ chi tiết</label>
-                    <input type="text" id="address" name="address" class="form-control" value="{{ $user->address ?? '' }}" >
-                </div>
-              
-                <div class="commitment">
-                    <p><strong>🔒 Cam kết bảo mật:</strong> Mọi thông tin của bạn sẽ được bảo vệ tuyệt đối và chỉ sử dụng để xử lý đơn hàng.</p>
-                    <p>✅ Giao hàng nhanh chóng – Thanh toán an toàn – Hỗ trợ tận tình.</p>
-                </div>
-                
-               
-                
+                                <div class="col-12">
+                                    <label for="address" class="form-label">Địa chỉ chi tiết</label>
+                                    <input type="text" class="form-control" id="address" name="address" value="{{ $user->address ?? '' }}" placeholder="Số nhà, tên đường...">
+                                </div>
+                            </div>
 
-        </div>
-
-
-        <div class="order-summary">
-            <h3>ĐƠN HÀNG CỦA BẠN</h3>
-            @foreach ($cartItems as $item)
-                <div class="order-item">
-                    <div class="order-item__image">
-                        <img src="{{ $item->product->image_url }}" style="width: 120px; height: auto;">
-                    </div>
-                    <div class="order-item__details">
-                        <p> Sản phẩm: <b> {{ $item->product->name }} </b></p>
-                        <p> Giá: <b> {{ number_format($item->price, 0, ',', '.') }} VND </b></p>
-                        <p> Số lượng: {{ $item->quantity }} </p>
-                        <p> Size: {{ $item->variant->size ?? 'Không có' }} </p>
-                        <p> Màu sắc: {{ $item->variant->color ?? 'Không có' }} </p>
+                            <div class="mt-4 text-muted small">
+                                <p><strong>🔒 Cam kết bảo mật:</strong> Thông tin của bạn được bảo vệ tuyệt đối và chỉ dùng để xử lý đơn hàng.</p>
+                                <p>✅ Giao hàng nhanh chóng – Thanh toán an toàn – Hỗ trợ tận tình.</p>
+                            </div>
+                        </form>
                     </div>
                 </div>
-                
-            @endforeach
-
-            <div class="order-total">
-                <p>Tổng cộng: {{ number_format($totalPrice, 0, ',', '.') }} VND</p>
             </div>
 
+            <!-- Đơn hàng của bạn -->
+            <div class="col-lg-5">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h3 class="card-title mb-4 fw-bold">Đơn hàng của bạn</h3>
+                        @foreach ($cartItems as $item)
+                            <div class="d-flex border-bottom py-3">
+                                <img src="{{ $item->product->image_url }}" alt="{{ $item->product->name }}" class="img-fluid rounded" style="width: 80px; height: 80px; object-fit: cover;">
+                                <div class="ms-3 flex-grow-1">
+                                    <p class="fw-bold mb-1">{{ $item->product->name }}</p>
+                                    <p class="mb-1">Giá: {{ number_format($item->price, 0, ',', '.') }} VND</p>
+                                    <p class="mb-1">Số lượng: {{ $item->quantity }}</p>
+                                    <p class="mb-0">Size: {{ $item->variant->size ?? 'Không có' }} | Màu: {{ $item->variant->color ?? 'Không có' }}</p>
+                                </div>
+                            </div>
+                        @endforeach
 
+                        <!-- Mã giảm giá -->
+                        <div class="mt-4">
+                            <h5>Nhập mã giảm giá</h5>
+                            <div class="input-group mb-3">
+                                <input type="text" id="coupon_code" name="coupon_code" class="form-control" placeholder="Mã giảm giá">
+                                <button type="button" id="apply_coupon_btn" class="btn btn-outline-primary mt-2">Áp dụng</button>
+                            </div>
+                            <div id="applied_coupons" class="d-flex flex-wrap gap-2"></div>
+                            <div id="coupon_message" class="mt-2"></div>
+                        </div>
 
-            <!-- Nhập mã giảm giá -->
-            <h4>Nhập mã giảm giá</h4>
-            <input type="text" id="coupon_code" name="coupon_code" class="form-control" placeholder="Mã giảm giá">
-            <button type="button" id="apply_coupon_btn" class="btn btn-primary mt-2">Áp dụng</button>
-            <div id="applied_coupons" class="mt-2">
-                {{-- List mã giảm giá --}}
-            </div> {{-- Đừng Xoá nữa nha sửa 2 lần cái thẻ div này rùi đó mấy ní --}}
-            <div id="coupon_message" class="mt-2"></div>
+                        <!-- Tổng tiền -->
+                        <div class="mt-4">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Tổng tiền trước giảm:</span>
+                                <span id="total_price">{{ number_format($totalPrice, 0, ',', '.') }} VNĐ</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Phí vận chuyển:</span>
+                                <span id="shipping_fee">{{ number_format(30000, 0, ',', '.') }} VNĐ</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Số tiền giảm:</span>
+                                <span id="discount_amount">0 VNĐ</span>
+                            </div>
+                            <div class="d-flex justify-content-between fw-bold fs-5">
+                                <span>Thành tiền:</span>
+                                <span id="final_price">{{ number_format($totalPrice + 30000, 0, ',', '.') }} VNĐ</span>
+                            </div>
+                        </div>
 
-            <div class="price-summary mt-4">
-                <p>Tổng tiền trước giảm: <span id="total_price">{{ number_format($totalPrice, 0, ',', '.') }} VNĐ</span>
-                </p>
-                <p>Phí vận chuyển: <span id="shipping_fee">{{ number_format(30000, 0, ',', '.') }} VNĐ</span></p>
-                <p>Số tiền giảm: <span id="discount_amount">0 VNĐ</span></p>
-                <h4>Thành tiền: <span id="final_price">{{ number_format($totalPrice + 30000, 0, ',', '.') }} VNĐ</span>
-                </h4>
+                        <!-- Phương thức thanh toán -->
+                        <div class="mt-4">
+                            <h5>Phương thức thanh toán</h5>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="payment_method" value="cod" id="cod" checked>
+                                <label class="form-check-label" for="cod">Thanh toán khi nhận hàng (COD)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="payment_method" value="vnpay" id="vnpay">
+                                <label class="form-check-label" for="vnpay">Thanh toán qua VNPAY</label>
+                            </div>
+                        </div>
+
+                        <input type="hidden" name="final_price" id="hidden_final_price" value="{{ $totalPrice + 30000 }}">
+                        <input type="hidden" name="items" id="selectitem" value="{{ $items }}">
+
+                        <button id="paymentButton" type="submit" class="btn btn-success w-100 mt-4">Thanh toán</button>
+                    </div>
+                </div>
             </div>
-
-
-            <!-- Hidden input để lưu finalPrice cho form thanh toán -->
-            <div class="payment-methods">
-                <input type="hidden" name="final_price" id="hidden_final_price" value="{{ $totalPrice }}">
-
-                <h4>Chọn phương thức thanh toán:</h4>
-
-                <input type="radio" name="payment_method" value="cod" checked> Thanh toán khi nhận hàng (COD)
-                <br>
-                <input type="radio" name="payment_method" value="vnpay"> Thanh toán qua VNPAY
-
-            </div>
-            <input type="hidden" name="items" id="selectitem" value="{{ $items }}">
-
-            <button id="paymentButton" type="submit" class="btn btn-success">Thanh toán</button>
-
-            </form>
         </div>
-
     </div>
 
     {{-- chọn nút thanh toán --}}
@@ -366,16 +371,16 @@
                 selectElement.disabled = false;
             }
         }
-    
+
         // Load tỉnh/thành phố
         document.addEventListener('DOMContentLoaded', () => {
             const provinceSelect = document.getElementById("province");
             const districtSelect = document.getElementById("district");
             const wardSelect = document.getElementById("ward");
-    
+
             // Hiển thị loading
             showLoading(provinceSelect, true);
-    
+
             fetch("https://provinces.open-api.vn/api/p/")
                 .then(response => {
                     if (!response.ok) throw new Error('Không thể tải danh sách tỉnh/thành phố');
@@ -399,7 +404,7 @@
                 .finally(() => {
                     showLoading(provinceSelect, false);
                 });
-    
+
             // Thêm sự kiện change ngay từ đầu
             provinceSelect.addEventListener('change', (e) => {
                 districtSelect.innerHTML = '<option value="" disabled selected>Chọn quận/huyện</option>';
@@ -408,7 +413,7 @@
                     loadDistricts(e.target.value);
                 }
             });
-    
+
             districtSelect.addEventListener('change', (e) => {
                 wardSelect.innerHTML = '<option value="" disabled selected>Chọn xã/phường</option>';
                 if (e.target.value) {
@@ -416,12 +421,12 @@
                 }
             });
         });
-    
+
         // Load quận/huyện
         function loadDistricts(cityCode) {
             const districtSelect = document.getElementById("district");
             showLoading(districtSelect, true);
-    
+
             fetch(`https://provinces.open-api.vn/api/p/${cityCode}?depth=2`)
                 .then(response => {
                     if (!response.ok) throw new Error('Không thể tải danh sách quận/huyện');
@@ -446,12 +451,12 @@
                     showLoading(districtSelect, false);
                 });
         }
-    
+
         // Load xã/phường
         function loadWards(districtCode) {
             const wardSelect = document.getElementById("ward");
             showLoading(wardSelect, true);
-    
+
             fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`)
                 .then(response => {
                     if (!response.ok) throw new Error('Không thể tải danh sách xã/phường');
@@ -475,9 +480,9 @@
                     showLoading(wardSelect, false);
                 });
         }
-    
+
         // Bật/tắt chỉnh sửa địa chỉ
-        
+
     </script>
     </div>
     @include('Users.chat')

@@ -22,8 +22,8 @@ class CheckoutController extends Controller
         $items = $request->query('items');
         // Lấy sản phẩm trong giỏ hàng chỉ của user hiện tại, lọc theo danh sách được chọn
         $cartItems = CartItem::with(['product', 'variant'])
-            ->where('user_id', auth()->id())
-            ->whereIn('id', $selectedItems) // Lọc theo ID sản phẩm được chọn
+//            ->where('user_id', auth()->id())
+//            ->whereIn('id', $selectedItems) // Lọc theo ID sản phẩm được chọn
             ->get();
 
         if ($cartItems->isEmpty()) {
@@ -88,14 +88,14 @@ class CheckoutController extends Controller
             } else {
                 $lastUpdated = $item->product->updated_at;
             }
-    
+
             if ($lastUpdated > $item->created_at) {
                 $priceChanged = true;
                 $changedItems[] = $item->product->name;
                 break;
             }
         }
-    
+
         if ($priceChanged) {
             $message = 'Giá của sản phẩm "' . implode(', ', $changedItems) . '" đã thay đổi. Vui lòng kiểm tra lại giỏ hàng.';
             return redirect()->route('cart.index')->with('error', $message);
