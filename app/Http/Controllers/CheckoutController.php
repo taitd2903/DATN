@@ -88,14 +88,14 @@ class CheckoutController extends Controller
             } else {
                 $lastUpdated = $item->product->updated_at;
             }
-    
+
             if ($lastUpdated > $item->created_at) {
                 $priceChanged = true;
                 $changedItems[] = $item->product->name;
                 break;
             }
         }
-    
+
         if ($priceChanged) {
             $message = 'Giá của sản phẩm "' . implode(', ', $changedItems) . '" đã thay đổi. Vui lòng kiểm tra lại giỏ hàng.';
             return redirect()->route('cart.index')->with('error', $message);
