@@ -23,7 +23,7 @@
               <br>  @error('password') <span class="error">{{ $message }}</span> @enderror
 <br>
 <div class="options">
-    <label><input type="checkbox" name="remember"> {{ __('messages.remember_me') }}</label>
+    {{-- <label><input type="checkbox" name="remember"> {{ __('messages.remember_me') }}</label> --}}
     <a href="{{ route('password.request') }}">{{ __('messages.forgot_password') }}</a>
 </div>
 <br>
