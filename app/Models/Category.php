@@ -20,4 +20,17 @@ class Category extends Model {
     public function products() {
         return $this->hasMany(Product::class);
     }
+    public static function getDescendantsAndSelfIds($categoryId)
+{
+    $ids = [$categoryId];
+
+    $children = self::where('parent_id', $categoryId)->get();
+
+    foreach ($children as $child) {
+        $ids = array_merge($ids, self::getDescendantsAndSelfIds($child->id));
+    }
+
+    return $ids;
+}
+
 }

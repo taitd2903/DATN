@@ -33,13 +33,15 @@
     <link rel="stylesheet" href="{{ asset('assets/css/adminchat.css') }}">
     <!-- CSS Just for demo purpose, don't include it in your project -->
     <link href="{{ asset('assets/css/demo.css') }}" rel="stylesheet" />
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- jQuery from CDN -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
 
 </head>
-
+@stack('scripts')
 <body>
     <div class="wrapper">
         <div class="sidebar" data-image="../assets/img/sidebar-.jpg" data-color="blue">
@@ -50,7 +52,7 @@
      -->
             <div class="sidebar-wrapper">
                 <div class="logo">
-                    <a href="{{ route('admin.statistics.index') }}" class="simple-text">
+                    <a href="{{ route('admin.statistics.profit') }}" class="simple-text">
                         {{-- <img src="../assets/img/logo.png" alt="Logo"> --}}
                         <h4>Ocean Sports</h4>
 
@@ -58,7 +60,7 @@
                 </div>
                 <ul class="nav">
                     <li>
-                        <a class="nav-link" href="{{ route('admin.statistics.index') }}">
+                        <a class="nav-link" href="{{ route('admin.statistics.profit') }}">
                             <i class="nc-icon nc-chart-pie-35"></i>
                             <p>Thống kê</p>
                         </a>
