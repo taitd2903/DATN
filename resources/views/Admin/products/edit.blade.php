@@ -29,17 +29,21 @@
     </div>
     
 
-    <div class="mb-3">
-        <label class="form-label">Danh mục:</label>
-        <select name="category_id" class="form-select">
-            <option value="">Chọn danh mục</option>
-            @foreach($categories as $category)
-                <option value="{{ $category->id }}" {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>
-                    {{ $category->name }}
+    <select name="category_id" class="form-control">
+        <option value="">-- Chọn danh mục --</option>
+        @foreach ($categories->where('parent_id', null) as $parent)
+            <option value="{{ $parent->id }}" {{ $product->category_id == $parent->id ? 'selected' : '' }}>
+                {{ $parent->name }}
+            </option>
+    
+            @foreach ($categories->where('parent_id', $parent->id) as $child)
+                <option value="{{ $child->id }}" {{ $product->category_id == $child->id ? 'selected' : '' }}>
+                    -- {{ $child->name }}
                 </option>
             @endforeach
-        </select>
-    </div>
+        @endforeach
+    </select>
+    
 
     <div class="mb-3">
         <label class="form-label">Giới tính:</label>
