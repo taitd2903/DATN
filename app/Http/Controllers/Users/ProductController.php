@@ -12,9 +12,9 @@ use Illuminate\Support\Facades\DB;
 class ProductController extends Controller {
 
     public function index(Request $request) {
-        $breadcrumbs = [
-            ['name' => 'Trang chủ', 'url' => route('home')],
-        ];
+        // $breadcrumbs = [
+        //     ['name' => 'Trang chủ', 'url' => route('home')],
+        // ];
         $categories = Category::all();
         $banners = Banner::all();
         $products = Product::with('category', 'variants') ->where('is_delete', false);
@@ -79,7 +79,7 @@ class ProductController extends Controller {
         }
 
 
-        return view('users.products.index', compact('breadcrumbs', 'products', 'categories', 'banners', 'topSellingProductsByCategory', 'representativeProductsByParentCategory'));
+        return view('users.products.index', compact( 'products', 'categories', 'banners', 'topSellingProductsByCategory', 'representativeProductsByParentCategory'));
     }
 
 
