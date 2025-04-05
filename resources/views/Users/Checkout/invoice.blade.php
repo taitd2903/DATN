@@ -86,7 +86,7 @@
                                     @foreach ($order->orderItems as $item)
                                         <tr class="border-bottom">
                                             <td class="py-3">
-                                                <img src="{{ $item->product->image_url }}" 
+                                                <img src="{{ asset('storage/' . $item->variant->image) }}"
                                                      
                                                      class="rounded me-3" 
                                                      style="width: 70px; height: 70px; object-fit: cover;">

@@ -63,6 +63,7 @@
                     </td>
 
                     <td>{{ $user->address }}</td>
+ 
                     <td>
                         @if (auth()->id() !== $user->id)
                         <form action="{{ route('admin.users.update', $user->id) }}" method="POST">
@@ -78,7 +79,6 @@
                        <span>{{ $user->role }}</span>
                          @endif  
                        </td>
-                    
                     <td>
                         @if ($user->status === 'active')
                             <span class="badge bg-success">Hoạt động</span>
@@ -99,8 +99,12 @@
                   
 
                     <!-- Actions: Edit, Delete -->
-                   
-                    {{-- @if($user->role === 'admin')
+                    @if($user->role === 'admin')
+                        <a href=""> </a>
+                    @else
+                        <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-warning">Edit</a>
+                    @endif
+                    @if($user->role === 'admin')
                          <a href=""> </a>
                     @else
                         <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" style="display:inline;">
@@ -108,7 +112,7 @@
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger" onclick="return confirm('bạn có chắc muốn xóa?')">Delete</button>
                         </form>
-                            @endif --}}
+                            @endif
                     </td>
                 </tr>
             @endforeach
