@@ -9,25 +9,36 @@
         </div>
         <a href="{{ route('admin.products.create') }}" class="btn btn-primary">Thêm sản phẩm</a>
     </div>
-@if(session('success'))
-    <div class="alert alert-success">
-        {{ session('success') }}
-    </div>
-@endif
+
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
     <div class="mb-3 d-flex gap-2">
         <input type="text" id="filter-name" class="form-control w-20" placeholder="Lọc theo tên sản phẩm...">
+
+        {{-- DANH MỤC PHÂN CẤP --}}
+        @php
+            function renderCategoryOptions($categories, $parentId = null, $prefix = '') {
+                foreach ($categories->where('parent_id', $parentId) as $cat) {
+                    echo '<option value="' . $cat->id . '">' . $prefix . $cat->name . '</option>';
+                    renderCategoryOptions($categories, $cat->id, $prefix . '-- ');
+                }
+            }
+        @endphp
+
         <select id="filter-category" class="form-control w-20">
             <option value="">Tất cả danh mục</option>
-            @foreach($categories as $category)
-                <option value="{{ $category->name }}">{{ $category->name }}</option>
-            @endforeach
+            @php renderCategoryOptions($categories); @endphp
         </select>
+
         <select id="filter-gender" class="form-control w-20">
             <option value="">Tất cả giới tính</option>
             <option value="male">Nam</option>
             <option value="female">Nữ</option>
             <option value="unisex">Unisex</option>
         </select>
+
         <select id="filter-sold" class="form-control w-20">
             <option value="">Sắp xếp theo số lượng bán</option>
             <option value="desc">Bán chạy nhất</option>
@@ -52,7 +63,13 @@
             </thead>
             <tbody>
                 @foreach($products as $product)
-                <tr class="product-row" data-name="{{ $product->name }}" data-category="{{ $product->category?->name ?? 'Không có danh mục' }}" data-gender="{{ $product->gender }}" data-price="{{ $product->base_price }}" data-sold="{{ $product->variants->sum('sold_quantity') }}">
+                <tr class="product-row"
+                    data-name="{{ $product->name }}"
+                    data-category="{{ $product->category_id }}"
+                    data-gender="{{ $product->gender }}"
+                    data-price="{{ $product->base_price }}"
+                    data-sold="{{ $product->variants->sum('sold_quantity') }}">
+
                     <td>{{ $product->id }}</td>
                     <td>
                         @if($product->image)
@@ -91,66 +108,40 @@
     </div>
 </div>
 
-
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    function closeAllVariantTables() {
-        document.querySelectorAll(".variant-table").forEach(table => {
-            table.style.display = "none";
-        });
-    }
-
-    function showVariantsForVisibleProducts() {
-        document.querySelectorAll(".product-row").forEach(row => {
-            let productId = row.querySelector(".toggle-variants")?.getAttribute("data-id");
-            let variantTable = document.getElementById("variants-" + productId);
-            if (variantTable && row.style.display !== "none") {
-                variantTable.style.display = "table-row";
-            } else if (variantTable) {
-                variantTable.style.display = "none";
-            }
-        });
-    }
-
-    document.querySelectorAll(".toggle-variants").forEach(function (link) {
-        link.addEventListener("click", function (e) {
-            e.preventDefault();
-            var productId = this.getAttribute("data-id");
-            var variantTable = document.getElementById("variants-" + productId);
-            variantTable.style.display = variantTable.style.display === "none" ? "table-row" : "none";
-        });
-    });
-
     function applyFilters() {
-        var nameFilter = document.getElementById("filter-name").value.toLowerCase();
-        var categoryFilter = document.getElementById("filter-category").value;
-        var genderFilter = document.getElementById("filter-gender").value;
-        var soldFilter = document.getElementById("filter-sold").value;
-        
-        let rows = Array.from(document.querySelectorAll(".product-row"));
+        const nameFilter = document.getElementById("filter-name").value.toLowerCase();
+        const categoryFilter = document.getElementById("filter-category").value;
+        const genderFilter = document.getElementById("filter-gender").value;
+        const soldFilter = document.getElementById("filter-sold").value;
+
+        const rows = Array.from(document.querySelectorAll(".product-row"));
+
         rows.forEach(row => {
             let matches = true;
-            if (nameFilter && !row.getAttribute("data-name").toLowerCase().includes(nameFilter)) {
-                matches = false;
-            }
-            if (categoryFilter && row.getAttribute("data-category") !== categoryFilter) {
-                matches = false;
-            }
-            if (genderFilter && row.getAttribute("data-gender") !== genderFilter) {
-                matches = false;
-            }
+
+            const name = row.getAttribute("data-name").toLowerCase();
+            const category = row.getAttribute("data-category");
+            const gender = row.getAttribute("data-gender");
+
+            if (nameFilter && !name.includes(nameFilter)) matches = false;
+            if (categoryFilter && category !== categoryFilter) matches = false;
+            if (genderFilter && gender !== genderFilter) matches = false;
+
             row.style.display = matches ? "" : "none";
         });
 
         if (soldFilter) {
             rows.sort((a, b) => {
-                let aValue = parseInt(a.getAttribute("data-sold"));
-                let bValue = parseInt(b.getAttribute("data-sold"));
-                return soldFilter === "asc" ? aValue - bValue : bValue - aValue;
+                let aSold = parseInt(a.getAttribute("data-sold"));
+                let bSold = parseInt(b.getAttribute("data-sold"));
+                return soldFilter === "asc" ? aSold - bSold : bSold - aSold;
             });
-            rows.forEach(row => document.querySelector("#product-table tbody").appendChild(row));
+
+            const tbody = document.querySelector("#product-table tbody");
+            rows.forEach(row => tbody.appendChild(row));
         }
-        showVariantsForVisibleProducts();
     }
 
     document.getElementById("filter-name").addEventListener("input", applyFilters);
@@ -158,8 +149,5 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("filter-gender").addEventListener("change", applyFilters);
     document.getElementById("filter-sold").addEventListener("change", applyFilters);
 });
-
-
-
 </script>
 @endsection

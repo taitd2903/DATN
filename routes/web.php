@@ -27,6 +27,7 @@ use App\Http\Controllers\ChatController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\Admin\Returns\AdminReturnController;
+use App\Http\Controllers\HomeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -70,7 +71,11 @@ Route::prefix('admin')->middleware(['auth', 'role:admin,staff'])->name('admin.')
 
     Route::resource('users', UserController::class);
     Route::resource('coupons', CouponController::class);
-    Route::resource('statistics', StatisticsController::class);
+    Route::get('/statistics', [StatisticsController::class, 'index'])->name('statistics.index');
+    Route::get('/statistics/profit', [StatisticsController::class, 'profitStatistics'])->name('statistics.profit');
+    Route::get('/statistics/monthly-profit-chart', [StatisticsController::class, 'monthlyProfitChart'])
+    ->name('statistics.monthlyProfitChart');
+
     Route::get('/statistics', [StatisticsController::class, 'index'])->name('statistics.index');
     Route::get('/products/{product}/variants/create', [ProductVariantController::class, 'create'])->name('variants.create');
     Route::post('/products/{product}/variants', [ProductVariantController::class, 'store'])->name('variants.store');

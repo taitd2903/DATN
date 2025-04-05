@@ -54,8 +54,10 @@ class ChatController extends Controller
                 'is_admin' => $isAdmin ? 1 : 0,
             ]);
 
-            $userName = $isAdmin ? 'Admin' : auth()->user()->name;
+            $user = auth()->user();
+            $userName = $isAdmin ? ($user->role === 'admin' ? 'Admin - ' . $user->name : 'Staff - ' . $user->name) : $user->name;
             $broadcastReceiverId = $isAdmin ? $receiverId : 'admin';
+
             Log::info('Broadcasting message: ', [
                 'message' => $messageContent,
                 'userId' => $userId,
@@ -75,7 +77,7 @@ class ChatController extends Controller
     {
         $userId = auth()->id();
         $receiverId = $request->query('receiver_id');
-        $isAdmin = auth()->user()->role === 'admin';
+        $isAdmin = auth()->user()->role === 'admin' || auth()->user()->role === 'staff';
 
         if ($isAdmin) {
             $messages = Message::where(function ($query) use ($receiverId) {
@@ -100,10 +102,17 @@ class ChatController extends Controller
 
         $adminOnline = User::where('role', 'admin')->where('is_online', true)->exists();
 
-        $formattedMessages = $messages->map(function ($message) {
+        $formattedMessages = $messages->map(function ($message) use ($isAdmin) {
+            $senderName = $message->is_admin
+                ? ($isAdmin
+                    ? ($message->user->role === 'admin' ? 'Admin - ' . $message->user->name : 'Staff - ' . $message->user->name)
+                    : 'OceanSport')
+                : $message->user->name;
+
             return [
                 'message'   => $message->message,
                 'is_admin'  => $message->is_admin,
+                'sender'    => $senderName,
                 'date'      => optional($message->created_at)->format('d/m/Y'),
                 'time'      => optional($message->created_at)->format('H:i')
             ];

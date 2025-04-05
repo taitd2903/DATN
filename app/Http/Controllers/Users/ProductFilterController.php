@@ -11,24 +11,54 @@ class ProductFilterController extends Controller
 {
     public function index(Request $request)
     {
-        $categories = Category::whereNull('parent_id')->with('children')->get(); // Lấy danh mục cha & con
-        $query = Product::query();
+        
+        $categories = Category::whereNull('parent_id')->with('children')->get();
 
-        // Lọc theo danh mục
-        if ($request->has('category_id')) {
-            $query->where('category_id', $request->category_id);
+       
+        $query = Product::query()->where('is_delete', false);
+        if ($request->filled('name')) {
+            $query->where('name', 'LIKE', '%' . $request->name . '%');
+        }
+        if ($request->filled('category')) {
+            $selectedCategoryId = $request->category;
+
+            $category = Category::with('children')->find($selectedCategoryId);
+
+            if ($category) {
+                if ($category->children->count() > 0) {
+                  
+                    $childIds = $category->children->pluck('id')->toArray();
+                    $query->whereIn('category_id', $childIds);
+                } else {
+                   
+                    $query->where('category_id', $selectedCategoryId);
+                }
+            }
         }
 
-        // Lọc theo giới tính (nếu có)
-        if ($request->has('gender')) {
+       
+        if ($request->filled('gender')) {
             $query->where('gender', $request->gender);
         }
 
-        $products = $query->with(['variants' => function ($query) {
-            $query->select('product_id', 'price');
-        }])->paginate(9); // Phân trang
+    
+        if ($request->filled('min_price') || $request->filled('max_price')) {
+            $query->whereHas('variants', function ($q) use ($request) {
+                if ($request->filled('min_price')) {
+                    $q->where('price', '>=', $request->min_price);
+                }
+                if ($request->filled('max_price')) {
+                    $q->where('price', '<=', $request->max_price);
+                }
+            });
+        }
 
-        // Tính giá cao nhất và thấp nhất từ ProductVariant
+  
+        $products = $query->with(['variants' => function ($q) {
+            $q->select('product_id', 'price');
+        }])->paginate(9)->appends($request->query());
+
+       
         $products->each(function ($product) {
             $prices = $product->variants->pluck('price');
             $product->min_price = $prices->min();
@@ -38,3 +68,4 @@ class ProductFilterController extends Controller
         return view('users.categories.index', compact('categories', 'products'));
     }
 }
+?>

@@ -9,91 +9,186 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Carbon\Carbon;
-use DB;
 
 class StatisticsController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        // Lọc theo ngày tháng nếu có request
-        $date = $request->input('date');
-        
-        $orderQuery = OrderItem::whereHas('order', function ($query) {
-            $query->where('status', 'Hoàn thành')
-                  ->where('payment_status', 'Đã thanh toán');
-        });
-
-        if ($date) {
-            $orderQuery->whereDate('created_at', $date);
-        }
-
-        // Thống kê tổng quan
-        $totalProducts = Product::count();
-        $totalCategory = Category::count();
-        $totalStock = ProductVariant::sum('stock_quantity');
-        $totalSold = ProductVariant::sum('sold_quantity');
-
-        // Thống kê doanh thu
-        $totalRevenue = $orderQuery->selectRaw('SUM(quantity * price) as revenue')->first()->revenue ?? 0;
-        $totalSoldFiltered = OrderItem::whereHas('order', function ($query) {
-            $query->where('status', 'Hoàn thành')
-            ->where('payment_status', 'Đã thanh toán');
-        })->sum('quantity');
-        
-        $revenueByCategory = Category::with(['children', 'children.products.variants' => function ($query) {
-            $query->selectRaw('product_id, SUM(sold_quantity * price) as revenue')->groupBy('product_id');
-        }, 'products.variants' => function ($query) {
-            $query->selectRaw('product_id, SUM(sold_quantity * price) as revenue')->groupBy('product_id');
-        }])->whereNull('parent_id')->get();
-
-        // Tính tổng doanh thu của danh mục cha từ chính nó và danh mục con
-        foreach ($revenueByCategory as $category) {
-            $category->own_revenue = $category->products->sum(function ($product) {
-                return $product->variants->sum('revenue');
-            });
-            $category->children_revenue = $category->children->sum(function ($child) {
-                return $child->products->sum(function ($product) {
-                    return $product->variants->sum('revenue');
-                });
-            });
-            $category->total_revenue = $category->own_revenue + $category->children_revenue;
-        }
-
-        $revenueByProduct = Product::with(['variants' => function ($query) {
-            $query->selectRaw('product_id, SUM(sold_quantity * price) as revenue')->groupBy('product_id');
-        }])->get();
-
-        // Thống kê theo thời gian
-        $revenueByDay = OrderItem::whereHas('order', function ($query) {
-            $query->where('status', 'Hoàn thành')->where('payment_status', 'Đã thanh toán');
-        })->whereDate('created_at', Carbon::today())->sum(\DB::raw('quantity * price'));
-
-        $revenueByMonth = OrderItem::whereHas('order', function ($query) {
-            $query->where('status', 'Hoàn thành')->where('payment_status', 'Đã thanh toán');
-        })->whereMonth('created_at', Carbon::now()->month)->sum(\DB::raw('quantity * price'));
-
-        $revenueByYear = OrderItem::whereHas('order', function ($query) {
-            $query->where('status', 'Hoàn thành')->where('payment_status', 'Đã thanh toán');
-        })->whereYear('created_at', Carbon::now()->year)->sum(\DB::raw('quantity * price'));
-
-        // **Thống kê sản phẩm bán chạy**
-        $topSellingProducts = Product::select('products.id', 'products.name', DB::raw('SUM(order_items.quantity) as total_sold'))
-        ->join('order_items', 'products.id', '=', 'order_items.product_id') // Đổi từ product_variant_id thành product_id
-        ->join('orders', 'order_items.order_id', '=', 'orders.id')
-        ->where('orders.status', 'Hoàn thành')
-        ->where('orders.payment_status', 'Đã thanh toán')
-        ->groupBy('products.id', 'products.name')
-        ->orderByDesc('total_sold')
-        ->take(10)
-        ->get();
-    
+        $categories = Category::all();
+        $products = Product::all();
+        $productVariants = ProductVariant::all();
+        $orders = Order::all();
+        $orderItems = OrderItem::all();
 
         return view('Admin.statistics.index', compact(
-            'totalProducts', 'totalCategory', 'totalStock', 'totalSold',
-            'totalRevenue', 'revenueByCategory', 'revenueByProduct',
-            'revenueByDay', 'revenueByMonth', 'revenueByYear',
-            'totalSoldFiltered', 'topSellingProducts'
+            'categories',
+            'products',
+            'productVariants',
+            'orders',
+            'orderItems'
         ));
+    }
+
+    public function profitStatistics(Request $request)
+    {
+        $from = $request->input('from_date');
+        $to = $request->input('to_date');
+        $productName = $request->input('product_name');
+        $categoryId = $request->input('category_id');
+        $orderId = $request->input('order_id');
+
+        $ordersQuery = Order::where('status', 'Hoàn thành')->with('orderItems');
+
+        if ($from) {
+            $ordersQuery->whereDate('created_at', '>=', $from);
+        }
+        if ($to) {
+            $ordersQuery->whereDate('created_at', '<=', $to);
+        }
+        if ($orderId) {
+            $ordersQuery->where('id', $orderId);
+        }
+
+        $orders = $ordersQuery->get();
+        $orderProfits = [];
+        $productProfits = [];
+
+        foreach ($orders as $order) {
+            $orderRevenue = 0;
+            $orderCost = 0;
+
+            foreach ($order->orderItems as $item) {
+                $variant = ProductVariant::find($item->variant_id);
+                $product = Product::find($item->product_id);
+                if (!$variant || !$product) continue;
+
+                if ($productName && stripos($product->name, $productName) === false) {
+                    continue;
+                }
+
+                if ($categoryId) {
+                    $categoryIds = Category::getDescendantsAndSelfIds($categoryId);
+                    if (!in_array($product->category_id, $categoryIds)) {
+                        continue;
+                    }
+                }
+
+                $itemRevenue = $item->price * $item->quantity;
+                $itemCost = $variant->original_price * $item->quantity;
+                $itemProfit = $itemRevenue - $itemCost;
+
+                if (!isset($productProfits[$product->id])) {
+                    $productProfits[$product->id] = [
+                        'product_name' => $product->name,
+                        'total_revenue' => 0,
+                        'total_cost' => 0,
+                        'total_profit' => 0,
+                        'total_sold' => 0,
+                    ];
+                }
+
+                $productProfits[$product->id]['total_revenue'] += $itemRevenue;
+                $productProfits[$product->id]['total_cost'] += $itemCost;
+                $productProfits[$product->id]['total_profit'] += $itemProfit;
+                $productProfits[$product->id]['total_sold'] += $item->quantity;
+
+                $orderRevenue += $itemRevenue;
+                $orderCost += $itemCost;
+            }
+
+            if ($orderRevenue > 0 || $orderCost > 0) {
+                $orderProfits[] = [
+                    'order_id' => $order->id,
+                    'order_code' => $order->code ?? ('Mã đơn ' . $order->id),
+                    'total_revenue' => $orderRevenue,
+                    'total_cost' => $orderCost,
+                    'total_profit' => $orderRevenue - $orderCost,
+                    'created_at' => $order->created_at,
+                ];
+            }
+        }
+
+        $categories = Category::with('children')->whereNull('parent_id')->get();
+
+
+        return view('Admin.statistics.profit', compact(
+            'productProfits',
+            'orderProfits',
+            'from',
+            'to',
+            'categories'
+        ));
+    }
+
+    public function monthlyProfitChart(Request $request)
+    {
+        $from = $request->input('from_date');
+        $to = $request->input('to_date');
+        $productName = $request->input('product_name');
+        $categoryId = $request->input('category_id');
+        $orderId = $request->input('order_id');
+
+        $ordersQuery = Order::where('status', 'Hoàn thành')->with('orderItems');
+
+        if ($from) {
+            $ordersQuery->whereDate('created_at', '>=', $from);
+        }
+        if ($to) {
+            $ordersQuery->whereDate('created_at', '<=', $to);
+        }
+        if ($orderId) {
+            $ordersQuery->where('id', $orderId);
+        }
+
+        $orders = $ordersQuery->get();
+        $monthlyProfits = [];
+
+        foreach ($orders as $order) {
+            $orderRevenue = 0;
+            $orderCost = 0;
+
+            foreach ($order->orderItems as $item) {
+                $variant = ProductVariant::find($item->variant_id);
+                $product = Product::find($item->product_id);
+                if (!$variant || !$product) continue;
+
+                if ($productName && stripos($product->name, $productName) === false) {
+                    continue;
+                }
+
+                if ($categoryId) {
+                    $categoryIds = Category::getDescendantsAndSelfIds($categoryId);
+                    if (!in_array($product->category_id, $categoryIds)) {
+                        continue;
+                    }
+                }
+
+                $itemRevenue = $item->price * $item->quantity;
+                $itemCost = $variant->original_price * $item->quantity;
+
+                $orderRevenue += $itemRevenue;
+                $orderCost += $itemCost;
+            }
+
+            $profit = $orderRevenue - $orderCost;
+            $monthKey = $order->created_at->format('Y-m');
+
+            if (!isset($monthlyProfits[$monthKey])) {
+                $monthlyProfits[$monthKey] = [
+                    'month' => $monthKey,
+                    'revenue' => 0,
+                    'cost' => 0,
+                    'profit' => 0,
+                ];
+            }
+
+            $monthlyProfits[$monthKey]['revenue'] += $orderRevenue;
+            $monthlyProfits[$monthKey]['cost'] += $orderCost;
+            $monthlyProfits[$monthKey]['profit'] += $profit;
+        }
+
+        ksort($monthlyProfits);
+
+        return response()->json(array_values($monthlyProfits));
     }
 }

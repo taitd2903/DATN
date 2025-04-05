@@ -66,60 +66,58 @@
 
     function loadChatHistory() {
         $.get('/chat/history', function(response) {
-            $('#chatMessages').empty();
-            let currentDate = "";
-            response.messages.forEach(function(msg) {
-                const msgDate = msg.date;
-                const msgTime = msg.time; 
+        $('#chatMessages').empty();
+        let currentDate = "";
+        response.messages.forEach(function(msg) {
+            const msgDate = msg.date;
+            const msgTime = msg.time;
 
-                if (msgDate !== currentDate) {
-                    $('#chatMessages').append(`<div class="date-separator">${msgDate}</div>`);
-                    currentDate = msgDate;
-                }
-                let sender = msg.is_admin ? 'Admin' : 'Bạn';
+            if (msgDate !== currentDate) {
+                $('#chatMessages').append(`<div class="date-separator">${msgDate}</div>`);
+                currentDate = msgDate;
+            }
+            
+            if (msg.is_admin) {
                 $('#chatMessages').append(
-                    `<p><strong>${sender}:</strong> ${msg.message} <span>(${msgTime})</span></p>`);
-            });
-
-            const adminStatusMessage = response.admin_online
-                ? ''
-                : 'Admin hiện đang Offline, bạn để lại thông tin chúng tôi sẽ liên lạc lại ngay.';
-                $('#adminStatus').html(`<p class="status-message">${adminStatusMessage}</p>`);
-
-            $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
+                    `<p class="admin-message"><strong>OceanSports:</strong> ${msg.message} <span class="message-time">${msgTime}</span></p>`);
+            } else {
+                $('#chatMessages').append(
+                    `<p class="user-message"><strong>Bạn:</strong> ${msg.message} <span class="message-time">${msgTime}</span></p>`);
+            }
         });
+
+        const adminStatusMessage = response.admin_online ? '' : 'OceanSports hiện đang Offline, bạn để lại thông tin chúng tôi sẽ liên lạc lại ngay.';
+        $('#adminStatus').html(`<p class="status-message">${adminStatusMessage}</p>`);
+        $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
+    });
+
     }
 
     function sendMessage() {
         const messageInput = document.getElementById('messageInput');
-        const message = messageInput.value.trim();
+    const message = messageInput.value.trim();
 
-        if (!message) return;
+    if (!message) return;
 
-        fetch("{{ route('chat.send') }}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                },
-                body: JSON.stringify({
-                    message: message
-                })
+    fetch("{{ route('chat.send') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            },
+            body: JSON.stringify({
+                message: message
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok: ' + response.status);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.status === 'Message sent!') {
-                    $('#chatMessages').append(
-                        `<p><strong>Bạn:</strong> ${message} <span>(${formatTime(new Date())})</span></p>`);
-                    $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
-                    messageInput.value = '';
-                }
-            });
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'Message sent!') {
+                $('#chatMessages').append(
+                    `<p class="user-message"><strong>Bạn:</strong> ${message} <span class="message-time">${formatTime(new Date())}</span></p>`);
+                $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
+                messageInput.value = '';
+            }
+        });
     }
 
     const pusher = new Pusher('{{ env('PUSHER_APP_KEY') }}', {
@@ -134,27 +132,28 @@
     });
 
     @if (auth()->check())
-        const channel = pusher.subscribe('chat.user.{{ auth()->id() }}');
-        channel.bind('message.sent', function(data) {
-            const today = data.date;
-            const lastDate = $('#chatMessages .date-separator:last').text();
-            if (lastDate !== today) {
-                $('#chatMessages').append(`<div class="date-separator">${today}</div>`);
-            }
-            $('#chatMessages').append(
-                `<p><strong>Admin:</strong> ${data.message} <span>(${formatTime(new Date())})</span></p>`);
-            $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
+    const channel = pusher.subscribe('chat.user.{{ auth()->id() }}');
+    channel.bind('message.sent', function(data) {
+        const today = data.date;
+        const lastDate = $('#chatMessages .date-separator:last').text();
+        if (lastDate !== today) {
+            $('#chatMessages').append(`<div class="date-separator">${today}</div>`);
+        }
+        $('#chatMessages').append(
+            `<p class="admin-message"><strong>OceanSports:</strong> ${data.message} <span class="message-time">${formatTime(new Date())}</span></p>`
+            );
+        $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
 
-            const chatBox = document.getElementById('chatBox');
-            if (chatBox.style.display !== 'flex') {
-                $('#notificationMessage').text('Bạn có tin nhắn mới!');
-                $('#newMessageNotification').show();
-                document.getElementById('notificationSound').play();
+        const chatBox = document.getElementById('chatBox');
+        if (chatBox.style.display !== 'flex') {
+            $('#notificationMessage').text('Bạn có tin nhắn mới từ OceanSports!');
+            $('#newMessageNotification').show();
+            document.getElementById('notificationSound').play();
 
-                setTimeout(() => {
-                    $('#newMessageNotification').hide();
-                }, 5000);
-            }
-        });
-    @endif
+            setTimeout(() => {
+                $('#newMessageNotification').hide();
+            }, 5000);
+        }
+    });
+@endif
 </script>

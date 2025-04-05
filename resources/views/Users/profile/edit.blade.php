@@ -44,31 +44,31 @@
 
             <div class="form-group">
                 <label for="province">Tỉnh/Thành phố</label>
-                <select id="province" name="city" class="form-control" >
+                <select id="province" name="city" class="form-control">
                     <option value="" disabled selected>Chọn tỉnh/thành phố</option>
                 </select>
             </div>
         
             <div class="form-group">
                 <label for="district">Quận/Huyện</label>
-                <select id="district" name="district" class="form-control" >
+                <select id="district" name="district" class="form-control">
                     <option value="" disabled selected>Chọn quận/huyện</option>
                 </select>
             </div>
         
             <div class="form-group">
                 <label for="ward">Xã/Phường</label>
-                <select id="ward" name="ward" class="form-control" >
+                <select id="ward" name="ward" class="form-control">
                     <option value="" disabled selected>Chọn xã/phường</option>
                 </select>
             </div>
         
             <div class="form-group">
                 <label for="address">Địa chỉ chi tiết</label>
-                <input type="text" id="address" name="address" class="form-control" value="{{ $user->address ?? '' }}" >
+                <input type="text" id="address" name="address" class="form-control" value="{{ $user->address ?? '' }}">
+                <div id="addressError" class="error" style="display: none; color: red; margin-top: 5px;"></div>
             </div>
 
-          
             <div class="input-box">
                 <label for="gender"><i class="fa-solid fa-venus-mars"></i> Giới tính</label>
                 <input type="text" id="gender" name="gender" value="{{ $user->gender === 'male' ? 'Nam' : 'Nữ' }}" readonly>
@@ -114,6 +114,15 @@
         const provinceSelect = document.getElementById("province");
         const districtSelect = document.getElementById("district");
         const wardSelect = document.getElementById("ward");
+        const addressInput = document.getElementById("address");
+        const form = document.querySelector("form");
+        const addressError = document.getElementById("addressError");
+
+        // Kiểm tra xem các phần tử có được tìm thấy không
+        if (!provinceSelect || !districtSelect || !wardSelect || !addressInput || !form || !addressError) {
+            console.error("Không tìm thấy một hoặc nhiều phần tử trong form. Vui lòng kiểm tra ID.");
+            return;
+        }
 
         // Hiển thị loading
         showLoading(provinceSelect, true);
@@ -155,6 +164,42 @@
             wardSelect.innerHTML = '<option value="" disabled selected>Chọn xã/phường</option>';
             if (e.target.value) {
                 loadWards(e.target.value);
+            }
+        });
+
+        // Hàm kiểm tra tính hợp lệ của địa chỉ
+        function validateAddress() {
+            const provinceValue = provinceSelect.value;
+            const districtValue = districtSelect.value;
+            const wardValue = wardSelect.value;
+            const addressValue = addressInput.value.trim();
+
+            // Debug: In giá trị của các trường
+            console.log("Province:", provinceValue);
+            console.log("District:", districtValue);
+            console.log("Ward:", wardValue);
+            console.log("Address:", addressValue);
+
+            // Đếm số lượng trường được điền
+            const filledCount = [provinceValue, districtValue, wardValue, addressValue].filter(value => value !== '').length;
+
+            console.log("Filled count:", filledCount);
+
+            if (filledCount > 0 && filledCount < 4) {
+                addressError.style.display = 'block';
+                addressError.textContent = 'Bạn phải chọn đầy đủ 4 mục trong phần Địa chỉ chi tiết (Tỉnh/Thành phố, Quận/Huyện, Xã/Phường, Địa chỉ chi tiết) hoặc để trống tất cả!';
+                return false;
+            } else {
+                addressError.style.display = 'none';
+                return true;
+            }
+        }
+
+        // Thêm sự kiện submit cho form
+        form.addEventListener('submit', function(event) {
+            console.log("Form submitted, validating address...");
+            if (!validateAddress()) {
+                event.preventDefault(); // Ngăn form gửi nếu không hợp lệ
             }
         });
     });
@@ -217,12 +262,9 @@
                 showLoading(wardSelect, false);
             });
     }
-
-    // Bật/tắt chỉnh sửa địa chỉ
-    
 </script>
-    
-    <style>
+
+<style>
     select {
         background-color: #fff;
         color: #333;
@@ -240,5 +282,5 @@
         border: none;
         cursor: pointer;
     }
-    </style>
+</style>
 @endsection

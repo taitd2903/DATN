@@ -117,9 +117,10 @@ class ProductController extends Controller {
     }
 
     public function edit(Product $product) {
-        $categories = Category::all();
+        $categories = Category::orderBy('parent_id')->orderBy('name')->get();
         return view('Admin.products.edit', compact('product', 'categories'));
     }
+    
 
     public function update(Request $request, Product $product) {
         $request->validate([
