@@ -154,6 +154,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/orders/{order}/edit-status', [CheckoutController::class, 'editStatus'])->name('orders.editStatus');
     Route::put('/orders/{order}/update-status', [CheckoutController::class, 'updateStatus'])->name('orders.updateStatus');
     Route::get('/orders/{order}', [CheckoutController::class, 'show'])->name('orders.show');
+    
 
     // check reviews
     Route::get('/check_reviews', [AdminReviewController::class, 'index'])->name('reviews.index');

@@ -3,19 +3,58 @@
 @section('content')
     <h1>Quản lý đơn hàng</h1>
     
-    <div class="input-group my-3">
-        <input type="text" id="searchInput" class="form-control" placeholder="Nhập khách hàng, số điện thoại hoặc đia chỉ...">
-        <button class="btn btn-primary" id="searchButton">Tìm kiếm</button>
+    <!-- Thêm các input lọc -->
+    <div class="filter-container mb-3 w-75 mx-auto">
+        <!-- Hàng 1 -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <input type="text" id="nameFilter" class="form-control" placeholder="Tên khách hàng">
+            </div>
+            <div class="col-md-6">
+                <input type="text" id="phoneFilter" class="form-control" placeholder="Số điện thoại">
+            </div>
+        </div>
+        <!-- Hàng 2 -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <input type="date" id="dateFilter" class="form-control">
+            </div>
+            <div class="col-md-6">
+                <select id="paymentStatusFilter" class="form-control">
+                    <option value="">Tất cả trạng thái thanh toán</option>
+                    <option value="Chưa thanh toán">Chưa thanh toán</option>
+                    <option value="Đã thanh toán">Đã thanh toán</option>
+                    <option value="Thất bại">Thất bại</option>
+                </select>
+            </div>
+        </div>
+        <!-- Hàng 3 -->
+        <div class="row mb-2">
+            <div class="col-md-6">
+                <select id="orderStatusFilter" class="form-control">
+                    <option value="">Tất cả trạng thái đơn hàng</option>
+                    <option value="Chờ xác nhận">Chờ xác nhận</option>
+                    <option value="Đang giao">Đang giao</option>
+                    <option value="Hoàn thành">Hoàn thành</option>
+                    <option value="Hủy">Hủy</option>
+                </select>
+            </div>
+            <div class="row mt-2" id="backFilterRow" style="display: none;">
+                <div class="col-md-12 text-end">
+                    <button id="resetFilter" class="btn btn-secondary btn-sm">Trở lại</button>
+                </div>
+            </div>    
+        </div>
     </div>
 
+    <!-- Table đơn hàng -->
     <table class="table table-bordered mt-3" id="orderTable">
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Khách hàng</th>
-                <th>Số điện thoại</th>
-                {{-- <th>Địa chỉ</th> --}}
-                <th>Phương thức thanh toán</th>
+                <th>Thông tin người đặt</th> 
+                <th>Ngày đặt hàng</th>
+                <th>Thanh toán</th> 
                 <th>Trạng thái thanh toán</th>
                 <th>Tổng tiền</th>
                 <th>Trạng thái</th>
@@ -26,10 +65,11 @@
             @foreach($orders as $index => $order)
             <tr>
                 <td>{{ $orders->firstItem() + $index }}</td>
-                <td class="customer_name">{{ $order->customer_name }}</td>
-                <td class="customer_phone">{{ $order->customer_phone }}</td>
-                {{-- <td class="customer_address">{{ $order->customer_address}}, <span id="ward-name"></span> ,<span id="district-name"></span>, <span id="city-name"></span></td>  --}}
-                <td>
+                <td class="customer_info" data-name="{{ $order->customer_name }}" data-phone="{{ $order->customer_phone }}"> 
+                    {{ $order->customer_name }} <br> SĐT:{{ $order->customer_phone }}
+                </td> 
+                <td class="order_date" data-date="{{ $order->created_at->format('Y-m-d') }}">{{ $order->created_at->format('d/m/Y') }}</td>
+                <td class="payment_method"> 
                     @if ($order->payment_method == 'cod')
                         COD
                     @elseif ($order->payment_method == 'vnpay')
@@ -38,9 +78,9 @@
                         Khác
                     @endif
                 </td>
-                <td>{{ $order->payment_status }}</td>
+                <td class="payment_status">{{ $order->payment_status }}</td>
                 <td>{{ number_format($order->total_price, 0, ',', '.') }} đ</td>
-                <td class="order_status">
+                <td class="order_status" data-status="{{ $order->status }}">
                     <span class="badge
                         @if($order->status == 'Chờ xác nhận') bg-warning
                         @elseif($order->status == 'Đang giao') bg-primary
@@ -59,142 +99,83 @@
                     @endif
                 </td>
             </tr>
-            
             @endforeach
         </tbody>
     </table>
 
     {{ $orders->links() }}
 
-    {{-- <script>
+    <!-- CSS -->
+    <style>
+        .payment_method {
+            width: 80px; 
+            text-align: center; 
+        }
+        .customer_info {
+            width: 150px; 
+            word-wrap: break-word; 
+        }
+        .filter-container {
+            margin-bottom: 20px;
+        }
+    </style>
+
+    <!-- Script -->
+    <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // Gán sự kiện click cho nút tìm kiếm
-            document.getElementById("searchButton").addEventListener("click", filterOrders);
+            const filters = ["nameFilter", "phoneFilter", "dateFilter", "paymentStatusFilter", "orderStatusFilter"];
+            filters.forEach(id => document.getElementById(id).addEventListener("input", filterOrders));
+            filters.forEach(id => document.getElementById(id).addEventListener("change", filterOrders));
+            document.getElementById("resetFilter").addEventListener("click", resetFilters);
+        });
+
+        function filterOrders() {
+            let nameFilter = document.getElementById("nameFilter").value.toLowerCase().trim();
+            let phoneFilter = document.getElementById("phoneFilter").value.toLowerCase().trim();
+            let dateFilter = document.getElementById("dateFilter").value;
+            let paymentStatusFilter = document.getElementById("paymentStatusFilter").value.toLowerCase().trim();
+            let orderStatusFilter = document.getElementById("orderStatusFilter").value.toLowerCase().trim();
             
-            // Cho phép nhấn Enter để tìm kiếm nhanh hơn
-            document.getElementById("searchInput").addEventListener("keypress", function(event) {
-                if (event.key === "Enter") {
-                    filterOrders();
-                }
-            });
-        });
-    
-        function filterOrders() {
-            let input = document.getElementById("searchInput").value.toLowerCase().trim();
             let rows = document.querySelectorAll("#orderTable tbody tr");
-    
+            let isFiltering = false;
+
             rows.forEach(row => {
-                let name = row.querySelector(".customer_name")?.innerText.toLowerCase().trim() || "";
-                let phone = row.querySelector(".customer_phone")?.innerText.toLowerCase().trim() || "";
-                let address = row.querySelector(".customer_address")?.innerText.toLowerCase().trim() || "";
-    
-                // Kiểm tra nếu input rỗng, hiển thị tất cả
-                if (input === "") {
-                    row.style.display = "table-row"; 
-                    return;
-                }
-    
-                // Nếu bất kỳ trường nào chứa từ khóa nhập vào, hiển thị hàng đó
-                if (name.includes(input) || phone.includes(input) || address.includes(input)) {
-                    row.style.display = "table-row"; 
-                } else {
-                    row.style.display = "none"; 
-                }
+                let name = row.querySelector(".customer_info").getAttribute("data-name").toLowerCase();
+                let phone = row.querySelector(".customer_info").getAttribute("data-phone").toLowerCase();
+                let date = row.querySelector(".order_date").getAttribute("data-date");
+                let paymentStatus = row.querySelector(".payment_status").innerText.toLowerCase();
+                let orderStatus = row.querySelector(".order_status").getAttribute("data-status").toLowerCase();
+
+                let nameMatch = !nameFilter || name.includes(nameFilter);
+                let phoneMatch = !phoneFilter || phone.includes(phoneFilter);
+                let dateMatch = !dateFilter || date === dateFilter;
+                let paymentStatusMatch = !paymentStatusFilter || paymentStatus.includes(paymentStatusFilter);
+                let orderStatusMatch = !orderStatusFilter || orderStatus === orderStatusFilter;
+
+                let showRow = nameMatch && phoneMatch && dateMatch && paymentStatusMatch && orderStatusMatch;
+
+                row.style.display = showRow ? "table-row" : "none";
+                if (!showRow) isFiltering = true;
             });
+
+            // Hiển thị nút "Trở lại" nếu có ít nhất một bộ lọc được áp dụng
+            document.getElementById("backFilterRow").style.display = (
+                nameFilter || phoneFilter || dateFilter || paymentStatusFilter || orderStatusFilter
+            ) ? "block" : "none";
         }
-    </script> --}}
-     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            document.getElementById("searchButton").addEventListener("click", filterOrders);
-            document.getElementById("searchInput").addEventListener("keypress", function(event) {
-                if (event.key === "Enter") {
-                    filterOrders();
-                }
+
+        function resetFilters() {
+            document.getElementById("nameFilter").value = "";
+            document.getElementById("phoneFilter").value = "";
+            document.getElementById("dateFilter").value = "";
+            document.getElementById("paymentStatusFilter").value = "";
+            document.getElementById("orderStatusFilter").value = "";
+
+            document.querySelectorAll("#orderTable tbody tr").forEach(row => {
+                row.style.display = "table-row";
             });
-        });
-    
-        function filterOrders() {
-            let input = document.getElementById("searchInput").value.toLowerCase().trim();
-            let rows = document.querySelectorAll("#orderTable tbody tr");
-    
-            rows.forEach(row => {
-                let name = row.querySelector(".customer_name")?.innerText.toLowerCase().trim() || "";
-                let phone = row.querySelector(".customer_phone")?.innerText.toLowerCase().trim() || "";
-                let address = row.querySelector(".customer_address")?.innerText.toLowerCase().trim() || "";
-    
-                let inputParts = input.split(" ").filter(part => part.length > 0); // Tách các từ trong input
-    
-                // Nếu input rỗng, hiển thị tất cả
-                if (inputParts.length === 0) {
-                    row.style.display = "table-row";
-                    return;
-                }
-    
-                let matches = inputParts.every(part => 
-                    name.includes(part) || phone.includes(part) || address.includes(part)
-                );
-    
-                if (matches) {
-                    row.style.display = "table-row"; // Hiển thị nếu thỏa mãn điều kiện
-                } else {
-                    row.style.display = "none"; // Ẩn nếu không khớp
-                }
-            });
+
+            document.getElementById("backFilterRow").style.display = "none";
         }
-    </script> 
-    
+    </script>
 @endsection
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-    // Lấy mã từ các phần tử HTML (hoặc lấy từ PHP như sau)
-    const cityCode = "{{ $order->city }}";
-    const districtCode = "{{ $order->district }}";
-    const wardCode = "{{ $order->ward }}";
-
-    // Hàm lấy tên tỉnh/thành phố từ mã cityCode
-    fetch(`https://provinces.open-api.vn/api/p/`)
-        .then(response => response.json())
-        .then(data => {
-            let cityName = "";
-            data.forEach(province => {
-                if (province.code == cityCode) {
-                    cityName = province.name;
-                }
-            });
-            // Cập nhật tên tỉnh/thành phố
-            document.getElementById("city-name").innerText = cityName;
-        })
-        .catch(error => console.error("Lỗi tải dữ liệu tỉnh/thành phố:", error));
-
-    // Hàm lấy tên quận/huyện từ mã districtCode
-    fetch(`https://provinces.open-api.vn/api/p/${cityCode}?depth=2`)
-        .then(response => response.json())
-        .then(data => {
-            let districtName = "";
-            data.districts.forEach(district => {
-                if (district.code == districtCode) {
-                    districtName = district.name;
-                }
-            });
-            // Cập nhật tên quận/huyện
-            document.getElementById("district-name").innerText = districtName;
-        })
-        .catch(error => console.error("Lỗi tải dữ liệu quận/huyện:", error));
-
-    // Hàm lấy tên xã/phường từ mã wardCode
-    fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`)
-        .then(response => response.json())
-        .then(data => {
-            let wardName = "";
-            data.wards.forEach(ward => {
-                if (ward.code == wardCode) {
-                    wardName = ward.name;
-                }
-            });
-            // Cập nhật tên xã/phường
-            document.getElementById("ward-name").innerText = wardName;
-        })
-        .catch(error => console.error("Lỗi tải dữ liệu xã/phường:", error));
-});
-
-</script>

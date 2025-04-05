@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Log;
 
 class CheckoutController extends Controller
 {
+     //XỬ LÝ USER
     public function index(Request $request)
     {
         // Lấy danh sách ID sản phẩm được chọn từ query string (ví dụ: ?items=1,2,3)
@@ -267,6 +268,75 @@ class CheckoutController extends Controller
         return view('Users.Checkout.invoice', compact('breadcrumbs', 'order'));
     }
 
+    public function orderTracking()
+    {
+        $breadcrumbs = [
+            ['name' => 'Trang chủ', 'url' => route('home')],
+            ['name' => 'Đơn hàng', 'url' => null],
+            ['name' => 'Đơn hàng của tôi', 'url' => null],
+        ];
+        $orders = Order::where('user_id', Auth::id())->with('orderItems.product')->get();
+
+        return view('users.tracking.order_tracking', compact('breadcrumbs', 'orders'));
+    }
+
+    public function cancelOrder(Order $order)
+    {
+        if ($order->user_id !== Auth::id()) {
+            return redirect()->back()->with('error', 'Bạn không có quyền hủy đơn này!');
+        }
+
+        if ($order->status !== 'Chờ xác nhận') {
+            return redirect()->back()->with('error', 'Đơn hàng đang vận chuyển, không thể hủy!');
+        }
+        Log::info('Coupon Code in cancelOrder:', [$order->coupon_code]);
+        DB::transaction(function () use ($order) {
+            // Khôi phục tồn kho
+            foreach ($order->orderItems as $item) {
+                $variant = $item->variant;
+                if ($variant) {
+                    $variant->stock_quantity += $item->quantity;
+                    $variant->sold_quantity -= $item->quantity;
+                    $variant->save();
+                } else {
+                    $product = $item->product;
+                    if ($product) {
+                        $product->stock_quantity += $item->quantity;
+                        $product->sold_quantity -= $item->quantity;
+                        $product->save();
+                    }
+                }
+            }
+
+            // Phần này của tao nhé Thắng
+            if ($order->coupon_code) {
+                $couponCodes = explode(',', $order->coupon_code);
+                foreach ($couponCodes as $code) {
+                    $code = trim($code);
+                    if (!empty($code)) {
+                        $coupon = Coupon::where('code', $code)->first();
+                        if ($coupon) {
+                            $couponUsage = CouponUsage::where('order_id', $order->id)
+                                ->where('user_id', $order->user_id)
+                                ->where('coupon_id', $coupon->id)
+                                ->first();
+                            if ($couponUsage) {
+                                $couponUsage->delete();
+                                $coupon->used_count = max(0, $coupon->used_count - 1);
+                                $coupon->save();
+                            }
+                        }
+                    }
+                }
+            }
+            $order->status = 'Hủy';
+            $order->save();
+        });
+
+        return redirect()->back()->with('success', 'Đơn hàng đã được hủy thành công.');
+    }
+
+          //XỬ LÝ ADMIN
     // Hiển thị danh sách đơn hàng
     public function orderList()
     {
@@ -368,76 +438,7 @@ class CheckoutController extends Controller
         return view('admin.orders.show', compact('order'));
     }
 
-
-
-
-    public function orderTracking()
-    {
-        $breadcrumbs = [
-            ['name' => 'Trang chủ', 'url' => route('home')],
-            ['name' => 'Đơn hàng', 'url' => null],
-            ['name' => 'Đơn hàng của tôi', 'url' => null],
-        ];
-        $orders = Order::where('user_id', Auth::id())->with('orderItems.product')->get();
-
-        return view('users.tracking.order_tracking', compact('breadcrumbs', 'orders'));
-    }
-
-    public function cancelOrder(Order $order)
-    {
-        if ($order->user_id !== Auth::id()) {
-            return redirect()->back()->with('error', 'Bạn không có quyền hủy đơn này!');
-        }
-
-        if ($order->status !== 'Chờ xác nhận') {
-            return redirect()->back()->with('error', 'Đơn hàng đang vận chuyển, không thể hủy!');
-        }
-        Log::info('Coupon Code in cancelOrder:', [$order->coupon_code]);
-        DB::transaction(function () use ($order) {
-            // Khôi phục tồn kho
-            foreach ($order->orderItems as $item) {
-                $variant = $item->variant;
-                if ($variant) {
-                    $variant->stock_quantity += $item->quantity;
-                    $variant->sold_quantity -= $item->quantity;
-                    $variant->save();
-                } else {
-                    $product = $item->product;
-                    if ($product) {
-                        $product->stock_quantity += $item->quantity;
-                        $product->sold_quantity -= $item->quantity;
-                        $product->save();
-                    }
-                }
-            }
-
-            // Phần này của tao nhé Thắng
-            if ($order->coupon_code) {
-                $couponCodes = explode(',', $order->coupon_code);
-                foreach ($couponCodes as $code) {
-                    $code = trim($code);
-                    if (!empty($code)) {
-                        $coupon = Coupon::where('code', $code)->first();
-                        if ($coupon) {
-                            $couponUsage = CouponUsage::where('order_id', $order->id)
-                                ->where('user_id', $order->user_id)
-                                ->where('coupon_id', $coupon->id)
-                                ->first();
-                            if ($couponUsage) {
-                                $couponUsage->delete();
-                                $coupon->used_count = max(0, $coupon->used_count - 1);
-                                $coupon->save();
-                            }
-                        }
-                    }
-                }
-            }
-            $order->status = 'Hủy';
-            $order->save();
-        });
-
-        return redirect()->back()->with('success', 'Đơn hàng đã được hủy thành công.');
-    }
+   
 
     // ===================== Function này của Đạt, cấm động ====================== //
     public function applyCoupon(Request $request)
