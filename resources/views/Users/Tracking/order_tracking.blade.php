@@ -59,7 +59,7 @@
                             @foreach ($order->orderItems as $item)
                                 <div class="card mb-2 border-0 shadow-sm">
                                     <div class="card-body d-flex align-items-center p-3">
-                                        <img src="{{ $item->product->image_url }}" alt="{{ $item->product->name }}"
+                                        <img src="{{ asset('storage/' . $item->variant->image) }}" alt="{{ $item->product->name }}"
                                             class="rounded me-3" style="width: 70px; height: 70px; object-fit: cover;">
                                         <div class="flex-grow-1">
                                             <strong>{{ $item->product->name }}</strong> (x{{ $item->quantity }})<br>
