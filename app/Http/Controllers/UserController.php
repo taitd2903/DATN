@@ -78,6 +78,9 @@ class UserController extends Controller
      // Cập nhật dữ liệu user
      public function update(Request $request, $id)
 {
+    if (auth()->id() == $id) {
+        return redirect()->back()->with('error', 'Bạn không thể thay đổi quyền của chính mình.');
+    }
     $request->validate([
 
         'role' => 'required|in:user,admin,staff',
