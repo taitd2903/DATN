@@ -103,7 +103,7 @@ Route::middleware('auth')->prefix('cart')->name('cart.')->group(function () {
 
 // ========================= SẢN PHẨM (PRODUCTS) =========================
 Route::get('/categories', [ProductFilterController::class, 'index'])->name('categories.show');
-Route::get('/', [UserProductController::class, 'index'])->name('index');
+Route::get('/', [UserProductController::class, 'index'])->name('home');
 Route::prefix('products')->name('products.')->group(function () {
     Route::get('/', [UserProductController::class, 'index'])->name('index');
     Route::get('/{product}', [UserProductController::class, 'show'])->name('show');
@@ -156,13 +156,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/reviews/{id}/approve', [AdminReviewController::class, 'approve'])->name('reviews.approve');
     Route::delete('/reviews/{id}', [AdminReviewController::class, 'destroy'])->name('reviews.destroy');
 
-    
-    // check đơn hoàn 
+
+    // check đơn hoàn
     Route::get('/returns', [AdminReturnController::class, 'index'])->name('returns.index');
     Route::patch('/returns/{id}/approve', [AdminReturnController::class, 'approve'])->name('returns.approve');
     Route::patch('/returns/{id}/reject', [AdminReturnController::class, 'reject'])->name('returns.reject');
     Route::patch('/returns/{id}/update-process', [AdminReturnController::class, 'updateReturnProcess'])->name('returns.update_process');
-   
+
 });
 // phần user người mua show ra
 Route::middleware(['auth'])->group(function () {
@@ -172,7 +172,7 @@ Route::middleware(['auth'])->group(function () {
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+//Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 // ========================= Quên mật khẩu =========================
 

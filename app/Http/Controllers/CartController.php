@@ -12,10 +12,14 @@ class CartController extends Controller
 {
     public function index()
     {
+        $breadcrumbs = [
+            ['name' => 'Trang chủ', 'url' => route('home')],
+            ['name' => 'Giỏ hàng', 'url' => null],
+        ];
         $cartItems = CartItem::where('user_id', Auth::id())
             ->with(['product', 'variant'])
             ->get();
-        return view('Users.Cart.index', compact('cartItems'));
+        return view('Users.Cart.index', compact('cartItems', 'breadcrumbs'));
     }
 
     public function add(Request $request)

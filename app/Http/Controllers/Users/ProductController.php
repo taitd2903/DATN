@@ -10,9 +10,12 @@ use App\Models\Review;
 use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller {
-    
+
     public function index(Request $request) {
-        $categories = Category::all(); 
+        $breadcrumbs = [
+            ['name' => 'Trang chủ', 'url' => route('home')],
+        ];
+        $categories = Category::all();
         $banners = Banner::all();
         $products = Product::with('category', 'variants') ->where('is_delete', false);
         if ($request->has('name') && $request->name != '') {
@@ -24,14 +27,14 @@ class ProductController extends Controller {
         if ($request->has('gender') && $request->gender != '') {
             $products->where('gender', $request->gender);
         }
-    
+
         $products = $products->get();
-    
+
         // Tính toán số lượng tồn kho, đã bán, giá min/max cho từng sản phẩm
         foreach ($products as $product) {
             $product->total_stock_quantity = $product->variants->sum('stock_quantity');
             $product->total_sold_quantity = $product->variants->sum('sold_quantity');
-    
+
             // Lấy giá thấp nhất và cao nhất từ các biến thể
             $prices = $product->variants->pluck('price');
             $product->min_price = $prices->min() ?? 0;
@@ -40,7 +43,7 @@ class ProductController extends Controller {
 
         $topSellingProductsByCategory = [];
         foreach ($categories as $category) {
-            
+
             $topSellingProductsByCategory[$category->id] = Product::where('category_id', $category->id)
                 ->with('variants')
                 ->get()
@@ -49,10 +52,10 @@ class ProductController extends Controller {
                 })
                 ->take(10);
         }
-    
+
         $representativeProductsByParentCategory = [];
-        $parentCategories = Category::whereNull('parent_id')->get(); 
-    
+        $parentCategories = Category::whereNull('parent_id')->get();
+
         foreach ($parentCategories as $parentCategory) {
             $childCategories = Category::where('parent_id', $parentCategory->id)->pluck('id');
             $topProducts = Product::whereIn('category_id', $childCategories)
@@ -62,54 +65,59 @@ class ProductController extends Controller {
                     return $product->variants->sum('sold_quantity');
                 })
                 ->take(10);
-        
+
             $representativeProduct = $topProducts->first();
-            
+
             if ($representativeProduct) {
                 $prices = $representativeProduct->variants->pluck('price');
                 $representativeProduct->min_price = $prices->min() ?? 0;
                 $representativeProduct->max_price = $prices->max() ?? 0;
                 $representativeProduct->avg_price = $prices->avg() ?? 0; // Thêm giá trung bình
             }
-        
+
             $representativeProductsByParentCategory[$parentCategory->id] = $representativeProduct;
         }
-        
-    
-        return view('users.products.index', compact('products', 'categories', 'banners', 'topSellingProductsByCategory', 'representativeProductsByParentCategory'));
-    }
-    
 
-    
+
+        return view('users.products.index', compact('breadcrumbs', 'products', 'categories', 'banners', 'topSellingProductsByCategory', 'representativeProductsByParentCategory'));
+    }
+
+
+
 
     public function show($id)
-{
-    $product = Product::with('category', 'variants')->findOrFail($id);
-    $reviews = Review::where('product_id', $id)->latest()->get();
-    $userHasPurchased = auth()->check() ? $this->hasPurchasedProduct($id) : false;
-    $minPrice = $product->variants->min('price');
-    $maxPrice = $product->variants->max('price');
-    // Lấy đơn hàng gần nhất của user (nếu có)
-    $order = DB::table('orders')
-        ->join('order_items', 'orders.id', '=', 'order_items.order_id')
-        ->where('orders.user_id', auth()->id())
-        ->where('order_items.product_id', $id)
-        ->where('orders.status', 'Hoàn thành')
-        ->orderBy('orders.created_at', 'desc')
-        ->select('orders.id')
-        ->first();
+    {
+        $product = Product::with('category', 'variants')->findOrFail($id);
+        $reviews = Review::where('product_id', $id)->latest()->get();
+        $userHasPurchased = auth()->check() ? $this->hasPurchasedProduct($id) : false;
+        $minPrice = $product->variants->min('price');
+        $maxPrice = $product->variants->max('price');
+        // Lấy đơn hàng gần nhất của user (nếu có)
+        $order = DB::table('orders')
+            ->join('order_items', 'orders.id', '=', 'order_items.order_id')
+            ->where('orders.user_id', auth()->id())
+            ->where('order_items.product_id', $id)
+            ->where('orders.status', 'Hoàn thành')
+            ->orderBy('orders.created_at', 'desc')
+            ->select('orders.id')
+            ->first();
 
-    // Kiểm tra nếu user đã đánh giá đơn hàng gần nhất
-    $userCanReview = false;
-    if ($order) {
-        $userCanReview = !Review::where('order_id', $order->id)
-            ->where('user_id', auth()->id())
-            ->where('product_id', $id)
-            ->exists();
+        // Kiểm tra nếu user đã đánh giá đơn hàng gần nhất
+        $userCanReview = false;
+        if ($order) {
+            $userCanReview = !Review::where('order_id', $order->id)
+                ->where('user_id', auth()->id())
+                ->where('product_id', $id)
+                ->exists();
+        }
+        $breadcrumbs = [
+            ['name' => 'Trang chủ', 'url' => route('home')],
+            ['name' => 'Chi tiết sản phẩm', 'url' => null],
+            ['name' => $product->name, 'url' => null],
+        ];
+
+        return view('users.products.show', compact('breadcrumbs','product', 'reviews', 'userCanReview','minPrice' ,'maxPrice'));
     }
-
-    return view('users.products.show', compact('product', 'reviews', 'userCanReview','minPrice' ,'maxPrice'));
-}
 
 
 //     public function hasPurchasedProduct($productId)
