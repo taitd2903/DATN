@@ -257,10 +257,14 @@ class CheckoutController extends Controller
     // Hiển thị sang trang invoice
     public function invoice($id)
     {
-
         $order = Order::with(['orderItems.product', 'orderItems.variant', 'user'])->findOrFail($id);
+        $breadcrumbs = [
+            ['name' => 'Trang chủ', 'url' => route('home')],
+            ['name' => 'Đơn hàng', 'url' => null],
+            ['name' => 'Đơn hàng ' . $order->id, 'url' => null],
+        ];
 
-        return view('Users.Checkout.invoice', compact('order'));
+        return view('Users.Checkout.invoice', compact('breadcrumbs', 'order'));
     }
 
     // Hiển thị danh sách đơn hàng
@@ -369,9 +373,14 @@ class CheckoutController extends Controller
 
     public function orderTracking()
     {
+        $breadcrumbs = [
+            ['name' => 'Trang chủ', 'url' => route('home')],
+            ['name' => 'Đơn hàng', 'url' => null],
+            ['name' => 'Đơn hàng của tôi', 'url' => null],
+        ];
         $orders = Order::where('user_id', Auth::id())->with('orderItems.product')->get();
 
-        return view('users.tracking.order_tracking', compact('orders'));
+        return view('users.tracking.order_tracking', compact('breadcrumbs', 'orders'));
     }
 
     public function cancelOrder(Order $order)

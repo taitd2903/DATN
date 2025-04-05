@@ -14,13 +14,13 @@ class UserController extends Controller
          $users = User::all();
          return view('admin.users.index', compact('users'));
      }
- 
+
      // Hiển thị form tạo user
      public function create()
      {
          return view('admin.users.create'); // Tạo view để nhập thông tin người dùng mới
      }
- 
+
      /**
       * Store a newly created user in the database.
       *
@@ -57,7 +57,7 @@ class UserController extends Controller
         $user->phone = $validated['phone'];
         $user->image = $imagePath; // Lưu đường dẫn ảnh vào database
         $user->address = $validated['address'];
-        
+
         $user->ward = $validated['ward'];
         $user->district = $validated['district'];
         $user->city = $validated['city'];
@@ -66,51 +66,51 @@ class UserController extends Controller
 
         return redirect()->route('admin.users.index')->with('success', 'User created successfully!');
     }
- 
+
      // Hiển thị form chỉnh sửa user
      public function edit($id)
      {
          $user = User::findOrFail($id); // Tìm người dùng theo ID
          return view('admin.users.edit', compact('user'));
      }
-     
- 
+
+
      // Cập nhật dữ liệu user
      public function update(Request $request, $id)
 {
     $request->validate([
-       
+
         'role' => 'required|in:user,admin,staff',
     ]);
 
     $user = User::findOrFail($id);
 
     // Cập nhật dữ liệu người dùng
-   
+
     $user->role = $request->role;
 
-   
+
 
     $user->save(); // Lưu dữ liệu
 
     return redirect()->route('admin.users.index')->with('success', 'cập nhật thành công');
 }
 
- 
+
      // Xóa user
      public function destroy($id)
      {
          // Tìm người dùng theo ID
          $user = User::findOrFail($id);
-     
+
          // Đếm số lượng admin hiện có
          $adminCount = User::where('role', 'admin')->count();
-     
+
          // Nếu chỉ còn 1 admin và user này là admin, không cho xóa
          if ($adminCount <= 1 && $user->role === 'admin') {
              return redirect()->back()->with('error', 'Không thể xóa tài khoản này vì đây là admin duy nhất.');
          }
-     
+
          // Nếu người dùng có ảnh, xóa ảnh khỏi thư mục lưu trữ
          if ($user->image) {
              $imagePath = public_path('storage/' . $user->image);
@@ -118,27 +118,32 @@ class UserController extends Controller
                  unlink($imagePath); // Xóa file ảnh
              }
          }
-     
+
          // Xóa người dùng khỏi cơ sở dữ liệu
          $user->delete();
-     
+
          // Chuyển hướng lại trang danh sách với thông báo thành công
          return redirect()->route('admin.users.index')->with('success', 'xóa người dùng thành công');
      }
-     
+
 
 
 public function editProfile()
 {
+    $breadcrumbs = [
+    ['name' => 'Trang chủ', 'url' => route('home')],
+    ['name' => 'Thông tin cá nhân', 'url' => null],
+    ['name' => 'Cập nhật', 'url' => null],
+];
     $user = Auth::user(); // Lấy thông tin người dùng đang đăng nhập
-    return view('users.profile.edit', compact('user')); // Trả về view chỉnh sửa
+    return view('users.profile.edit', compact('user', 'breadcrumbs')); // Trả về view chỉnh sửa
 }
 
 public function updateProfile(Request $request)
 {
     $user = Auth::user(); // Lấy thông tin người dùng đang đăng nhập
-    
-    
+
+
 
     $request->validate([
         'name' => 'required|string|min:3|max:55|regex:/^[a-zA-ZÀ-Ỹà-ỹ0-9\s]+$/u',
@@ -155,7 +160,7 @@ public function updateProfile(Request $request)
         ],
         'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         'address' => 'nullable|string|max:50',
-        
+
         'ward' => 'nullable|string|max:100',
         'district' => 'nullable|string|max:100',
         'city' => 'nullable|string|max:100',
@@ -173,14 +178,14 @@ public function updateProfile(Request $request)
         'image.mimes' => 'Ảnh phải là định dạng: jpeg, png, jpg, gif, svg.',
         'image.max' => 'Ảnh không được vượt quá 2MB.',
     ]);
-    
+
 
     // Cập nhật thông tin
     $user->name = $request->name;
     $user->email = $request->email;
     $user->phone = $request->phone;
     $user->address = $request->address;
-    
+
     $user->ward = $request->ward;
     $user->district = $request->district;
     $user->city = $request->city;

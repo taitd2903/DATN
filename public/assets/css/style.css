@@ -2822,7 +2822,17 @@ input#select-all:checked + label {
     }
 }
 
-
+.color-dot {
+    border: 1px solid #ddd;
+}
+.heart-icon:hover {
+    cursor: pointer;
+    color: #ff7878;
+}
+.card:hover {
+    transform: translateY(-5px);
+    transition: transform 0.3s ease;
+}
 
 
 
