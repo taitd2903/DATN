@@ -102,36 +102,37 @@ body {
     overflow-x: hidden; 
 }
 #chatMessages p {
-    max-width: 100%;
+    max-width: 80%;
     word-wrap: break-word;
     white-space: pre-wrap;
-    margin: 5px 0;
+    margin: 8px 0;
     padding: 8px 12px;
-    background-color: #e9ecef;
-    border-radius: 5px;
+    border-radius: 15px;
+    position: relative;
+    clear: both;
 }
 
 .notification {
     position: fixed;
     top: 20px;
     right: 20px;
-    background-color: #28a745; /* Màu xanh lá */
+    background-color: #28a745;
     color: white;
     padding: 15px;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    z-index: 1000; /* Đảm bảo hiển thị trên cùng */
+    z-index: 1000;
     display: flex;
     align-items: center;
     gap: 10px;
 }
 .notification p {
     margin: 0;
-    max-width: 300px; /* Giới hạn chiều rộng thông báo */
+    max-width: 300px;
     word-wrap: break-word;
 }
 .notification button {
-    background-color: #28a745; /* Màu đỏ cho nút đóng */
+    background-color: #28a745;
     color: white;
     border: none;
     padding: 5px 10px;
@@ -148,6 +149,11 @@ body {
     margin: 10px 0;
     padding: 5px 0;
     border-bottom: 1px solid #e0e4e8;
+    clear: both; 
+    float: none; 
+    width: 100%;
+    position: relative;
+    overflow: hidden;
 }
 .floating-status {
     background-color: rgba(255, 255, 255, 0.9);
@@ -165,4 +171,37 @@ body {
 }
 .chat-content {
     position: relative;
+}
+#chatMessages .user-message {
+    background-color: #007bff;
+    color: white;
+    float: right;
+    border-bottom-right-radius: 5px;
+    margin-left: 20%;
+}
+
+#chatMessages .admin-message {
+    background-color: #e9ecef;
+    color: #333;
+    float: left;
+    border-bottom-left-radius: 5px;
+    margin-right: 20%;
+}
+
+#chatMessages .message-time {
+    font-size: 10px;
+    opacity: 0.7;
+    margin-top: 4px;
+    display: block;
+    text-align: right;
+}
+
+#chatMessages::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+#chatMessages .user-message strong {
+    display: none;
 }

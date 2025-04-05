@@ -62,16 +62,14 @@
                             );
                             lastDate = msg.date;
                         }
-                        let sender = msg.is_admin ? 'Admin' : userName;
                         $('#chatMessages').append(
-                            `<p><strong>${sender} (${msg.time}):</strong> ${msg.message}</p>`
+                            `<p><strong>${msg.sender} (${msg.time}):</strong> ${msg.message}</p>`
                         );
                     });
                     $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
                 });
             });
 
-            // Gửi tin nhắn
             $('#adminMessageForm').on('submit', function(e) {
                 e.preventDefault();
                 let message = $('#messageInput').val();
@@ -103,17 +101,17 @@
             channel.bind('message.sent', function(data) {
                 let isFromUser = data.receiverId === 'admin';
                 let relevantUserId = isFromUser ? data.userId : data.receiverId;
-                let senderName = isFromUser ? data.userName : 'Admin';
+                let senderName = data.userName;
                 let time = data.time.split(' ')[1].slice(0, 5);
                 let userItem = $(`.user-item[data-user-id="${relevantUserId}"]`);
                 if (userItem.length) {
                     $('#userList').prepend(userItem);
                 } else if (isFromUser) {
                     $('#userList').prepend(`<li class="list-group-item user-item d-flex align-items-center" 
-                            data-user-id="${relevantUserId}" style="cursor: pointer;">
-                            <span class="abc">${data.userName}</span>
-                            <span class="unread"></span>
-                        </li>`);
+                        data-user-id="${relevantUserId}" style="cursor: pointer;">
+                        <span class="abc">${data.userName}</span>
+                        <span class="unread"></span>
+                    </li>`);
                     userItem = $(`.user-item[data-user-id="${relevantUserId}"]`);
                 }
 
