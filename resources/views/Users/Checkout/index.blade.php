@@ -81,9 +81,9 @@
                         <h3 class="card-title mb-4 fw-bold">Đơn hàng của bạn</h3>
                         @foreach ($cartItems as $item)
                             <div class="d-flex border-bottom py-3">
-                                <img src="{{ $item->product->image_url }}" alt="{{ $item->product->name }}" class="img-fluid rounded" style="width: 80px; height: 80px; object-fit: cover;">
+                                <td><img src="{{ asset('storage/' . $item->variant->image) }}" class="cart-image" style="width: 30%"></td>
                                 <div class="ms-3 flex-grow-1">
-                                    <p class="fw-bold mb-1">{{ $item->product->name }}</p>
+                                    <p class="fw-bold mb-1">Sản phẩm :{{ $item->product->name }}</p>
                                     <p class="mb-1">Giá: {{ number_format($item->price, 0, ',', '.') }} VND</p>
                                     <p class="mb-1">Số lượng: {{ $item->quantity }}</p>
                                     <p class="mb-0">Size: {{ $item->variant->size ?? 'Không có' }} | Màu: {{ $item->variant->color ?? 'Không có' }}</p>
@@ -169,7 +169,7 @@
                         district: formData.get('district_name'),
                         ward: formData.get('ward_name'),
                         address: formData.get('address'),
-                        note: form.querySelector('textarea').value,
+                       // note: form.querySelector('textarea').value,
                         coupon_code: formData.get('coupon_code'),
                         items: formData.get('items')
                     };
