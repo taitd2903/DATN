@@ -341,22 +341,21 @@ class CheckoutController extends Controller
     public function orderList()
     {
         $orders = Order::orderBy('created_at', 'desc')->paginate(10);
-        return view('admin.orders.index', compact('orders'));
-    }
-
-
-    // Trang chỉnh sửa trạng thái đơn hàng
-    public function editStatus(Order $order)
-    {
         $statusOptions = ['Chờ xác nhận', 'Đang giao', 'Hoàn thành', 'Hủy'];
-        return view('admin.orders.edit-status', compact('order', 'statusOptions'));
+       
+        return view('admin.orders.index', compact('orders','statusOptions'));
     }
+
 
     // Cập nhật trạng thái qly đơn hàng trong admin
     public function updateStatus(Request $request, Order $order)
     {
+        
         $request->validate([
             'status' => 'required|in:Chờ xác nhận,Đang giao,Hoàn thành,Hủy',
+        ]);
+        $order->update([
+            'status' => $request->status
         ]);
 
         // Nếu đơn hàng đã bị huỷ trước đó, không cho phép cập nhật nữa
@@ -426,7 +425,6 @@ class CheckoutController extends Controller
             $order->completed_by = Auth::id(); // Lưu ID người cập nhật
 
         }
-
         $order->save();
 
         return redirect()->route('admin.orders.index')->with('success', 'Cập nhật trạng thái thành công!');

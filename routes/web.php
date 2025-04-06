@@ -151,7 +151,6 @@ Route::get('/checkout/invoice/{id}', [CheckoutController::class, 'invoice'])->na
 //admin/oder
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/orders', [CheckoutController::class, 'orderList'])->name('orders.index');
-    Route::get('/orders/{order}/edit-status', [CheckoutController::class, 'editStatus'])->name('orders.editStatus');
     Route::put('/orders/{order}/update-status', [CheckoutController::class, 'updateStatus'])->name('orders.updateStatus');
     Route::get('/orders/{order}', [CheckoutController::class, 'show'])->name('orders.show');
     
