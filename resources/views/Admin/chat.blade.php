@@ -62,9 +62,15 @@
                             );
                             lastDate = msg.date;
                         }
-                        $('#chatMessages').append(
-                            `<p><strong>${msg.sender} (${msg.time}):</strong> ${msg.message}</p>`
-                        );
+                        if (msg.is_admin) {
+                            $('#chatMessages').append(
+                                `<p class="admin-message"><strong>${msg.sender}</strong>: ${msg.message} <span class="message-time">${msg.time}</span></p>`
+                            );
+                        } else {
+                            $('#chatMessages').append(
+                                `<p class="user-message"><strong>${msg.sender}</strong>: ${msg.message} <span class="message-time">${msg.time}</span></p>`
+                            );
+                        }
                     });
                     $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
                 });
@@ -108,10 +114,10 @@
                     $('#userList').prepend(userItem);
                 } else if (isFromUser) {
                     $('#userList').prepend(`<li class="list-group-item user-item d-flex align-items-center" 
-                        data-user-id="${relevantUserId}" style="cursor: pointer;">
-                        <span class="abc">${data.userName}</span>
-                        <span class="unread"></span>
-                    </li>`);
+            data-user-id="${relevantUserId}" style="cursor: pointer;">
+            <span class="abc">${data.userName}</span>
+            <span class="unread"></span>
+        </li>`);
                     userItem = $(`.user-item[data-user-id="${relevantUserId}"]`);
                 }
 
@@ -123,8 +129,24 @@
                 }
 
                 if ($('#receiver_id').val() == relevantUserId) {
-                    $('#chatMessages').append(
-                        `<p><strong>${senderName} (${time}):</strong> ${data.message}</p>`);
+                    const lastDate = $('#chatMessages .date-separator:last').text();
+                    const today = new Date().toLocaleDateString('vi-VN', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric'
+                    });
+                    if (lastDate !== today) {
+                        $('#chatMessages').append(`<p class="date-separator">${today}</p>`);
+                    }
+                    if (isFromUser) {
+                        $('#chatMessages').append(
+                            `<p class="user-message"><strong>${senderName}</strong>: ${data.message} <span class="message-time">${time}</span></p>`
+                        );
+                    } else {
+                        $('#chatMessages').append(
+                            `<p class="admin-message"><strong>${senderName}</strong>: ${data.message} <span class="message-time">${time}</span></p>`
+                        );
+                    }
                     $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
                 }
             });
