@@ -176,7 +176,7 @@
                     };
 
                     console.log('Data sent to VNPAY:', data); // Ghi log để kiểm tra dữ liệu gửi đi
-                    debugger;
+                    //debugger;
                     fetch('{{ route('vnpay.payment') }}', {
                             method: 'POST',
                             headers: {
