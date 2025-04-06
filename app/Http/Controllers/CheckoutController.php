@@ -340,9 +340,38 @@ class CheckoutController extends Controller
 
           //XỬ LÝ ADMIN
     // Hiển thị danh sách đơn hàng
-    public function orderList()
+    public function orderList(Request $request)
     {
-        $orders = Order::orderBy('created_at', 'desc')->paginate(10);
+        $query = Order::orderBy('created_at', 'desc');
+
+        // Lọc theo tên khách hàng
+        if ($request->filled('name')) {
+            $query->where('customer_name', 'like', '%' . $request->name . '%');
+        }
+
+        // Lọc theo số điện thoại
+        if ($request->filled('phone')) {
+            $query->where('customer_phone', 'like', '%' . $request->phone . '%');
+        }
+
+        // Lọc theo ngày đặt hàng
+        if ($request->filled('start_date')) {
+            $query->whereDate('created_at', '>=', $request->start_date);
+        }
+        if ($request->filled('end_date')) {
+            $query->whereDate('created_at', '<=', $request->end_date);
+        }
+
+        // Lọc theo trạng thái thanh toán
+        if ($request->filled('payment_status')) {
+            $query->where('payment_status', $request->payment_status);
+        }
+
+        // Lọc theo trạng thái đơn hàng
+        if ($request->filled('order_status')) {
+            $query->where('status', $request->order_status);
+        }
+        $orders = $query->paginate(10);
         $statusOptions = ['Chờ xác nhận', 'Đang giao', 'Hoàn thành', 'Hủy'];
        
         return view('admin.orders.index', compact('orders','statusOptions'));

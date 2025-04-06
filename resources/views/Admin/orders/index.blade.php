@@ -3,49 +3,67 @@
 @section('content')
     <h1>Quản lý đơn hàng</h1>
 
-    <!-- Thêm các input lọc -->
-    <div class="filter-container mb-3 w-75 mx-auto">
+    <!-- Form lọc -->
+    <form id="filterForm" action="{{ route('admin.orders.index') }}" method="GET" class="filter-container mb-3 w-75 mx-auto">
         <!-- Hàng 1 -->
         <div class="row mb-3">
             <div class="col-md-6">
-                <input type="text" id="nameFilter" class="form-control" placeholder="Tên khách hàng">
+                <input type="text" id="nameFilter" name="name" class="form-control" placeholder="Tên khách hàng"
+                    value="{{ request('name') }}">
             </div>
             <div class="col-md-6">
-                <input type="text" id="phoneFilter" class="form-control" placeholder="Số điện thoại">
+                <input type="text" id="phoneFilter" name="phone" class="form-control" placeholder="Số điện thoại"
+                    value="{{ request('phone') }}">
             </div>
         </div>
+
         <!-- Hàng 2 -->
         <div class="row mb-3">
             <div class="col-md-6">
-                <input type="date" id="dateFilter" class="form-control">
+                <label for="startDateFilter">Từ ngày</label>
+                <input type="date" id="startDateFilter" name="start_date" class="form-control"
+                    value="{{ request('start_date') }}">
             </div>
             <div class="col-md-6">
-                <select id="paymentStatusFilter" class="form-control">
-                    <option value="">Tất cả trạng thái thanh toán</option>
-                    <option value="Chưa thanh toán">Chưa thanh toán</option>
-                    <option value="Đã thanh toán">Đã thanh toán</option>
-                    <option value="Thất bại">Thất bại</option>
-                </select>
+                <label for="endDateFilter">Đến ngày</label>
+                <input type="date" id="endDateFilter" name="end_date" class="form-control"
+                    value="{{ request('end_date') }}">
             </div>
         </div>
         <!-- Hàng 3 -->
-        <div class="row mb-2">
+        <!-- Hàng 3: Trạng thái thanh toán và trạng thái đơn hàng trên cùng một hàng -->
+        <div class="row mb-3">
             <div class="col-md-6">
-                <select id="orderStatusFilter" class="form-control">
-                    <option value="">Tất cả trạng thái đơn hàng</option>
-                    <option value="Chờ xác nhận">Chờ xác nhận</option>
-                    <option value="Đang giao">Đang giao</option>
-                    <option value="Hoàn thành">Hoàn thành</option>
-                    <option value="Hủy">Hủy</option>
+                <select id="paymentStatusFilter" name="payment_status" class="form-control">
+                    <option value="">Tất cả trạng thái thanh toán</option>
+                    <option value="Chưa thanh toán" {{ request('payment_status') === 'Chưa thanh toán' ? 'selected' : '' }}>
+                        Chưa thanh toán</option>
+                    <option value="Đã thanh toán" {{ request('payment_status') === 'Đã thanh toán' ? 'selected' : '' }}>
+                        Đã thanh toán</option>
+                    <option value="Thất bại" {{ request('payment_status') === 'Thất bại' ? 'selected' : '' }}>
+                        Thất bại</option>
                 </select>
             </div>
-            <div class="row mt-2" id="backFilterRow" style="display: none;">
-                <div class="col-md-12 text-end">
-                    <button id="resetFilter" class="btn btn-secondary btn-sm">Trở lại</button>
-                </div>
+            <div class="col-md-6">
+                <select id="orderStatusFilter" name="order_status" class="form-control">
+                    <option value="">Tất cả trạng thái đơn hàng</option>
+                    @foreach ($statusOptions as $status)
+                        <option value="{{ $status }}" {{ request('order_status') === $status ? 'selected' : '' }}>
+                            {{ $status }}
+                        </option>
+                    @endforeach
+                </select>
             </div>
         </div>
-    </div>
+
+        <!-- Hàng 4: Nút lọc và trở lại -->
+        <div class="row mb-2">
+            <div class="col-md-12 text-end">
+                <button type="submit" class="btn btn-primary btn-sm">Lọc</button>
+                <a href="{{ route('admin.orders.index') }}" class="btn btn-secondary btn-sm">Trở lại</a>
+            </div>
+        </div>
+    </form>
 
     <!-- Table đơn hàng -->
     <table class="table table-bordered mt-3" id="orderTable">
@@ -67,7 +85,7 @@
                     <td>{{ $orders->firstItem() + $index }}</td>
                     <td class="customer_info" data-name="{{ $order->customer_name }}"
                         data-phone="{{ $order->customer_phone }}">
-                        {{ $order->customer_name }} <br> SĐT:{{ $order->customer_phone }}
+                        {{ $order->customer_name }} <br> SĐT: {{ $order->customer_phone }}
                     </td>
                     <td class="order_date" data-date="{{ $order->created_at->format('Y-m-d') }}">
                         {{ $order->created_at->format('d/m/Y') }}</td>
@@ -89,7 +107,9 @@
                         <a href="{{ route('admin.orders.show', $order->id) }}" class="btn btn-info btn-sm">Xem</a>
                         @if ($order->status === 'Hoàn thành')
                             <button class="btn btn-success btn-sm" disabled>Hoàn thành</button>
-                        @elseif ($order->status !== 'Hủy')
+                        @elseif ($order->status === 'Hủy')
+                            <button class="btn btn-secondary btn-sm" disabled>Đã hủy</button>
+                        @else
                             <div class="update-container">
                                 <button class="btn btn-warning btn-sm update-status-btn">Cập nhật</button>
                                 <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST"
@@ -98,19 +118,15 @@
                                     @method('PUT')
                                     <select name="status" class="form-control status-select mt-2"
                                         onchange="this.form.submit()">
-                                        <option value="Chờ xác nhận"
-                                            {{ $order->status === 'Chờ xác nhận' ? 'selected' : '' }}>Chờ xác nhận</option>
-                                        <option value="Đang giao" {{ $order->status === 'Đang giao' ? 'selected' : '' }}>
-                                            Đang giao</option>
-                                        <option value="Hoàn thành" {{ $order->status === 'Hoàn thành' ? 'selected' : '' }}>
-                                            Hoàn thành</option>
-                                        <option value="Hủy" {{ $order->status === 'Hủy' ? 'selected' : '' }}>Hủy
-                                        </option>
+                                        @foreach ($statusOptions as $status)
+                                            <option value="{{ $status }}"
+                                                {{ $order->status === $status ? 'selected' : '' }}>
+                                                {{ $status }}
+                                            </option>
+                                        @endforeach
                                     </select>
                                 </form>
                             </div>
-                        @else
-                            <button class="btn btn-secondary btn-sm" disabled>Đã hủy</button>
                         @endif
                     </td>
                 </tr>
@@ -118,9 +134,9 @@
         </tbody>
     </table>
 
-    {{ $orders->links() }}
+    {{ $orders->appends(request()->query())->links() }}
 
-    <!-- CSS -->
+    <!-- Script xử lý cập nhật trạng thái -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const statusOrder = {
@@ -174,7 +190,8 @@
                     } else if (currentStatus === 'Đang giao') {
                         if (selectedStatus !== 'Hoàn thành') {
                             alert(
-                                'Từ "Đang giao" chỉ được chuyển sang "Hoàn thành". Không được hủy.');
+                                'Từ "Đang giao" chỉ được chuyển sang "Hoàn thành". Không được hủy.'
+                            );
                             this.value = currentStatus;
                             e.preventDefault();
                             return;
@@ -267,7 +284,7 @@
                     if (newOrder < currentOrder && selectedStatus !== 'Hủy') {
                         alert(
                             `Không thể chuyển trạng thái từ "${currentStatus}" về "${selectedStatus}".`
-                            );
+                        );
                         this.value = currentStatus;
                         e.preventDefault();
                         return;
@@ -294,64 +311,5 @@
                 });
             });
         });
-    </script>
-
-
-    <!-- Script bộ lọc -->
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const filters = ["nameFilter", "phoneFilter", "dateFilter", "paymentStatusFilter", "orderStatusFilter"];
-            filters.forEach(id => document.getElementById(id).addEventListener("input", filterOrders));
-            filters.forEach(id => document.getElementById(id).addEventListener("change", filterOrders));
-            document.getElementById("resetFilter").addEventListener("click", resetFilters);
-        });
-
-        function filterOrders() {
-            let nameFilter = document.getElementById("nameFilter").value.toLowerCase().trim();
-            let phoneFilter = document.getElementById("phoneFilter").value.toLowerCase().trim();
-            let dateFilter = document.getElementById("dateFilter").value;
-            let paymentStatusFilter = document.getElementById("paymentStatusFilter").value.toLowerCase().trim();
-            let orderStatusFilter = document.getElementById("orderStatusFilter").value.toLowerCase().trim();
-
-            let rows = document.querySelectorAll("#orderTable tbody tr");
-            let isFiltering = false;
-
-            rows.forEach(row => {
-                let name = row.querySelector(".customer_info").getAttribute("data-name").toLowerCase();
-                let phone = row.querySelector(".customer_info").getAttribute("data-phone").toLowerCase();
-                let date = row.querySelector(".order_date").getAttribute("data-date");
-                let paymentStatus = row.querySelector(".payment_status").innerText.toLowerCase();
-                let orderStatus = row.querySelector(".order_status").getAttribute("data-status").toLowerCase();
-
-                let nameMatch = !nameFilter || name.includes(nameFilter);
-                let phoneMatch = !phoneFilter || phone.includes(phoneFilter);
-                let dateMatch = !dateFilter || date === dateFilter;
-                let paymentStatusMatch = !paymentStatusFilter || paymentStatus.includes(paymentStatusFilter);
-                let orderStatusMatch = !orderStatusFilter || orderStatus === orderStatusFilter;
-
-                let showRow = nameMatch && phoneMatch && dateMatch && paymentStatusMatch && orderStatusMatch;
-
-                row.style.display = showRow ? "table-row" : "none";
-                if (!showRow) isFiltering = true;
-            });
-
-            document.getElementById("backFilterRow").style.display = (
-                nameFilter || phoneFilter || dateFilter || paymentStatusFilter || orderStatusFilter
-            ) ? "block" : "none";
-        }
-
-        function resetFilters() {
-            document.getElementById("nameFilter").value = "";
-            document.getElementById("phoneFilter").value = "";
-            document.getElementById("dateFilter").value = "";
-            document.getElementById("paymentStatusFilter").value = "";
-            document.getElementById("orderStatusFilter").value = "";
-
-            document.querySelectorAll("#orderTable tbody tr").forEach(row => {
-                row.style.display = "table-row";
-            });
-
-            document.getElementById("backFilterRow").style.display = "none";
-        }
     </script>
 @endsection
