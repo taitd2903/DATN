@@ -74,11 +74,11 @@
                     @foreach ($order->orderItems as $item)
                         <tr>
                             <td class="text-center">
-                                <img src="{{ $item->product->image_url }}" class="rounded img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">
+                                <img  src="{{ asset('storage/' . $item->variant->image) }}" class="rounded img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">
                             </td>
                             <td>{{ $item->product->name }}</td>
-                            <td class="text-center">{{ $item->variant ? $item->variant->size : 'Không có' }}</td>
-                            <td class="text-center">{{ $item->variant ? $item->variant->color : 'Không có' }}</td>
+                            <td class="text-center">{{  $item->size  }}</td>
+                            <td class="text-center">{{  $item->color  }}</td>
                             <td class="text-center">{{ $item->quantity }}</td>
                             <td class="text-end">{{ number_format($item->price, 0, ',', '.') }} VND</td>
                             <td class="text-end fw-bold">{{ number_format($item->price * $item->quantity, 0, ',', '.') }} VND</td>

@@ -63,8 +63,8 @@
                                             class="rounded me-3" style="width: 70px; height: 70px; object-fit: cover;">
                                         <div class="flex-grow-1">
                                             <strong>{{ $item->product->name }}</strong> (x{{ $item->quantity }})<br>
-                                            <span class="badge bg-secondary mt-1 px-2 py-1">{{ $item->variant->size }} -
-                                                {{ $item->variant->color }}</span>
+                                            <span class="badge bg-secondary mt-1 px-2 py-1">{{ $item->size }} -
+                                                {{ $item->color }}</span>
                                         </div>
                                     </div>
                                 </div>

@@ -188,12 +188,15 @@ class CheckoutController extends Controller
 
         // Lưu sản phẩm vào order_items và cập nhật kho hàng
         foreach ($cartItems as $item) {
+            $variant = ProductVariant::find($item->variant_id);
             OrderItem::create([
                 'order_id' => $order->id,
                 'product_id' => $item->product_id,
                 'variant_id' => $item->variant_id, // Nếu có biến thể
                 'quantity' => $item->quantity,
                 'price' => $item->price,
+                'size' => $variant->size ?? null,
+                'color'=> $variant->color ?? null,
             ]);
 
             // Cập nhật tồn kho

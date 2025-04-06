@@ -15,6 +15,8 @@ class OrderItem extends Model
         'quantity',
         'price',
         'variant_id',
+        'size',
+        'color',
         'is_available'
      ];
     // Quan hệ với Product

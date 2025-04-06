@@ -7,6 +7,7 @@ use App\Models\Coupon;
 use App\Models\CouponUsage;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -65,16 +66,21 @@ class VnPayController extends Controller
 
         // Lấy sản phẩm trong giỏ hàng chỉ của user hiện tại, lọc theo danh sách được chọn
         $cartItems = CartItem::with(['product', 'variant'])
+        
             ->where('user_id', auth()->id())
             ->whereIn('id', $selectedItems) // Lọc theo ID sản phẩm được chọn
             ->get();
+            
         foreach ($cartItems as $item) {
+            $variant = ProductVariant::find($item->variant_id);
             OrderItem::create([
                 'order_id' => $order->id,
                 'product_id' => $item->product_id,
                 'variant_id' => $item->variant_id, // Nếu có biến thể
                 'quantity' => $item->quantity,
                 'price' => $item->price,
+                'size' => $variant->size ?? null,
+                'color'=> $variant->color ?? null,
             ]);
         }
 

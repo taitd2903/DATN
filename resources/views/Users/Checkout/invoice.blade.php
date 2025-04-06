@@ -92,8 +92,8 @@
                                                      style="width: 70px; height: 70px; object-fit: cover;">
                                             </td>
                                             <td class="py-3">{{ $item->product->name }}</td>
-                                            <td class="py-3">{{ $item->variant ? $item->variant->size : 'Không có' }}</td>
-                                            <td class="py-3">{{ $item->variant ? $item->variant->color : 'Không có' }}</td>
+                                            <td class="py-3">{{ $item->size ?? 'Không có' }}</td>
+                                            <td class="py-3">{{ $item->color ?? 'Không có' }}</td>                      
                                             <td class="py-3">{{ $item->quantity }}</td>
                                             <td class="py-3">{{ number_format($item->price, 0, ',', '.') }} VND</td>
                                             <td class="py-3 fw-semibold text-dark">{{ number_format($item->price * $item->quantity, 0, ',', '.') }} VND</td>
