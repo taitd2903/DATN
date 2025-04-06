@@ -2837,8 +2837,80 @@ input#select-all:checked + label {
 }
 
 
+/* chi tet */
+.policy-support ul {
+    padding-left: 0;
+    margin: 20px 0;
+    font-size: 15px;
+    line-height: 1.8;
+    color: #333;
+}
+
+.policy-support li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.policy-support i {
+    font-size: 18px;
+    color: #000;
+    margin-right: 10px;
+}
 
 
+/* nut so luong */
+.quantity-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: Arial, sans-serif;
+}
 
+.quantity-label {
+    font-weight: 600;
+    font-size: 16px;
+}
 
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    border-radius: 4px;
+    overflow: hidden;
+    height: 32px;
+}
 
+.quantity-btn {
+    width: 38px;
+    height: 38px;
+    background-color: #f9f9f9;
+    border: none;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.quantity-btn:hover {
+    background-color: #e0e0e0;
+}
+
+.quantity-input {
+    width: 40px;
+    text-align: center;
+    border: none;
+    font-size: 16px;
+    outline: none;
+    -moz-appearance: textfield; /* Ẩn mũi tên trên Firefox */
+}
+
+/* Ẩn mũi tên trên Chrome/Safari */
+.quantity-input::-webkit-outer-spin-button,
+.quantity-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}

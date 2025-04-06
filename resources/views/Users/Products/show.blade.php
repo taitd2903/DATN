@@ -51,7 +51,7 @@
     <h1 class="product-title">{{ $product->name }}</h1>
 
     <p class="sku">
-    <strong>{{ __('messages.out_of_stock') }}:</strong> {{ $product->variants->sum('stock_quantity') }} 
+    <strong>{{ __('messages.out_of_stock') }}</strong> {{ $product->variants->sum('stock_quantity') }} 
 
     <span class="rating">
         ⭐⭐⭐⭐⭐ (0) <span class="reviews">0 {{ __('messages.reviews') }}</span>
@@ -67,16 +67,16 @@
         </span>
     </p>
     
+    <p> Mo ta: {{ $product->description }}</p>
+    <p><strong>{{ __('messages.stock') }} </strong> <span id="stock-info">{{ $product->variants->sum('stock_quantity') }}</span></p>
+    <hr>
 
-    <div class="dashed-line"></div>
-    <!-- <p> Mo ta: {{ $product->description }}</p> -->
 <!-- 
     <div>
         <img id="product-image" src="{{ $product->image }}" alt="{{ $product->name }}"
             style="max-width: 300px; display: block;">
     </div> -->
     
-    <p><strong>{{ __('messages.stock') }}: </strong> <span id="stock-info">{{ $product->variants->sum('stock_quantity') }}</span></p>
 
     <button class="dashed-line-btn"></button>
 
@@ -91,7 +91,7 @@
         <div>
 
             <div id="size-options">
-            <p class="mt-2"><strong>{{ __('messages.size') }}:</strong></p>
+            <p class="mt-2"><strong>{{ __('messages.size') }}</strong></p>
                 @foreach ($product->variants->groupBy('size') as $size => $variants)
                     <button type="button" class="size-btn" data-size="{{ $size }}">{{ $size }}</button>
                 @endforeach
@@ -111,17 +111,26 @@
                 @endforeach
                 </div>
           <br>
-        </div><p><strong>{{ __('messages.selected_variant') }}:  </strong> <span id="selected-variant-info">{{ __('messages.not_selected') }}</span></p>
+        </div><p><strong>{{ __('messages.selected_variant') }} </strong> <span id="selected-variant-info">{{ __('messages.not_selected') }}</span></p>
 
      <br>
    
-    <label for="quantity" class="quantity-label">{{ __('messages.quantity') }}:</label>
+    <!-- <label for="quantity" class="quantity-label">{{ __('messages.quantity') }}</label> -->
     
-    <div class="quantity-controls">
+    <!-- <div class="quantity-controls">
         <button type="button" class="quantity-btn" id="decrease">−</button>
         <input type="text" id="quantity" name="quantity" value="1" min="1" class="quantity-input" readonly>
         <button type="button" class="quantity-btn" id="increase">+</button>
+    </div> -->
+
+    <div class="quantity-wrapper">
+    <label for="quantity" class="quantity-label">Số lượng:</label>
+    <div class="quantity-controls">
+        <button type="button" class="quantity-btn" id="decrease">−</button>
+        <input type="number" id="quantity" name="quantity" value="1" min="1" class="quantity-input">
+        <button type="button" class="quantity-btn" id="increase">+</button>
     </div>
+</div>
 
         <div class="mt-3 d-flex align-items-center">
     <!-- Nút yêu thích -->
@@ -145,6 +154,16 @@
         <span class="close" onclick="closeSizeGuide()">&times;</span>
         <img src="../assets/img/bangsize.jpg" alt="Bảng size áo nữ">
     </div>
+</div>
+<br>
+<div class="policy-support">
+    <ul class="list-unstyled">
+        <li><i class="fa fa-check-square"></i> Chính sách bảo mật - Bảo vệ thông tin khách hàng</li>
+        <li><i class="fa fa-truck"></i> Chính sách giao hàng - Nhanh chóng, tiện lợi</li>
+        <li><i class="fa fa-sync-alt"></i> Chính sách đổi trả - Đảm bảo quyền lợi khách hàng</li>
+        <li><i class="fa fa-credit-card"></i> Chính sách thanh toán - Linh hoạt, an toàn</li>
+        <li><i class="fa fa-headphones"></i> Hỗ trợ khách hàng - Tư vấn 24/7</li>
+    </ul>
 </div>
 
                 
