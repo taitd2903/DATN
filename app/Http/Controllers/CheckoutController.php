@@ -30,6 +30,13 @@ class CheckoutController extends Controller
         if ($cartItems->isEmpty()) {
             return redirect('/cart')->with('error', 'Giỏ hàng của bạn đang trống.');
         }
+
+        $checkoutPrices = [];
+            foreach ($cartItems as $item) {
+                $checkoutPrices[$item->id] = $item->price;
+            }
+        session(['checkout_prices' => $checkoutPrices]);
+
         //============================24/03==========================
         $currentCartHash = md5(serialize($cartItems->pluck('id')->toArray()));
         $previousCartHash = session('cart_hash');
@@ -80,17 +87,11 @@ class CheckoutController extends Controller
             return redirect()->route('cart.index')->with('error', 'Giỏ hàng trống.');
         }
 
+        $checkoutPrices = session('checkout_prices', []);
         $priceChanged = false;
         $changedItems = [];
         foreach ($cartItems as $item) {
-            if ($item->variant) {
-                $variant = ProductVariant::find($item->variant_id);
-                $lastUpdated = $variant->updated_at;
-            } else {
-                $lastUpdated = $item->product->updated_at;
-            }
-
-            if ($lastUpdated > $item->created_at) {
+            if (isset($checkoutPrices[$item->id]) && $checkoutPrices[$item->id] != $item->price) {
                 $priceChanged = true;
                 $changedItems[] = $item->product->name;
                 break;
@@ -101,6 +102,8 @@ class CheckoutController extends Controller
             $message = 'Giá của sản phẩm "' . implode(', ', $changedItems) . '" đã thay đổi. Vui lòng kiểm tra lại giỏ hàng.';
             return redirect()->route('cart.index')->with('error', $message);
         }
+
+        session()->forget('checkout_prices');
 
         $totalPrice = $cartItems->sum(fn($item) => $item->price * $item->quantity);
         $shippingFee = 30000;
@@ -161,10 +164,6 @@ class CheckoutController extends Controller
             $request->session()->put('applied_coupons', $validCoupons);
         } else {
             $finalPrice = $totalPrice + $shippingFee;
-        }
-
-        if ($finalPrice == 0) {
-            return redirect()->route('cart.index')->with('error', 'Tổng giá trị đơn hàng không hợp lệ (đã đạt mức giảm tối đa).');
         }
 
         $note = " {$validated['address']}, {$request->ward_name}, {$request->district_name}, {$request->province_name}";
