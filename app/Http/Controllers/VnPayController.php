@@ -58,6 +58,9 @@ class VnPayController extends Controller
             'status' => 'Chờ xác nhận',
             'payment_status' => 'Chưa thanh toán',
             'vnp_txn_ref' => $vnp_TxnRef,
+            'city' => $request->input('city'),
+            'district' => $request->input('district'),
+            'ward' => $request->input('ward'),
         ]);
 
         $request->session()->put('pending_order_id', $order->id);

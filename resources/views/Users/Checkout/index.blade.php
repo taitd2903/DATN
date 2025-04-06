@@ -166,9 +166,9 @@
                         name: formData.get('name'),
                         phone: formData.get('phone'),
                         email: formData.get('email'),
-                        city: formData.get('province_name'),
-                        district: formData.get('district_name'),
-                        ward: formData.get('ward_name'),
+                        city: formData.get('city'),
+                        district: formData.get('district'),
+                        ward: formData.get('ward'),
                         address: formData.get('address'),
                         // note: form.querySelector('textarea').value,
                         coupon_code: formData.get('coupon_code'),
@@ -176,7 +176,7 @@
                     };
 
                     console.log('Data sent to VNPAY:', data); // Ghi log để kiểm tra dữ liệu gửi đi
-
+                    debugger;
                     fetch('{{ route('vnpay.payment') }}', {
                             method: 'POST',
                             headers: {
