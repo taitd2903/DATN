@@ -17,10 +17,44 @@ class CouponController extends Controller
             ->update(['status' => 2]);
 
         $query = Coupon::query();
+
         $query->when($request->status !== null && $request->status !== '', function ($q) use ($request) {
             return $q->where('status', $request->status);
         });
+
+        $query->when($request->code, function ($q) use ($request) {
+            return $q->where('code', 'like', '%' . $request->code . '%');
+        });
+
+        $query->when($request->discount_type, function ($q) use ($request) {
+            return $q->where('discount_type', $request->discount_type);
+        });
+
+        $query->when($request->start_date, function ($q) use ($request) {
+            return $q->where('start_date', '>=', $request->start_date);
+        });
+        $query->when($request->end_date, function ($q) use ($request) {
+            return $q->where('end_date', '<=', $request->end_date);
+        });
+
+        $query->when($request->usage_status, function ($q) use ($request) {
+            if ($request->usage_status == 'available') {
+                return $q->whereColumn('used_count', '<', 'usage_limit');
+            } elseif ($request->usage_status == 'exhausted') {
+                return $q->whereColumn('used_count', '>=', 'usage_limit');
+            }
+        });
+
+        $query->when($request->user_voucher_limit, function ($q) use ($request) {
+            return $q->where('user_voucher_limit', $request->user_voucher_limit);
+        });
+
+        $query->when($request->discount_target, function ($q) use ($request) {
+            return $q->where('discount_target', $request->discount_target);
+        });
+        
         $query->where('is_delete', false);
+
         $coupons = $query->orderBy('created_at', 'desc')->paginate(10);
         return view('Admin.Coupons.index', compact('coupons'));
     }
