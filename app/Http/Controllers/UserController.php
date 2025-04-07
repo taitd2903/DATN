@@ -5,14 +5,30 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
      // Hiển thị danh sách users
-     public function index()
+     public function index(Request $request)
      {
-         $users = User::all();
-         return view('admin.users.index', compact('users'));
+        $query = User::query();
+
+        if ($request->filled('name')) {
+            $query->where('name', 'like', '%' . $request->name . '%');
+        }
+    
+        if ($request->filled('role')) {
+            $query->where('role', $request->role);
+        }
+    
+        if ($request->filled('status')) {
+            $query->where('status', $request->status); 
+        }
+    
+        $users = $query->get();
+    
+        return view('admin.users.index', compact('users'));
      }
 
      // Hiển thị form tạo user
