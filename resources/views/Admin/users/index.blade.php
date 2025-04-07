@@ -108,9 +108,33 @@
                                 @if($user->role === 'admin')
                                     <a href=""> </a>
                                 @else
-                                    <a href="{{ route('admin.users.toggleStatus', $user->id) }}" class="btn btn-warning">
-                                        {{ $user->status === 'active' ? 'Khóa' : 'Mở khóa' }}
-                                    </a>
+                                <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#banUserModal{{ $user->id }}">
+                                    Khóa
+                                </button>
+                                <div class="modal fade" id="banUserModal{{ $user->id }}" tabindex="-1">
+                                    <div class="modal-dialog">
+                                      <form action="{{ route('admin.users.ban', $user->id) }}" method="POST">
+                                          @csrf
+                                          <div class="modal-content">
+                                              <div class="modal-header">
+                                                  <h5 class="modal-title">Lý do khóa tài khoản</h5>
+                                                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                              </div>
+                                              <div class="modal-body">
+                                                  <select name="ban_reason" class="form-select" required>
+                                                      <option value="">-- Chọn lý do --</option>
+                                                      <option value="Vi phạm điều khoản">Vi phạm điều khoản</option>
+                                                      <option value="Hoạt động đáng ngờ">Hoạt động đáng ngờ</option>
+                                                      <option value="Yêu cầu từ quản trị viên">Yêu cầu từ quản trị viên</option>
+                                                  </select>
+                                              </div>
+                                              <div class="modal-footer">
+                                                  <button type="submit" class="btn btn-danger">Khóa tài khoản</button>
+                                              </div>
+                                          </div>
+                                      </form>
+                                    </div>
+                                  </div>
                                 @endif
 
 

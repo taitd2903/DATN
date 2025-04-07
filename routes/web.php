@@ -70,6 +70,8 @@ Route::prefix('admin')->middleware(['auth', 'role:admin,staff'])->name('admin.')
     Route::get('products/{id}', [ProductController::class, 'show'])->name('admin.products.show');
 
     Route::resource('users', UserController::class);
+    Route::post('/users/{id}/ban', [UserController::class, 'ban'])->name('users.ban');
+
     Route::resource('coupons', CouponController::class);
     Route::get('/statistics', [StatisticsController::class, 'index'])->name('statistics.index');
     Route::get('/statistics/profit', [StatisticsController::class, 'profitStatistics'])->name('statistics.profit');

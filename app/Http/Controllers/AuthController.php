@@ -46,14 +46,18 @@ class AuthController extends Controller
             'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự.',
             'password.regex' => 'Mật khẩu phải chứa ít nhất 1 chữ hoa, 1 chữ thường, 1 số và 1 ký tự đặc biệt.'
         ]);
-    
-    
+        
         if (!Auth::attempt($request->only('email', 'password'))) {
             return back()->withErrors(['email' => 'Email hoặc mật khẩu không đúng.']);
         }
     
         $user = Auth::user();
-        
+
+if ($user->status === 'banned') {
+    $banReason = $user->ban_reason ?? 'Tài khoản của bạn đã bị khóa.';
+    Auth::logout();
+    return redirect()->route('login')->withErrors(['email' => $banReason]);
+}
         // Tạo token và lưu vào session
         $token = $user->createToken('auth_token')->plainTextToken;
         session(['auth_token' => $token]);

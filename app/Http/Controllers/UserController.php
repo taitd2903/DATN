@@ -261,5 +261,19 @@ public function toggleStatus($id)
 
     return redirect()->back()->with('success', 'Cập nhật trạng thái tài khoản thành công.');
 }
+public function ban(Request $request, $id)
+{
+    $request->validate([
+        'ban_reason' => 'required|string|max:255',
+    ]);
+
+    $user = User::findOrFail($id);
+    $user->status = 'banned';
+    $user->ban_reason = $request->ban_reason;
+    $user->save();
+
+    return redirect()->back()->with('success', 'Đã khóa tài khoản với lý do: ' . $request->ban_reason);
+}
+
 
 }
