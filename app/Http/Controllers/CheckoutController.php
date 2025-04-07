@@ -116,26 +116,28 @@ class CheckoutController extends Controller
             $validCoupons = [];
             foreach ($appliedCoupons as $couponData) {
                 $coupon = Coupon::where('code', $couponData['code'])->first();
-                if ($coupon && $this->isCouponValid($coupon, auth()->user())) {
-                    $baseAmount = ($coupon->discount_target == 'shipping_fee') ? $shippingFee : $totalPrice;
-                    $discountAmount = $this->calculateDiscount($coupon, $baseAmount);
-
-                    if ($coupon->minimum_order_value && $totalPrice < $coupon->minimum_order_value) {
-                        continue;
-                    }
-
-                    if ($coupon->discount_target == 'shipping_fee') {
-                        $discountShipping += $discountAmount;
-                    } else {
-                        $discountOrder += $discountAmount;
-                    }
-
-                    $validCoupons[] = [
-                        'code' => $coupon->code,
-                        'discount_amount' => $discountAmount,
-                        'discount_target' => $coupon->discount_target,
-                    ];
+                if (!$coupon || $coupon->is_delete || !$this->isCouponValid($coupon, auth()->user())) {
+                    return redirect()->route('checkout', ['items' => $request->items])
+                        ->with('error', "Mã giảm giá {$couponData['code']} không còn hiệu lực.");
                 }
+                $baseAmount = ($coupon->discount_target == 'shipping_fee') ? $shippingFee : $totalPrice;
+                $discountAmount = $this->calculateDiscount($coupon, $baseAmount);
+
+                if ($coupon->minimum_order_value && $totalPrice < $coupon->minimum_order_value) {
+                    continue;
+                }
+
+                if ($coupon->discount_target == 'shipping_fee') {
+                    $discountShipping += $discountAmount;
+                } else {
+                    $discountOrder += $discountAmount;
+                }
+
+                $validCoupons[] = [
+                    'code' => $coupon->code,
+                    'discount_amount' => $discountAmount,
+                    'discount_target' => $coupon->discount_target,
+                ];
             }
 
             $discountOrder = min($discountOrder, $totalPrice);
@@ -196,7 +198,7 @@ class CheckoutController extends Controller
                 'quantity' => $item->quantity,
                 'price' => $item->price,
                 'size' => $variant->size ?? null,
-                'color'=> $variant->color ?? null,
+                'color' => $variant->color ?? null,
             ]);
 
             // Cập nhật tồn kho
@@ -338,7 +340,7 @@ class CheckoutController extends Controller
         return redirect()->back()->with('success', 'Đơn hàng đã được hủy thành công.');
     }
 
-          //XỬ LÝ ADMIN
+    //XỬ LÝ ADMIN
     // Hiển thị danh sách đơn hàng
     public function orderList(Request $request)
     {
@@ -373,15 +375,15 @@ class CheckoutController extends Controller
         }
         $orders = $query->paginate(10);
         $statusOptions = ['Chờ xác nhận', 'Đang giao', 'Hoàn thành', 'Hủy'];
-       
-        return view('admin.orders.index', compact('orders','statusOptions'));
+
+        return view('admin.orders.index', compact('orders', 'statusOptions'));
     }
 
 
     // Cập nhật trạng thái qly đơn hàng trong admin
     public function updateStatus(Request $request, Order $order)
     {
-        
+
         $request->validate([
             'status' => 'required|in:Chờ xác nhận,Đang giao,Hoàn thành,Hủy',
         ]);
@@ -467,7 +469,7 @@ class CheckoutController extends Controller
         return view('admin.orders.show', compact('order'));
     }
 
-   
+
 
     // ===================== Function này của Đạt, cấm động ====================== //
     public function applyCoupon(Request $request)
@@ -489,6 +491,13 @@ class CheckoutController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Mã giảm giá không tồn tại'
+            ]);
+        }
+
+        if ($coupon->is_delete) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Mã giảm giá không còn hiệu lực'
             ]);
         }
 
@@ -686,6 +695,10 @@ class CheckoutController extends Controller
     private function isCouponValid(Coupon $coupon, $user)
     {
         $currentDate = now();
+
+        if ($coupon->is_delete) {
+            return false;
+        }
 
         if ($coupon->status != 1) {
             return false;

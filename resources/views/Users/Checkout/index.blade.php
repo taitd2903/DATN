@@ -99,6 +99,9 @@
                             </div>
                             <div id="applied_coupons" class="d-flex flex-wrap gap-2"></div>
                             <div id="coupon_message" class="mt-2"></div>
+                            @if (session('error'))
+                                <div class="alert alert-danger">{{ session('error') }}</div>
+                            @endif
                         </div>
 
                         <!-- Tổng tiền -->
