@@ -9,25 +9,37 @@ body {
     margin: 0 auto;
 }
 
-/* Nút Boxchat */
 .chat-button {
     position: fixed;
     bottom: 20px;
     right: 20px;
     background-color: #007bff;
     color: white;
-    padding: 10px 20px;
-    border-radius: 25px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     z-index: 1000;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .chat-button:hover {
     background-color: #0056b3;
+    transform: scale(1.1);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
 }
-
-/* Hộp thoại chat */
+.chat-button img {
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); 
+}
 .chat-box {
     position: fixed;
     bottom: 20px;
@@ -53,12 +65,14 @@ body {
     align-items: center;
 }
 
-.close-btn {
+#close-btn {
+    all: unset;
     background: none;
     border: none;
     color: white;
     font-size: 16px;
     cursor: pointer;
+    display: inline-block;
 }
 
 .chat-content {

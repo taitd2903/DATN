@@ -1,12 +1,12 @@
 <div class="chat-button" id="chatButton" onclick="toggleChat()">
-    <span>Chat với Admin</span>
+    <img src="https://cdn-icons-png.flaticon.com/128/11947/11947546.png" alt="Chat" />
 </div>
 
 <!-- Hộp thoại chat -->
 <div class="chat-box" id="chatBox">
     <div class="chat-header">
         <span>Chat với Admin</span>
-        <button class="close-btn" onclick="toggleChat()">
+        <button id="close-btn" onclick="toggleChat()">
             <img src="https://cdn-icons-png.flaticon.com/128/12613/12613236.png" alt=""
                 style="width: 25px; height: 23px;">
         </button>

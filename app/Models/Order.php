@@ -25,7 +25,8 @@ class Order extends Model
         'status_updated_by',
         'delivering_at',
         'completed_at',
-        'city', 'district', 'ward', 'address'
+        'city', 'district', 'ward', 'address',
+        'discount_amount',
 
     ];
 

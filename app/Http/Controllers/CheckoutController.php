@@ -63,7 +63,7 @@ class CheckoutController extends Controller
 
     public function placeOrder(Request $request)
     {
-        //dd($request->all());
+        // Validate dữ liệu
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'phone' => 'required|string|max:15',
@@ -74,19 +74,20 @@ class CheckoutController extends Controller
             'ward' => 'required|string|max:255',
             'payment_method' => 'required|in:cod,vnpay',
         ]);
-
+    
         $selectedItems = $request->items ? explode(',', $request->items) : [];
-
-        // Lấy sản phẩm trong giỏ hàng chỉ của user hiện tại, lọc theo danh sách được chọn
+    
+        // Lấy sản phẩm trong giỏ hàng
         $cartItems = CartItem::with(['product', 'variant'])
             ->where('user_id', auth()->id())
-            ->whereIn('id', $selectedItems) // Lọc theo ID sản phẩm được chọn
+            ->whereIn('id', $selectedItems)
             ->get();
-
+    
         if ($cartItems->isEmpty()) {
             return redirect()->route('cart.index')->with('error', 'Giỏ hàng trống.');
         }
-
+    
+        // Kiểm tra giá thay đổi
         $checkoutPrices = session('checkout_prices', []);
         $priceChanged = false;
         $changedItems = [];
@@ -97,21 +98,22 @@ class CheckoutController extends Controller
                 break;
             }
         }
-
+    
         if ($priceChanged) {
             $message = 'Giá của sản phẩm "' . implode(', ', $changedItems) . '" đã thay đổi. Vui lòng kiểm tra lại giỏ hàng.';
             return redirect()->route('cart.index')->with('error', $message);
         }
-
+    
         session()->forget('checkout_prices');
-
-        $totalPrice = $cartItems->sum(fn($item) => $item->price * $item->quantity);
+    
+        // Tính toán giá trị
+        $totalPrice = $cartItems->sum(fn($item) => $item->price * $item->quantity); // Tổng tiền gốc
         $shippingFee = 30000;
         $appliedCoupons = $request->session()->get('applied_coupons', []);
-
+    
         $discountOrder = 0;
         $discountShipping = 0;
-
+    
         if ($appliedCoupons) {
             $validCoupons = [];
             foreach ($appliedCoupons as $couponData) {
@@ -122,27 +124,27 @@ class CheckoutController extends Controller
                 }
                 $baseAmount = ($coupon->discount_target == 'shipping_fee') ? $shippingFee : $totalPrice;
                 $discountAmount = $this->calculateDiscount($coupon, $baseAmount);
-
+    
                 if ($coupon->minimum_order_value && $totalPrice < $coupon->minimum_order_value) {
                     continue;
                 }
-
+    
                 if ($coupon->discount_target == 'shipping_fee') {
                     $discountShipping += $discountAmount;
                 } else {
                     $discountOrder += $discountAmount;
                 }
-
+    
                 $validCoupons[] = [
                     'code' => $coupon->code,
                     'discount_amount' => $discountAmount,
                     'discount_target' => $coupon->discount_target,
                 ];
             }
-
+    
             $discountOrder = min($discountOrder, $totalPrice);
             $discountShipping = min($discountShipping, $shippingFee);
-
+    
             $totalDiscount = $discountOrder + $discountShipping;
             $maxDiscount = $totalPrice + $shippingFee;
             if ($totalDiscount > $maxDiscount) {
@@ -154,7 +156,7 @@ class CheckoutController extends Controller
                     $discountShipping = $totalDiscount - $discountOrder;
                 }
             }
-
+    
             $finalPrice = $totalPrice + $shippingFee - $totalDiscount;
             if ($finalPrice < 0) {
                 $finalPrice = 0;
@@ -162,20 +164,27 @@ class CheckoutController extends Controller
                 $discountShipping = min($discountShipping, $shippingFee);
                 $discountOrder = $totalDiscount - $discountShipping;
             }
-
+    
             $request->session()->put('applied_coupons', $validCoupons);
         } else {
+            $totalDiscount = 0;
             $finalPrice = $totalPrice + $shippingFee;
         }
-
+    
+        // Tính tổng số tiền giảm giá
+        $discountAmount = $discountOrder + $discountShipping;
+    
         $note = " {$validated['address']}, {$request->ward_name}, {$request->district_name}, {$request->province_name}";
-
         $couponCodes = array_column($appliedCoupons, 'code');
         $couponCodeString = !empty($couponCodes) ? implode(',', $couponCodes) : null;
+    
+        // Tạo đơn hàng với discount_amount
         $order = Order::create([
             'user_id' => auth()->id(),
             'note' => $note,
-            'total_price' => $finalPrice,
+            'total_price' => $totalPrice, // Tổng tiền gốc (chưa cộng phí vận chuyển, chưa giảm giá)
+            'discount_amount' => $discountAmount, // Số tiền giảm giá
+            'final_price' => $finalPrice, // Tổng tiền cuối cùng (sau khi giảm giá và cộng phí vận chuyển)
             'payment_method' => strtolower($validated['payment_method']),
             'status' => 'Chờ xác nhận',
             'customer_name' => $request->name,
@@ -187,61 +196,54 @@ class CheckoutController extends Controller
             'district' => $request->district,
             'ward' => $request->ward,
         ]);
-
+    
         // Lưu sản phẩm vào order_items và cập nhật kho hàng
         foreach ($cartItems as $item) {
             $variant = ProductVariant::find($item->variant_id);
             OrderItem::create([
                 'order_id' => $order->id,
                 'product_id' => $item->product_id,
-                'variant_id' => $item->variant_id, // Nếu có biến thể
+                'variant_id' => $item->variant_id,
                 'quantity' => $item->quantity,
                 'price' => $item->price,
                 'size' => $variant->size ?? null,
                 'color' => $variant->color ?? null,
             ]);
-
+    
             // Cập nhật tồn kho
             if ($item->variant) {
                 $variant = $item->variant;
-
                 if ($variant->stock_quantity < $item->quantity) {
                     return redirect()->route('cart.index')->with('error', 'Biến thể "' . $variant->name . '" không đủ số lượng trong kho.');
                 }
-
                 $variant->stock_quantity -= $item->quantity;
                 $variant->sold_quantity += $item->quantity;
-
                 if ($variant->stock_quantity <= 0) {
                     $variant->stock_quantity = 0;
                 }
-
                 $variant->save();
             } else {
                 $product = $item->product;
-
                 if ($product->stock_quantity < $item->quantity) {
                     return redirect()->route('cart.index')->with('error', 'Sản phẩm "' . $product->name . '" không đủ số lượng trong kho.');
                 }
-
                 $product->stock_quantity -= $item->quantity;
                 $product->sold_quantity += $item->quantity;
-
                 if ($product->stock_quantity <= 0) {
                     $product->stock_quantity = 0;
                 }
-
                 $product->save();
             }
         }
-
+    
+        // Cập nhật mã giảm giá
         if ($appliedCoupons) {
             foreach ($appliedCoupons as $couponData) {
                 $coupon = Coupon::where('code', $couponData['code'])->first();
                 if ($coupon) {
                     $coupon->used_count += 1;
                     $coupon->save();
-
+    
                     CouponUsage::create([
                         'user_id' => auth()->id(),
                         'coupon_id' => $coupon->id,
@@ -251,10 +253,11 @@ class CheckoutController extends Controller
                 }
             }
         }
-
+    
+        // Xóa các mục trong giỏ hàng và session
         CartItem::where('user_id', auth()->id())->whereIn('id', $selectedItems)->delete();
-        session()->forget(['discount', 'applied_coupons', 'total_price', 'discount_order', 'discount_shipping']);
-
+        session()->forget(['discount', 'applied_coupons', 'total_price', 'discount_order', 'discount_shipping', 'checkout_prices']);
+    
         return redirect()->route('checkout.invoice', ['id' => $order->id])
             ->with('success', 'Đơn hàng đã được đặt thành công!');
     }
