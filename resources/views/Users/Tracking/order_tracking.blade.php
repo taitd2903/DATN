@@ -41,18 +41,28 @@
                                         class="badge bg-info px-2 py-1">{{ $order->payment_method }}</span></p>
                             </div>
                             <div class="col-md-6">
-                                <p class="mb-2"><i class="fas fa-money-check-alt me-2"></i> Trạng thái:
-                                    <span
-                                        class="badge {{ $order->payment_status == 'Đã thanh toán' ? 'bg-success' : 'bg-warning' }} px-2 py-1">
-                                        {{ $order->payment_status }}
-                                    </span>
-                                </p>
-                                {{-- <p class="mb-2"><i class="fas fa-map-marker-alt me-2"></i> Địa chỉ: 
-                             {{ $order->customer_address}}, <span id="ward-name"></span> ,<span id="district-name"></span>, <span id="city-name"></span>
-
-                                </p> --}}
+                                <ul class="list-group list-group-flush">
+                                    <!-- Trạng thái thanh toán -->
+                                    <li class="list-group-item py-2 d-flex justify-content-between align-items-center">
+                                        <strong><i class="fas fa-money-check-alt me-2"></i> Trạng thái:</strong>
+                                        <span class="badge {{ $order->payment_status == 'Đã thanh toán' ? 'bg-success' : 'bg-warning' }} px-2 py-1">
+                                            {{ $order->payment_status }}
+                                        </span>
+                                    </li>
+                                    <!-- Mã giảm giá -->
+                                    <li class="list-group-item py-2 d-flex justify-content-between align-items-center">
+                                        <strong>Mã giảm giá:</strong>
+                                        <span>{{ $order->coupon_code ?? 'Không có mã nào áp dụng' }}</span>
+                                    </li>
+                                    <!-- Số tiền giảm (nếu có) -->
+                                    @if ($order->coupon_code && $order->discount_amount > 0)
+                                        <li class="list-group-item py-2 d-flex justify-content-between align-items-center">
+                                            <strong>Số tiền giảm:</strong>
+                                            <span>{{ number_format($order->discount_amount, 0, ',', '.') }} VNĐ</span>
+                                        </li>
+                                    @endif
+                                </ul>
                             </div>
-                        </div>
 
                         <h6 class="mt-4 text-secondary fw-semibold">Sản phẩm trong đơn hàng:</h6>
                         <div class="order-items mt-3">
@@ -184,6 +194,7 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
+        
     </style>
 
     <!-- Thêm Animate.css từ CDN -->

@@ -56,11 +56,17 @@
                                         <div><strong>Phương thức:</strong> {{ $order->payment_method }}</div>
                                         <div><strong>Trạng thái:</strong> {{ $order->payment_status }}</div>
                                         @if (!empty($order->coupon_code))
+                                        <p class="mb-2">
+                                            <strong>Mã giảm giá:</strong>
+                                            <span>{{ $order->coupon_code }}</span>
+                                        </p>
+                                        @if ($order->discount_amount > 0)
                                             <p class="mb-2">
-                                                <strong>Mã giảm giá:</strong>
-                                                <span class="">{{ $order->coupon_code }}</span>
+                                                <strong>Số tiền giảm:</strong>
+                                                <span>{{ number_format($order->discount_amount, 0, ',', '.') }} VNĐ</span>
                                             </p>
                                         @endif
+                                    @endif
                                         <div><strong>Tổng tiền:</strong>
                                             <span
                                                 class="text-success fw-bold">{{ number_format($order->total_price, 0, ',', '.') }}
