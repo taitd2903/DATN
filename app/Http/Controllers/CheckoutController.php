@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Log;
 
 class CheckoutController extends Controller
 {
-     //XỬ LÝ USER
+    //XỬ LÝ USER
     public function index(Request $request)
     {
         // Lấy danh sách ID sản phẩm được chọn từ query string (ví dụ: ?items=1,2,3)
@@ -32,9 +32,9 @@ class CheckoutController extends Controller
         }
 
         $checkoutPrices = [];
-            foreach ($cartItems as $item) {
-                $checkoutPrices[$item->id] = $item->price;
-            }
+        foreach ($cartItems as $item) {
+            $checkoutPrices[$item->id] = $item->price;
+        }
         session(['checkout_prices' => $checkoutPrices]);
 
         //============================24/03==========================
@@ -561,8 +561,30 @@ class CheckoutController extends Controller
             ]);
         }
 
-        $discountAmount = 0;
+        $totalDiscountOrder = array_sum(array_filter(
+            array_column($appliedCoupons, 'discount_amount'),
+            fn($item) => $appliedCoupons[array_search($item, array_column($appliedCoupons, 'discount_amount'))]['discount_target'] == 'order_total'
+        ));
+        $totalDiscountShipping = array_sum(array_filter(
+            array_column($appliedCoupons, 'discount_amount'),
+            fn($item) => $appliedCoupons[array_search($item, array_column($appliedCoupons, 'discount_amount'))]['discount_target'] == 'shipping_fee'
+        ));
+
+        if ($coupon->discount_target == 'order_total' && $totalDiscountOrder >= $totalPrice) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Đơn hàng đã được giảm tối đa!'
+            ]);
+        }
+        if ($coupon->discount_target == 'shipping_fee' && $totalDiscountShipping >= $shippingFee) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Phí vận chuyển đã được giảm tối đa!'
+            ]);
+        }
+
         $baseAmount = ($coupon->discount_target == 'shipping_fee') ? $shippingFee : $totalPrice;
+        $discountAmount = 0;
         if ($coupon->discount_type == 1) {
             $discountAmount = ($baseAmount * $coupon->discount_value) / 100;
             if ($coupon->max_discount_amount && $discountAmount > $coupon->max_discount_amount) {
@@ -571,15 +593,16 @@ class CheckoutController extends Controller
         } else {
             $discountAmount = $coupon->discount_value;
         }
-
         $discountAmount = min($discountAmount, $baseAmount);
 
+        // Thêm mã mới vào danh sách áp dụng
         $appliedCoupons[] = [
             'code' => $couponCode,
             'discount_amount' => $discountAmount,
             'discount_target' => $coupon->discount_target,
         ];
 
+        // Cập nhật lại tổng giảm giá sau khi thêm mã mới
         $totalDiscountOrder = array_sum(array_filter(
             array_column($appliedCoupons, 'discount_amount'),
             fn($item) => $appliedCoupons[array_search($item, array_column($appliedCoupons, 'discount_amount'))]['discount_target'] == 'order_total'
