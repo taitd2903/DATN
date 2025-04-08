@@ -88,7 +88,7 @@
                                         @csrf
                                         @method('PUT')
                                         <select name="role" onchange="this.form.submit()" class="form-select form-select-sm">
-                                            <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
+                                            
                                             <option value="staff" {{ $user->role == 'staff' ? 'selected' : '' }}>Staff</option>
                                             <option value="user" {{ $user->role == 'user' ? 'selected' : '' }}>User</option>
                                         </select>
@@ -169,8 +169,6 @@
                 alert("bạn không có quyền truy cập! vui lòng liên hệ với admin.")
                 window.history.back();
             </script>
-
-          
         @endif
     </div>
 @endsection

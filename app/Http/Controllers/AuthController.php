@@ -53,11 +53,11 @@ class AuthController extends Controller
     
         $user = Auth::user();
 
-if ($user->status === 'banned') {
-    $banReason = $user->ban_reason ?? 'Tài khoản của bạn đã bị khóa.';
-    Auth::logout();
-    return redirect()->route('login')->withErrors(['email' => $banReason]);
-}
+    if ($user->status === 'banned') {
+        $banReason = $user->ban_reason ?? 'Tài khoản của bạn đã bị khóa.';
+        Auth::logout();
+        return redirect()->route('login')->withErrors(['email' => $banReason]);
+    }
         // Tạo token và lưu vào session
         $token = $user->createToken('auth_token')->plainTextToken;
         session(['auth_token' => $token]);
