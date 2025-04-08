@@ -182,9 +182,8 @@ class CheckoutController extends Controller
         $order = Order::create([
             'user_id' => auth()->id(),
             'note' => $note,
-            'total_price' => $totalPrice, // Tổng tiền gốc (chưa cộng phí vận chuyển, chưa giảm giá)
+            'total_price' => $finalPrice, 
             'discount_amount' => $discountAmount, // Số tiền giảm giá
-            'final_price' => $finalPrice, // Tổng tiền cuối cùng (sau khi giảm giá và cộng phí vận chuyển)
             'payment_method' => strtolower($validated['payment_method']),
             'status' => 'Chờ xác nhận',
             'customer_name' => $request->name,
@@ -282,7 +281,10 @@ class CheckoutController extends Controller
             ['name' => 'Đơn hàng', 'url' => null],
             ['name' => 'Đơn hàng của tôi', 'url' => null],
         ];
-        $orders = Order::where('user_id', Auth::id())->with('orderItems.product')->get();
+        $orders = Order::where('user_id', Auth::id())
+        ->with('orderItems.product')
+        ->orderBy('created_at', 'desc')
+        ->get();
 
         return view('users.tracking.order_tracking', compact('breadcrumbs', 'orders'));
     }

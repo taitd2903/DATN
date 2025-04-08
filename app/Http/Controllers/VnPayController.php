@@ -24,7 +24,7 @@ class VnPayController extends Controller
         ]);
 
         $vnp_TxnRef = time();
-        $vnp_Amount = $request->input('amount') * 100;
+        $vnp_Amount = $request->input('amount') * 100; // Amount gửi cho VNPay
         $vnp_Locale = $request->input('language', 'vn');
         $vnp_BankCode = $request->input('bankCode');
         $vnp_IpAddr = $request->ip();
@@ -41,18 +41,94 @@ class VnPayController extends Controller
         $note = $request->input('address') . ', ' . $request->input('ward') . ', ' .
             $request->input('district') . ', ' . $request->input('city');
 
+        // Lấy danh sách sản phẩm từ giỏ hàng
+        $selectedItems = $request->items ? explode(',', $request->items) : [];
+        $cartItems = CartItem::with(['product', 'variant'])
+            ->where('user_id', auth()->id())
+            ->whereIn('id', $selectedItems)
+            ->get();
+
+        if ($cartItems->isEmpty()) {
+            return response()->json(['success' => false, 'message' => 'Giỏ hàng trống'], 400);
+        }
+
+        // Tính toán giá trị
+        $totalPrice = $cartItems->sum(fn($item) => $item->price * $item->quantity); // Tổng tiền gốc
+        $shippingFee = 30000;
         $appliedCoupons = $request->session()->get('applied_coupons', []);
+
+        $discountOrder = 0;
+        $discountShipping = 0;
+
+        if ($appliedCoupons) {
+            $validCoupons = [];
+            foreach ($appliedCoupons as $couponData) {
+                $coupon = Coupon::where('code', $couponData['code'])->first();
+                if (!$coupon) {
+                    continue; // Bỏ qua nếu mã không tồn tại
+                }
+                $baseAmount = ($coupon->discount_target == 'shipping_fee') ? $shippingFee : $totalPrice;
+                $discountAmount = $this->calculateDiscount($coupon, $baseAmount);
+
+                if ($coupon->minimum_order_value && $totalPrice < $coupon->minimum_order_value) {
+                    continue;
+                }
+
+                if ($coupon->discount_target == 'shipping_fee') {
+                    $discountShipping += $discountAmount;
+                } else {
+                    $discountOrder += $discountAmount;
+                }
+
+                $validCoupons[] = [
+                    'code' => $coupon->code,
+                    'discount_amount' => $discountAmount,
+                    'discount_target' => $coupon->discount_target,
+                ];
+            }
+
+            $discountOrder = min($discountOrder, $totalPrice);
+            $discountShipping = min($discountShipping, $shippingFee);
+
+            $totalDiscount = $discountOrder + $discountShipping;
+            $maxDiscount = $totalPrice + $shippingFee;
+            if ($totalDiscount > $maxDiscount) {
+                $totalDiscount = $maxDiscount;
+                if ($discountOrder > $totalPrice) {
+                    $discountOrder = $totalPrice;
+                    $discountShipping = $totalDiscount - $discountOrder;
+                } else {
+                    $discountShipping = $totalDiscount - $discountOrder;
+                }
+            }
+
+            $finalPrice = $totalPrice + $shippingFee - $totalDiscount;
+            if ($finalPrice < 0) {
+                $finalPrice = 0;
+            }
+
+            $request->session()->put('applied_coupons', $validCoupons);
+        } else {
+            $totalDiscount = 0;
+            $finalPrice = $totalPrice + $shippingFee;
+        }
+
+        // Tính discount_amount
+        $discountAmount = $discountOrder + $discountShipping;
+
         $couponCodes = array_column($appliedCoupons, 'code');
         $couponCodeString = !empty($couponCodes) ? implode(',', $couponCodes) : null;
-        // Lưu đơn hàng vào bảng orders
 
+        // Lưu đơn hàng
         $order = Order::create([
             'customer_name' => $request->input('name'),
             'customer_phone' => $request->input('phone'),
             'customer_address' => $request->input('address'),
             'user_id' => Auth::id(),
             'note' => $note,
-            'total_price' => $request->input('amount'),
+            'total_price' => $finalPrice, // Tổng tiền gốc
+            'discount_amount' => $discountAmount, // Số tiền giảm giá
+            
             'coupon_code' => $couponCodeString,
             'payment_method' => 'vnpay',
             'status' => 'Chờ xác nhận',
@@ -63,40 +139,29 @@ class VnPayController extends Controller
             'ward' => $request->input('ward'),
         ]);
 
-        $request->session()->put('pending_order_id', $order->id);
-
-        $selectedItems = $request->items ? explode(',', $request->items) : [];
-
-        // Lấy sản phẩm trong giỏ hàng chỉ của user hiện tại, lọc theo danh sách được chọn
-        $cartItems = CartItem::with(['product', 'variant'])
-        
-            ->where('user_id', auth()->id())
-            ->whereIn('id', $selectedItems) // Lọc theo ID sản phẩm được chọn
-            ->get();
-            
+        // Lưu OrderItems
         foreach ($cartItems as $item) {
             $variant = ProductVariant::find($item->variant_id);
             OrderItem::create([
                 'order_id' => $order->id,
                 'product_id' => $item->product_id,
-                'variant_id' => $item->variant_id, // Nếu có biến thể
+                'variant_id' => $item->variant_id,
                 'quantity' => $item->quantity,
                 'price' => $item->price,
                 'size' => $variant->size ?? null,
-                'color'=> $variant->color ?? null,
+                'color' => $variant->color ?? null,
             ]);
         }
 
-
-        // Không xóa giỏ hàng ngay lập tức, chỉ xóa khi thanh toán thành công
         $request->session()->put('pending_order_id', $order->id);
         $request->session()->put('applied_coupons_for_vnpay', $appliedCoupons);
-        // Kiểm tra xem đơn hàng đã được lưu chưa
+
         if (!$order) {
             Log::error('Failed to create order', $request->all());
             return response()->json(['success' => false, 'message' => 'Không thể tạo đơn hàng'], 500);
         }
 
+        // Tạo URL thanh toán VNPay
         $inputData = [
             "vnp_Version" => "2.1.0",
             "vnp_TmnCode" => $vnp_TmnCode,
@@ -133,11 +198,24 @@ class VnPayController extends Controller
         $vnp_SecureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);
         $paymentUrl = $vnp_Url . '?' . http_build_query($inputData) . '&vnp_SecureHash=' . $vnp_SecureHash;
 
-        // Trả về JSON thay vì redirect
         return response()->json([
             'success' => true,
             'payment_url' => $paymentUrl
         ]);
+    }
+    private function calculateDiscount(Coupon $coupon, $totalPrice)
+    {
+        $discountAmount = 0;
+        if ($coupon->discount_type == 1) { // Giảm theo phần trăm
+            $discountAmount = ($totalPrice * $coupon->discount_value) / 100;
+            if ($coupon->max_discount_amount && $discountAmount > $coupon->max_discount_amount) {
+                $discountAmount = $coupon->max_discount_amount;
+            }
+        } else { // Giảm cố định
+            $discountAmount = $coupon->discount_value;
+        }
+
+        return min($discountAmount, $totalPrice);
     }
 
     public function response(Request $request)

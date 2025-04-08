@@ -53,6 +53,10 @@
                                 <div class="bg-white p-4 rounded-3 shadow-sm">
                                     <h5 class="text-primary fw-semibold mb-3">Thông Tin Thanh Toán</h5>
                                     <div class="d-flex flex-column gap-2">
+                                        <div><strong>Thời gian đặt hàng:</strong>
+                                            {{ $order->created_at->format('d/m/Y H:i') }}</div>
+                                        <div><strong>Thời gian thanh toán:</strong>
+                                            {{ $order->updated_at->format('d/m/Y H:i') }}</div>
                                         <div><strong>Phương thức:</strong> {{ $order->payment_method }}</div>
                                         <div><strong>Trạng thái:</strong> {{ $order->payment_status }}</div>
                                         @if (!empty($order->coupon_code))
@@ -67,16 +71,11 @@
                                             </p>
                                         @endif
                                     @endif
-                                        <div><strong>Tổng tiền:</strong>
-                                            <span
-                                                class="text-success fw-bold">{{ number_format($order->total_price, 0, ',', '.') }}
-                                                VND</span>
-                                        </div>
+                                    <div class="alert alert-success d-flex align-items-center mb-3" role="alert">
+                                        <strong class="me-2">Tổng tiền:</strong>
+                                        <span class="fw-bold fs-4">{{ number_format($order->total_price, 0, ',', '.') }} VND</span>
+                                    </div>
 
-                                        <div><strong>Thời gian đặt hàng:</strong>
-                                            {{ $order->created_at->format('d/m/Y H:i') }}</div>
-                                        <div><strong>Thời gian thanh toán:</strong>
-                                            {{ $order->updated_at->format('d/m/Y H:i') }}</div>
                                     </div>
                                 </div>
                             </div>
