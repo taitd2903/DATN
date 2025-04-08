@@ -488,6 +488,16 @@
         // Bật/tắt chỉnh sửa địa chỉ
         
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const errorAlerts = document.querySelectorAll('.alert.alert-danger');
+            errorAlerts.forEach(function(alert) {
+                setTimeout(function() {
+                    alert.style.display = 'none';
+                }, 5000);
+            });
+        });
+    </script>
     </div>
     @include('Users.chat')
 @endsection

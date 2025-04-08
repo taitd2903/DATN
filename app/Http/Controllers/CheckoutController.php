@@ -86,7 +86,29 @@ class CheckoutController extends Controller
         if ($cartItems->isEmpty()) {
             return redirect()->route('cart.index')->with('error', 'Giỏ hàng trống.');
         }
-    
+//=============================Quang Đạt đã để lại dấu răng ở đây (START)===========================//
+        $totalPrice = $cartItems->sum(fn($item) => $item->price * $item->quantity);
+        $appliedCoupons = $request->session()->get('applied_coupons', []);
+        if ($appliedCoupons) {
+            foreach ($appliedCoupons as $couponData) {
+                $coupon = Coupon::where('code', $couponData['code'])->first();
+                if (!$coupon || !$this->isCouponValid($coupon, auth()->user())) {
+                    return redirect()->route('checkout', ['items' => $request->items])
+                        ->with('error', "Mã giảm giá {$couponData['code']} không còn hiệu lực hoặc đã có sự thay đổi. Vui lòng kiểm tra lại.");
+                }
+                $baseAmount = ($coupon->discount_target == 'shipping_fee') ? 30000 : $totalPrice;
+                $currentDiscount = $this->calculateDiscount($coupon, $baseAmount);
+                if ($currentDiscount != $couponData['discount_amount']) {
+                    return redirect()->route('checkout', ['items' => $request->items])
+                        ->with('error', "Mã giảm giá {$couponData['code']} đã có sự thay đổi. Vui lòng áp dụng lại mã.");
+                }
+                if ($coupon->minimum_order_value && $totalPrice < $coupon->minimum_order_value) {
+                    return redirect()->route('checkout', ['items' => $request->items])
+                        ->with('error', "Mã giảm giá {$couponData['code']} yêu cầu đơn hàng tối thiểu " . number_format($coupon->minimum_order_value, 0, ',', '.') . " VNĐ. Tổng đơn hàng hiện tại không đủ điều kiện.");
+                }
+            }
+        }
+//=============================Quang Đạt đã để lại dấu răng ở đây (END)===========================//
         // Kiểm tra giá thay đổi
         $checkoutPrices = session('checkout_prices', []);
         $priceChanged = false;
@@ -182,7 +204,7 @@ class CheckoutController extends Controller
         $order = Order::create([
             'user_id' => auth()->id(),
             'note' => $note,
-            'total_price' => $finalPrice, 
+            'total_price' => $finalPrice,
             'discount_amount' => $discountAmount, // Số tiền giảm giá
             'payment_method' => strtolower($validated['payment_method']),
             'status' => 'Chờ xác nhận',

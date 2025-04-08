@@ -51,7 +51,43 @@ class VnPayController extends Controller
         if ($cartItems->isEmpty()) {
             return response()->json(['success' => false, 'message' => 'Giỏ hàng trống'], 400);
         }
-
+    
+//=============================Quang Đạt đã để lại dấu răng ở đây (START)===========================//
+        $totalPrice = $cartItems->sum(fn($item) => $item->price * $item->quantity);
+        $appliedCoupons = $request->session()->get('applied_coupons', []);
+        if ($appliedCoupons) {
+            foreach ($appliedCoupons as $couponData) {
+                $coupon = Coupon::where('code', $couponData['code'])->first();
+                if (!$coupon) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => "Mã giảm giá {$couponData['code']} không còn tồn tại."
+                    ], 400);
+                }
+                $checkoutController = new CheckoutController();
+                if (!$checkoutController->isCouponValid($coupon, auth()->user())) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => "Mã giảm giá {$couponData['code']} không hiệu lực hoặc đã có sự thay đổi."
+                    ], 400);
+                }
+                $baseAmount = ($coupon->discount_target == 'shipping_fee') ? 30000 : $totalPrice;
+                $currentDiscount = $this->calculateDiscount($coupon, $baseAmount);
+                if ($currentDiscount != $couponData['discount_amount']) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => "Mã giảm giá {$couponData['code']} đã có sự thay đổi. Vui lòng áp dụng lại mã."
+                    ], 400);
+                }
+                if ($coupon->minimum_order_value && $totalPrice < $coupon->minimum_order_value) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => "Mã giảm giá {$couponData['code']} yêu cầu đơn hàng tối thiểu " . number_format($coupon->minimum_order_value, 0, ',', '.') . " VNĐ. Tổng đơn hàng hiện tại không đủ điều kiện."
+                    ], 400);
+                }
+            }
+        }
+    //=============================Quang Đạt đã để lại dấu răng ở đây (END)===========================//
         // Tính toán giá trị
         $totalPrice = $cartItems->sum(fn($item) => $item->price * $item->quantity); // Tổng tiền gốc
         $shippingFee = 30000;
