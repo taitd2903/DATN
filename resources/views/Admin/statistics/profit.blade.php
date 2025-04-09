@@ -79,6 +79,12 @@
                    Lợi nhuận theo đơn hàng
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request('tab') == 'coupon-stats' ? 'active' : '' }}"
+                   href="?tab=coupon-stats&from_date={{ request('from_date') }}&to_date={{ request('to_date') }}&product_name={{ request('product_name') }}&category_id={{ request('category_id') }}&order_id={{ request('order_id') }}">
+                   Thống kê mã giảm giá
+                </a>
+            </li>
         </ul>
 
         <div class="tab-content mt-3">
@@ -139,9 +145,244 @@
                     </tbody>
                 </table>
             </div>
-        </div>
-        <div class="discountstatistics">
-            
+            <!-- Thống kê mã giảm giá -->
+            <div class="tab-pane fade {{ request('tab') == 'coupon-stats' ? 'show active' : '' }}" id="coupon-stats">
+                <h2 class="text-center">Thống kê mã giảm giá</h2>
+                <br>
+                <div class="discountstatistics">
+                    <h4 class="text-center">Tổng quan</h4>
+                    <div class="row mb-4">
+                        <div class="col">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h6>Tổng số mã</h6>
+                                    <p>{{ $totalCoupons }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h6>Mã đang hoạt động</h6>
+                                    <p>{{ $activeCoupons }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h6>Mã hết hạn</h6>
+                                    <p>{{ $expiredCoupons }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h6>Mã giảm phí vận chuyển</h6>
+                                    <p>{{ $shippingCoupons }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h6>Mã giảm giá trị đơn</h6>
+                                    <p>{{ $orderCoupons }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h4 class="text-center">Hiệu quả sử dụng</h4>
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h5>Tổng lượt sử dụng</h5>
+                                    <p>{{ $totalUsages }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h5>Tổng tiền giảm</h5>
+                                    <p>{{ number_format($totalDiscount, 0, ',', '.') }} VNĐ</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h5>Số người dùng</h5>
+                                    <p>{{ $uniqueUsers }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h5>Tỷ lệ đơn hàng dùng mã</h5>
+                                    <p>{{ number_format($couponOrderRate, 2) }}%</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h5>Tổng doanh thu sau giảm giá</h5>
+                                    <p>{{ number_format($affectedRevenue, 0, ',', '.') }} VNĐ</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h5>Tổng doanh thu trước giảm</h5>
+                                    <p>{{ number_format($originalRevenue, 0, ',', '.') }} VNĐ</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h4 class="text-center">Top 5 mã sử dụng nhiều nhất</h4>
+                    <table class="table table-bordered mb-4">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Mã</th>
+                                <th>Loại</th>
+                                <th>Lượt sử dụng</th>
+                                <th>Tổng tiền giảm</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($topUsedCoupons as $coupon)
+                                <tr>
+                                    <td>{{ $coupon['code'] }}</td>
+                                    <td>{{ $coupon['type'] }}</td>
+                                    <td>{{ $coupon['usage_count'] }}</td>
+                                    <td>{{ number_format($coupon['total_discount'], 0, ',', '.') }} VNĐ</td>
+                                </tr>
+                            @empty
+                                <tr><td colspan="4" class="text-center">Không có dữ liệu mã giảm giá.</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                    <h4 class="text-center">Top 5 mã sử dụng ít nhất</h4>
+                    <table class="table table-bordered mb-4">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Mã</th>
+                                <th>Loại</th>
+                                <th>Lượt sử dụng</th>
+                                <th>Tổng tiền giảm</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($leastUsedCoupons as $coupon)
+                                <tr>
+                                    <td>{{ $coupon['code'] }}</td>
+                                    <td>{{ $coupon['type'] }}</td>
+                                    <td>{{ $coupon['usage_count'] }}</td>
+                                    <td>{{ number_format($coupon['total_discount'], 0, ',', '.') }} VNĐ</td>
+                                </tr>
+                            @empty
+                                <tr><td colspan="4" class="text-center">Không có dữ liệu mã giảm giá.</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                    <h4 class="text-center">Biểu đồ tỷ lệ sử dụng mã</h4>
+                    <div class="row mb-4">
+                        <div class="col-md-5">
+                            <canvas id="pieChart"></canvas>
+                        </div>
+                        <div class="col-md-6">
+                            <canvas id="columnChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
+    <!-- Thêm Chart.js và script -->
+    @if(request('tab') == 'coupon-stats')
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            const pieCtx = document.getElementById('pieChart').getContext('2d');
+            const pieChart = new Chart(pieCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Phí vận chuyển', 'Giá trị đơn'],
+                    datasets: [{
+                        data: [{{ $pieChartData['shipping_usage'] }}, {{ $pieChartData['order_usage'] }}],
+                        backgroundColor: ['#36A2EB', '#FF6384'],
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'top' },
+                        title: { display: true, text: 'Tỷ lệ sử dụng mã giảm giá' }
+                    }
+                }
+            });
+            const columnCtx = document.getElementById('columnChart').getContext('2d');
+            const columnData = @json($columnChartData);
+            const labels = Object.keys(columnData.data);
+            const shippingData = labels.map(key => columnData.data[key].shipping);
+            const orderData = labels.map(key => columnData.data[key].order);
+
+            const columnChart = new Chart(columnCtx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Phí vận chuyển',
+                            data: shippingData,
+                            backgroundColor: '#36A2EB'
+                        },
+                        {
+                            label: 'Giá trị đơn',
+                            data: orderData,
+                            backgroundColor: '#FF6384'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: columnData.group_by === 'day' ? 'Ngày' : 'Tháng'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Lượt sử dụng'
+                            },
+                            ticks: {
+                                stepSize: 2,   // Mỗi bước giá trị tăng lên 2
+                                max: 40        // Giá trị lớn nhất là 40
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Lượt sử dụng mã theo thời gian'
+                        }
+                    }
+                }
+            });
+        </script>
+    @endif
 @endsection

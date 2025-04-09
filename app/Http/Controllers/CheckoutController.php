@@ -270,6 +270,7 @@ class CheckoutController extends Controller
                         'coupon_id' => $coupon->id,
                         'order_id' => $order->id,
                         'used_at' => now(),
+                        'applied_discount' => $couponData['discount_amount'],
                     ]);
                 }
             }

@@ -18,6 +18,7 @@ class CouponUsage extends Model
         'coupon_id',
         'order_id',
         'used_at',
+        'applied_discount',
     ];
 
     // Định dạng cột kiểu timestamp
@@ -25,6 +26,7 @@ class CouponUsage extends Model
         'used_at' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        'applied_discount' => 'float',
     ];
 
     // Quan hệ với model User
