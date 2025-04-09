@@ -140,5 +140,8 @@
                 </table>
             </div>
         </div>
+        <div class="discountstatistics">
+            
+        </div>
     </div>
 @endsection
