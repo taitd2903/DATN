@@ -588,6 +588,21 @@ class CheckoutController extends Controller
             ]);
         }
 
+        $orderTotalCount = count(array_filter($appliedCoupons, fn($c) => $c['discount_target'] == 'order_total'));
+        $shippingFeeCount = count(array_filter($appliedCoupons, fn($c) => $c['discount_target'] == 'shipping_fee'));
+        if ($coupon->discount_target == 'order_total' && $orderTotalCount >= 1) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn chỉ có thể áp dụng tối đa 1 mã giảm giá trị đơn hàng.'
+            ]);
+        }
+        if ($coupon->discount_target == 'shipping_fee' && $shippingFeeCount >= 1) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn chỉ có thể áp dụng tối đa 1 mã giảm phí vận chuyển.'
+            ]);
+        }
+        
         $totalDiscountOrder = array_sum(array_filter(
             array_column($appliedCoupons, 'discount_amount'),
             fn($item) => $appliedCoupons[array_search($item, array_column($appliedCoupons, 'discount_amount'))]['discount_target'] == 'order_total'
