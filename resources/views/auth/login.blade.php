@@ -19,8 +19,11 @@
                 </div>
                  @endif
 
+            
+
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
+
                     <input type="email" name="email" placeholder="Email" value="{{ old('email') }}">
                     <br> @error('email') <span class="error">{{ $message }}</span> @enderror
 

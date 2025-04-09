@@ -35,18 +35,27 @@ use App\Http\Controllers\HomeController;
 |--------------------------------------------------------------------------
 */
 
-
+Auth::routes();
+//===============chuyển hướng admin============
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin/dashboard', function () {
+        return view('Admin.dashboard');
+    })->name('Admin.Dashboard.index');
+});
 
 // ========================= XÁC THỰC (AUTH) =========================
+Route::controller(RegisterController::class)->group(function () {
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-
-
+Route::post('/register', 'register');
+});
 
 Route::controller(AuthController::class)->group(function () {
     // Route::get('/register', 'showRegisterForm')->name('register');
-    Route::post('/register', 'register');
+    
+
     Route::get('/login', 'showLoginForm')->name('login');
     Route::post('/login', 'login');
+
     Route::post('/logout', 'logout')->name('logout');
 });
 
@@ -177,7 +186,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('users/tracking/order_tracking/cancel/{order}', [CheckoutController::class, 'cancelOrder'])->name('order.cancel');
 });
 
-Auth::routes();
+
 
 //Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
