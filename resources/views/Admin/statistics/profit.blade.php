@@ -64,7 +64,18 @@
                 </div>
             </div>
         </form>
-
+        <canvas id="monthlyProfitChart" height="100"></canvas>
+        <div class="bieudo">
+            <h4 class="text-center">Tỷ lệ sử dụng mã giảm giá</h4>
+            <div class="row mb-4">
+                <div class="col-md-5">
+                    <canvas id="pieChart"></canvas>
+                </div>
+                <div class="col-md-6">
+                    <canvas id="columnChart"></canvas>
+                </div>
+            </div>
+        </div>
         {{-- Tabs Bootstrap --}}
         <ul class="nav nav-tabs">
             <li class="nav-item">
@@ -307,7 +318,6 @@
     </div>
 
     <!-- Thêm Chart.js và script -->
-    @if(request('tab') == 'coupon-stats')
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>
             const pieCtx = document.getElementById('pieChart').getContext('2d');
@@ -367,8 +377,8 @@
                                 text: 'Lượt sử dụng'
                             },
                             ticks: {
-                                stepSize: 2,   // Mỗi bước giá trị tăng lên 2
-                                max: 40        // Giá trị lớn nhất là 40
+                                stepSize: 2,
+                                max: 40
                             }
                         }
                     },
@@ -384,5 +394,43 @@
                 }
             });
         </script>
-    @endif
+        <script>
+            async function loadMonthlyProfitChart() {
+                const res = await fetch('{{ route('admin.statistics.monthlyProfitChart') }}');
+                const data = await res.json();
+        
+                const labels = data.map(item => item.month);
+                const profits = data.map(item => item.profit);
+        
+                const ctx = document.getElementById('monthlyProfitChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Lợi nhuận theo tháng',
+                            data: profits,
+                            backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value.toLocaleString('vi-VN') + ' đ';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        
+            document.addEventListener('DOMContentLoaded', loadMonthlyProfitChart);
+        </script>
 @endsection

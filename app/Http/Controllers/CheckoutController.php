@@ -758,7 +758,7 @@ class CheckoutController extends Controller
     }
 
     // ===================== Function này của Đạt, cấm động ====================== //
-    private function isCouponValid(Coupon $coupon, $user)
+    public function isCouponValid(Coupon $coupon, $user)
     {
         $currentDate = now();
 

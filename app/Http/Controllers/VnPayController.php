@@ -330,26 +330,29 @@ class VnPayController extends Controller
                     }
                 }
 
-                // Xử lý giảm số lần sử dụng mã giảm giá
-                if ($order->coupon_code) {
-                    $couponCodes = explode(',', $order->coupon_code);
-                    foreach ($couponCodes as $code) {
-                        $code = trim($code);
-                        if (!empty($code)) {
-                            $coupon = Coupon::where('code', $code)->first();
-                            if ($coupon) {
-                                $coupon->increment('used_count');
+                $appliedCoupons = $request->session()->get('applied_coupons_for_vnpay', []);
+                if ($order->coupon_code && $appliedCoupons) {
+                $couponCodes = explode(',', $order->coupon_code);
+                foreach ($couponCodes as $code) {
+                    $code = trim($code);
+                    if (!empty($code)) {
+                        $coupon = Coupon::where('code', $code)->first();
+                        if ($coupon) {
+                            $coupon->increment('used_count');
+                            $couponData = collect($appliedCoupons)->firstWhere('code', $code);
+                            $discountAmount = $couponData['discount_amount'] ?? $this->calculateDiscount($coupon, $order->total_price);
 
-                                CouponUsage::create([
-                                    'user_id' => $order->user_id,
-                                    'coupon_id' => $coupon->id,
-                                    'order_id' => $order->id,
-                                    'used_at' => now(),
-                                ]);
-                            }
+                            CouponUsage::create([
+                                'user_id' => $order->user_id,
+                                'coupon_id' => $coupon->id,
+                                'order_id' => $order->id,
+                                'used_at' => now(),
+                                'applied_discount' => $discountAmount,
+                            ]);
                         }
                     }
                 }
+            }
             } else {
                 // Nếu thanh toán thất bại, cập nhật trạng thái đơn hàng
                 $order->update(['payment_status' => 'Thất bại', 'status' => 'Hủy']);
