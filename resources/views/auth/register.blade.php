@@ -36,6 +36,7 @@
                     <option value="male">{{ __('messages.male') }}</option>
                     <option value="female">{{ __('messages.female') }}</option>
                 </select>
+                <br> @error('gender') <span class="error">{{ $message }}</span> @enderror
 
                 <br> <button type="submit" class="btn">{{ __('messages.register') }}</button>
             </form>

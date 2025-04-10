@@ -80,6 +80,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin,staff'])->name('admin.')
 
     Route::resource('users', UserController::class);
     Route::post('/users/{id}/ban', [UserController::class, 'ban'])->name('users.ban');
+    Route::post('/admin/users/unban/{id}', [UserController::class, 'unban'])->name('users.unban');
 
     Route::resource('coupons', CouponController::class);
     Route::get('/statistics', [StatisticsController::class, 'index'])->name('statistics.index');

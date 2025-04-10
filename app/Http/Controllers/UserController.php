@@ -265,15 +265,38 @@ public function ban(Request $request, $id)
 {
     $request->validate([
         'ban_reason' => 'required|string|max:255',
+        'custom_reason' => 'nullable|string|max:255',
+    ],[
+        'ban_reason.required'=>'vui lòng chọn lý do khóa'
     ]);
 
     $user = User::findOrFail($id);
     $user->status = 'banned';
-    $user->ban_reason = $request->ban_reason;
+
+    // Nếu chọn "Khác" thì dùng custom_reason, ngược lại dùng lý do mặc định
+    if ($request->ban_reason === 'Khác') {
+        $user->ban_reason = $request->custom_reason ?? 'Không rõ lý do';
+    } else {
+        $user->ban_reason = $request->ban_reason;
+    }
+
     $user->save();
 
-    return redirect()->back()->with('success', 'Đã khóa tài khoản với lý do: ' . $request->ban_reason);
+    return back()->with('success', 'Tài khoản đã bị khóa với lý do: ' . $user->ban_reason);
 }
+
+
+
+public function unban($id)
+{
+    $user = User::findOrFail($id);
+    $user->status = 'active';
+    $user->ban_reason = null;
+    $user->save();
+
+    return redirect()->back()->with('success', 'Tài khoản đã được mở khóa.');
+}
+
 
 
 }

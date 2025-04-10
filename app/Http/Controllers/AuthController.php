@@ -50,7 +50,7 @@ class AuthController extends Controller
             $user = Auth::user();
     
             if ($user->status === 'banned') {
-                $banReason = $user->ban_reason ?? 'Tài khoản của bạn đã bị khóa.';
+                $banReason = $user->ban_reason ? "Tài khoản của bạn đã bị khóa. Lý do: {$user->ban_reason}" : 'Tài khoản của bạn đã bị khóa.';
                 Auth::logout();
                 return redirect()->route('login')->withErrors(['email' => $banReason]);
             }
