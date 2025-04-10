@@ -42,7 +42,7 @@ Bài viết
         <!-- Sản phẩm mới -->
         <div class="row mb-5">
             <div class="col-12 text-center mb-4 animate__animated animate__fadeIn">
-                <h1 class="display-6 section-title">Sản phẩm mới <i class="fas fa-box-open text-primary ms-2"></i></h1>
+                <h1>Sản phẩm mới</h1>
             </div>
             <div class="col-12">
                 <div class="carousel slide" id="newProductsCarousel" data-bs-ride="carousel">
@@ -59,15 +59,17 @@ Bài viết
                                                         $firstVariantImage = $product->variants->whereNotNull('image')->first();
                                                         $defaultImage = $firstVariantImage ? asset('storage/' . $firstVariantImage->image) : $defaultImage;
                                                     @endphp
-                                                    <img src="{{ $defaultImage }}" class="card-img-top product-image" data-default-image="{{ $defaultImage }}" style="height: 250px; object-fit: cover;" alt="{{ $product->name }}">
+                                                    <img src="{{ $defaultImage }}" class="card-img-top product-image" data-default-image="{{ $defaultImage }}" style="height: 280px; object-fit: cover;" alt="{{ $product->name }}">
                                                 </a>
                                                 <div class="card-body">
-                                                    <p class="card-title" style="font-size: 14px; font-weight: 500;">{{ Str::limit($product->name, 30) }}</p>
+                                                    <p class="card-title">{{ Str::limit($product->name, 30) }}</p>
+
                                                     @php
                                                         $minPrice = $product->variants->min('price') ?? 0;
                                                         $maxPrice = $product->variants->max('price') ?? 0;
                                                     @endphp
                                                     <p class="card-text text-danger text-left">{{ number_format($minPrice, 0, ',', '.') }}đ</p>
+
                                                     <div class="d-flex justify-content-between">
                                                         <div>
                                                             @foreach($product->variants as $variant)
@@ -76,8 +78,8 @@ Bài viết
                                                                 @endif
                                                             @endforeach
                                                         </div>
-                                                        <span class="heart-icon" style="color: #ff4d4f; font-size: 12px;">❤️</span>
                                                     </div>
+                                                    
                                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                                         <span class="rating" style="font-size: 10px;">
                                                             ⭐⭐⭐⭐⭐ <span class="reviews">(0)</span>
@@ -114,8 +116,8 @@ Bài viết
                                         <img src="{{ $defaultImage }}" class="card-img-top product-image" data-default-image="{{ $defaultImage }}" style="height: 250px; object-fit: cover;" alt="{{ $product->name }}">
                                     </a>
                                     <div class="card-body">
-                                        <p class="card-title" style="font-size: 14px; font-weight: 500;">{{ Str::limit($product->name, 30) }}</p>
-                                        @php
+                                    <p class="card-title">{{ Str::limit($product->name, 30) }}</p>
+                                    @php
                                             $minPrice = $product->variants->min('price') ?? 0;
                                             $maxPrice = $product->variants->max('price') ?? 0;
                                         @endphp
@@ -128,7 +130,6 @@ Bài viết
                                                     @endif
                                                 @endforeach
                                             </div>
-                                            <span class="heart-icon" style="color: #ff4d4f; font-size: 12px;">❤️</span>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center mb-2">
                                             <span class="rating" style="font-size: 10px;">
@@ -162,7 +163,7 @@ Bài viết
         <!-- Sản phẩm nổi bật -->
         <div class="row mb-5">
             <div class="col-12 text-center mb-4 animate__animated animate__fadeIn">
-                <h1 class="display-6 section-title">Sản phẩm nổi bật <i class="fas fa-star text-warning ms-2"></i></h1>
+                <h1>Sản phẩm nổi bật</h1>
             </div>
             <div class="col-12">
                 <div class="carousel slide" id="featuredProductsCarousel" data-bs-ride="carousel">
@@ -182,7 +183,8 @@ Bài viết
                                                     <img src="{{ $defaultImage }}" class="card-img-top product-image" data-default-image="{{ $defaultImage }}" style="height: 250px; object-fit: cover;" alt="{{ $product->name }}">
                                                 </a>
                                                 <div class="card-body">
-                                                    <p class="card-title" style="font-size: 14px; font-weight: 500;">{{ Str::limit($product->name, 30) }}</p>
+                                                <p class="card-title">{{ Str::limit($product->name, 30) }}</p>
+
                                                     @php
                                                         $minPrice = $product->variants->min('price') ?? 0;
                                                         $maxPrice = $product->variants->max('price') ?? 0;
@@ -196,7 +198,6 @@ Bài viết
                                                                 @endif
                                                             @endforeach
                                                         </div>
-                                                        <span class="heart-icon" style="color: #ff4d4f; font-size: 12px;">❤️</span>
                                                     </div>
                                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                                         <span class="rating" style="font-size: 10px;">
@@ -234,7 +235,8 @@ Bài viết
                                         <img src="{{ $defaultImage }}" class="card-img-top product-image" data-default-image="{{ $defaultImage }}" style="height: 250px; object-fit: cover;" alt="{{ $product->name }}">
                                     </a>
                                     <div class="card-body">
-                                        <p class="card-title" style="font-size: 14px; font-weight: 500;">{{ Str::limit($product->name, 30) }}</p>
+                                    <p class="card-title">{{ Str::limit($product->name, 30) }}</p>
+
                                         @php
                                             $minPrice = $product->variants->min('price') ?? 0;
                                             $maxPrice = $product->variants->max('price') ?? 0;
@@ -248,7 +250,6 @@ Bài viết
                                                     @endif
                                                 @endforeach
                                             </div>
-                                            <span class="heart-icon" style="color: #ff4d4f; font-size: 12px;">❤️</span>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center mb-2">
                                             <span class="rating" style="font-size: 10px;">
@@ -266,7 +267,7 @@ Bài viết
         </div>
 
         <!-- Banner quảng cáo thứ hai -->
-        <div class="row my-5">
+        <!-- <div class="row my-5">
             <div class="col-12">
                 <div class="promo-banner animate__animated animate__fadeIn">
                     <img src="https://file.hstatic.net/1000398692/collection/banner_giay_pan_ps_7686edaa13ec4b06a1f244428a72d164.jpg" alt="Promo Banner 2" class="img-fluid rounded">
@@ -277,10 +278,10 @@ Bài viết
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <!-- Sản phẩm nhiều người chú ý -->
-        <div class="row mb-5">
+        <!-- <div class="row mb-5">
             <div class="col-12 text-center mb-4 animate__animated animate__fadeIn">
                 <h1 class="display-6 section-title">Sản phẩm nhiều người chú ý <i class="fas fa-eye text-success ms-2"></i></h1>
             </div>
@@ -316,7 +317,6 @@ Bài viết
                                                                 @endif
                                                             @endforeach
                                                         </div>
-                                                        <span class="heart-icon" style="color: #ff4d4f; font-size: 12px;">❤️</span>
                                                     </div>
                                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                                         <span class="rating" style="font-size: 10px;">
@@ -383,7 +383,7 @@ Bài viết
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <!-- Banner quảng cáo thứ ba -->
         <div class="row my-5">
@@ -402,7 +402,7 @@ Bài viết
         <!-- Giảm giá sốc -->
         <div class="row mb-5">
             <div class="col-12 text-center mb-4 animate__animated animate__fadeIn">
-                <h1 class="display-6 section-title">Giảm giá sốc <i class="fas fa-tags text-danger ms-2"></i></h1>
+                <h1>Giảm giá sốc</h1>
             </div>
             <div class="col-12">
                 <div class="carousel slide" id="discountProductsCarousel" data-bs-ride="carousel">
@@ -422,8 +422,8 @@ Bài viết
                                                     <img src="{{ $defaultImage }}" class="card-img-top product-image" data-default-image="{{ $defaultImage }}" style="height: 250px; object-fit: cover;" alt="{{ $product->name }}">
                                                 </a>
                                                 <div class="card-body">
-                                                    <p class="card-title" style="font-size: 14px; font-weight: 500;">{{ Str::limit($product->name, 30) }}</p>
-                                                    @php
+                                                <p class="card-title">{{ Str::limit($product->name, 30) }}</p>
+                                                @php
                                                         $minPrice = $product->variants->min('price') ?? 0;
                                                         $maxPrice = $product->variants->max('price') ?? 0;
                                                     @endphp
@@ -436,7 +436,6 @@ Bài viết
                                                                 @endif
                                                             @endforeach
                                                         </div>
-                                                        <span class="heart-icon" style="color: #ff4d4f; font-size: 12px;">❤️</span>
                                                     </div>
                                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                                         <span class="rating" style="font-size: 10px;">
@@ -474,8 +473,8 @@ Bài viết
                                         <img src="{{ $defaultImage }}" class="card-img-top product-image" data-default-image="{{ $defaultImage }}" style="height: 250px; object-fit: cover;" alt="{{ $product->name }}">
                                     </a>
                                     <div class="card-body">
-                                        <p class="card-title" style="font-size: 14px; font-weight: 500;">{{ Str::limit($product->name, 30) }}</p>
-                                        @php
+                                    <p class="card-title">{{ Str::limit($product->name, 30) }}</p>
+                                    @php
                                             $minPrice = $product->variants->min('price') ?? 0;
                                             $maxPrice = $product->variants->max('price') ?? 0;
                                         @endphp
@@ -488,7 +487,6 @@ Bài viết
                                                     @endif
                                                 @endforeach
                                             </div>
-                                            <span class="heart-icon" style="color: #ff4d4f; font-size: 12px;">❤️</span>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center mb-2">
                                             <span class="rating" style="font-size: 10px;">
@@ -505,6 +503,7 @@ Bài viết
             </div>
         </div>
     </div>
+
 
     <!-- Sản phẩm bán chạy -->
     <div class="container my-5">
@@ -563,7 +562,7 @@ Bài viết
                     <h2 class="display-6 section-title">Phong cách thời trang</h2>
                     <p class="text-muted">Xu hướng thời trang năm 2025</p>
                     <p class="text-muted">Thời trang bền vững suốt đời</p>
-                    <a href="#" class="btn btn-primary rounded-pill px-4">Xem thêm thời trang</a>
+                    <a href={{ url('categories') }} class="btn btn-primary rounded-pill px-4">Xem thêm thời trang</a>
                 </div>
                 <div class="col-md-6">
                     <img src="../assets/img/hi.jpg" class="img-fluid rounded shadow" alt="Hình ảnh thời trang">

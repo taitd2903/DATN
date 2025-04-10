@@ -90,38 +90,6 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                <div class="custom-select-box">
-                    <select style="color: white" id="language-switcher" class="form-control"
-                            onchange="changeLanguage(this.value)">
-                        <option value="en" {{ app()->getLocale() == 'en' ? 'selected' : '' }}>🇺🇸</option>
-                        <option value="vi" {{ app()->getLocale() == 'vi' ? 'selected' : '' }}>🇻🇳</option>
-                    </select>
-
-                    <script>
-                        function changeLanguage(locale) {
-                            window.location.href = "/lang/" + locale;
-                        }
-                    </script>
-
-                    <script>
-                        function changeLanguage(locale) {
-                            window.location.href = "/lang/" + locale;
-                        }
-                    </script>
-
-                </div>
-                <div class="right-phone-box">
-                    <p>Gọi tôi :- <a href="#"> +11 900 800 100</a></p>
-                </div>
-                <!-- <div class="our-link">
-                    <ul>
-                        <li><a href="#">Tài khoản của tôi</a></li>
-                        <li><a href="#">Địa chỉ của chúng tôi</a></li>
-                        <li><a href="#">Liên hệ với chúng tôi</a></li>
-                    </ul>
-                </div> -->
-            </div>
         </div>
     </div>
 </div>
@@ -148,13 +116,11 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="navbar-menu">
                 <ul class="nav navbar-nav ml-auto" data-in="fadeInDown" data-out="fadeOutUp">
-                    <li class="nav-item active"><a class="nav-link" href="index.html">{{ __('messages.home') }}</a></li>
-                    <li class="dropdown megamenu-fw">
-                        <a href="#" class="nav-link dropdown-toggle arrow"
-                           data-toggle="dropdown">{{ __('messages.products') }}</a>
+                    <li class="nav-item active"><a class="nav-link" href="{{ url('/') }}">{{ __('messages.home') }}</a></li>
+                   
                            <li class="nav-item"><a class="nav-link" href={{ url('bai-viet') }}>Bài viết</a>
                            </li>
-                    </li>
+                 
                     <li class="nav-item"><a class="nav-link"
                                             href={{ url('categories') }}>{{ __('messages.categories') }}</a></li>
                     <li class="nav-item"><a class="nav-link" href="contact-us.html">{{ __('messages.contact') }}</a>
@@ -165,7 +131,6 @@
             <!-- /.navbar-collapse -->
             <div class="right__content--mobile">
                 <ul class="d-flex justify-content-center align-items-center gap-4">
-                    <li class="search"><a href="#"> <i class="fas fa-heart"></i></a></li>
                     <li class="side-menu">
                         <a href="{{ route('cart.index') }}">
                             <i class="fa fa-shopping-bag"></i>
