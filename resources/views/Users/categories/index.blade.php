@@ -56,6 +56,55 @@
                     {{ __('messages.no_products_found') }}
                 </div>
             @else
+            <div class="row">
+                    @foreach($products as $product)
+                    @if($product->is_delete=="1")
+                        <div class="col-md-4 mb-4">
+                            <div class="card product-card shadow-sm">
+                                {{-- <img src="{{ $product->image ? asset('storage/' . $product->image) : asset('default-image.jpg') }}" 
+                                class="card-img-top product-img" alt="{{ $product->name }}"> --}}
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">{{ $product->name }}</h5>
+                                    <p class="text-muted">{{ __('messages.gender') }}: {{ ucfirst($product->gender) }}</p>
+                                    
+                                    @php
+                                        $minPrice = $product->variants->min('price') ?? 0;
+                                        $maxPrice = $product->variants->max('price') ?? 0;
+                                    @endphp
+                    
+                                    <p class="text-danger fw-bold">
+                                        {{ number_format($minPrice, 0, ',', '.') }} VND - {{ number_format($maxPrice, 0, ',', '.') }} VND
+                                    </p>
+                    
+                                    <a href="{{ route('products.show', $product->id) }}" class="btn btn-success">{{ __('messages.view_details') }}</a>
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                    <div class="col-md-4 mb-4">
+                        <div class="card product-card shadow-sm">
+                            <img src="{{ $product->image ? asset('storage/' . $product->image) : asset('default-image.jpg') }}" 
+                            class="card-img-top product-img" alt="{{ $product->name }}">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">{{ $product->name }}</h5>
+                                <p class="text-muted">{{ __('messages.gender') }}: {{ ucfirst($product->gender) }}</p>
+                                
+                                @php
+                                    $minPrice = $product->variants->min('price') ?? 0;
+                                    $maxPrice = $product->variants->max('price') ?? 0;
+                                @endphp
+                
+                                <p class="text-danger fw-bold">
+                                    {{ number_format($minPrice, 0, ',', '.') }} VND - {{ number_format($maxPrice, 0, ',', '.') }} VND
+                                </p>
+                
+                                <a href="{{ route('products.show', $product->id) }}" class="btn btn-success">{{ __('messages.view_details') }}</a>
+                            </div>
+                        </div>
+                        </div>
+                    @endif
+                    @endforeach
+                </div>
                 <div class="row">
                     @foreach($products as $product)
                         <div class="col-md-4 mb-4">

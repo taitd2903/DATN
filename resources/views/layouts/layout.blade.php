@@ -119,6 +119,12 @@
                         </a>
                     </li>
 
+                    <li>
+                        <a class="nav-link" href="{{ route('admin.articles.index') }}">
+                            <i class="nc-icon nc-cart-simple"></i> <!-- Đổi icon thành giỏ hàng -->
+                            <p>Quản lý bài viết </p>
+                        </a>
+                    </li>
 
                     <!-- <li>
                         {{-- admin.combos.index --}}

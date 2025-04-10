@@ -1,5 +1,20 @@
 @extends('layouts.app')
 @section('content')
+
+Bài viết 
+@foreach($articles as $article)
+    <div class="article">
+        <img id="article-image" src="{{ asset('storage/' . $article->image) }}" 
+        alt="{{ $article->name }}" class="img-fluid" width="600px" height="60%">
+        <h2>{{ $article->name }}</h2>
+        <p>{{ $article->description }}</p>
+        <p><strong>Lượt xem:</strong> {{ $article->views }}</p>
+        <a href="{{ route('articles.showUser', $article->id) }}" class="btn btn-primary">Xem thêm</a>
+    </div>
+
+@endforeach
+
+
     <div id="slides-shop" class="cover-slides">
         <ul class="slides-container">
             @foreach ($banners as $key => $banner)

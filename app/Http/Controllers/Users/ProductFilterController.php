@@ -15,7 +15,7 @@ class ProductFilterController extends Controller
         $categories = Category::whereNull('parent_id')->with('children')->get();
 
        
-        $query = Product::query()->where('is_delete', false);
+        $query = Product::query();
         if ($request->filled('name')) {
             $query->where('name', 'LIKE', '%' . $request->name . '%');
         }

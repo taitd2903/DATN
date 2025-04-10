@@ -152,53 +152,8 @@
                     <li class="dropdown megamenu-fw">
                         <a href="#" class="nav-link dropdown-toggle arrow"
                            data-toggle="dropdown">{{ __('messages.products') }}</a>
-                        <ul class="dropdown-menu megamenu-content" role="menu">
-                            <li>
-
-
-                                <div class="row">
-                                    <div class="col-menu col-md-3">
-                                        <h6 class="title">Top</h6>
-                                        <ul class="menu-col">
-                                            <li><a href="shop.html">Áo</a></li>
-                                            <li><a href="shop.html">Sơ mi</a></li>
-                                            <li><a href="shop.html">thể thao</a></li>
-                                            <li><a href="shop.html">bóng chuyền</a></li>
-                                        </ul>
-                                    </div>
-                                    <!-- end col-3 -->
-                                    <div class="col-menu col-md-3">
-                                        <h6 class="title">Bóng đá</h6>
-                                        <ul class="menu-col">
-                                            <li><a href="shop.html">Bộ thể thap</a></li>
-                                            <li><a href="shop.html">Áo đá bóng</a></li>
-                                            <li><a href="shop.html">Quần đá bóng</a></li>
-                                            <li><a href="shop.html">Phụ kiện</a></li>
-                                        </ul>
-                                    </div>
-                                    <div class="col-menu col-md-3">
-                                        <h6 class="title">Giảm giá</h6>
-                                        <ul class="menu-col">
-                                            <li><a href="shop.html">Quần áo</a></li>
-                                            <li><a href="shop.html">Giày dép</a></li>
-                                            <li><a href="shop.html">Thể thao</a></li>
-                                            <li><a href="shop.html">Đá bóng</a></li>
-                                        </ul>
-                                    </div>
-                                    <div class="col-menu col-md-3">
-                                        <h6 class="title">Giảm</h6>
-                                        <ul class="menu-col">
-                                            <li><a href="shop.html">Túi</a></li>
-                                            <li><a href="shop.html">Vợt</a></li>
-                                            <li><a href="shop.html">Đá bóng</a></li>
-                                            <li><a href="shop.html">Đá bóng</a></li>
-                                        </ul>
-                                    </div>
-                                    <!-- end col-3 -->
-                                </div>
-                                <!-- end row -->
-                            </li>
-                        </ul>
+                           <li class="nav-item"><a class="nav-link" href={{ url('bai-viet') }}>Bài viết</a>
+                           </li>
                     </li>
                     <li class="nav-item"><a class="nav-link"
                                             href={{ url('categories') }}>{{ __('messages.categories') }}</a></li>

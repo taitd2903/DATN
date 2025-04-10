@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\Admin\Returns\AdminReturnController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Admin\Article\ArticleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -65,6 +66,7 @@ Route::middleware(['auth', 'role:admin'])->get('/switch-to-user', [AuthControlle
 // ========================= QUẢN TRỊ VIÊN (ADMIN) =========================
 Route::prefix('admin')->middleware(['auth', 'role:admin,staff'])->name('admin.')->group(function () {
     Route::resource('banners', BannerController::class);
+    Route::resource('articles', ArticleController::class);
     Route::get('/', fn() => view('admin.dashboard'))->name('dashboard');
     Route::resource('categories', CategoryController::class)->except(['show']);
     Route::resource('products', ProductController::class);
@@ -244,3 +246,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/returns', [OrderReturnController::class, 'store'])->name('returns.store');
     Route::get('/returns/{id}', [OrderReturnController::class, 'show'])->name('returns.show');
 });
+
+
+Route::get('/bai-viet/{article}', [ArticleController::class, 'showUser'])->name('articles.showUser');
+Route::get('/bai-viet', [ArticleController::class, 'indexUser'])->name('article.index');

@@ -8,6 +8,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Review;
 use Illuminate\Support\Facades\DB;
+use App\Models\Article;
+
 
 class ProductController extends Controller {
 
@@ -17,6 +19,7 @@ class ProductController extends Controller {
         // ];
         $categories = Category::all();
         $banners = Banner::all();
+        $articles = Article::where('is_active', true)->latest()->take(3)->get();
         $products = Product::with('category', 'variants') ->where('is_delete', false);
         if ($request->has('name') && $request->name != '') {
             $products->where('name', 'like', '%' . $request->name . '%');
@@ -79,7 +82,7 @@ class ProductController extends Controller {
         }
 
 
-        return view('users.products.index', compact( 'products', 'categories', 'banners', 'topSellingProductsByCategory', 'representativeProductsByParentCategory'));
+        return view('users.products.index', compact( 'articles','products', 'categories', 'banners', 'topSellingProductsByCategory', 'representativeProductsByParentCategory'));
     }
 
 
