@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <head>
         <title>Ocean Sports</title>
-        <link rel="icon" type="image/png" href="{{ asset('assets/img/logo.png') }}">
+        <link rel="icon" type="image/png" style="width: 100%;" href="{{ asset('assets/img/logoo.png') }}">
     </head>
     @vite(['resources/js/app.js'])
     <!-- Favicons -->

@@ -105,7 +105,7 @@
                     @endif
                     @endforeach
                 </div>
-                <div class="row">
+                <!-- <div class="row">
                     @foreach($products as $product)
                         <div class="col-md-4 mb-4">
                             <div class="card product-card shadow-sm">
@@ -129,7 +129,7 @@
                             </div>
                         </div>
                     @endforeach
-                </div>
+                </div> -->
 
                 <div class="pagination justify-content-center">
                     {{ $products->links() }}
