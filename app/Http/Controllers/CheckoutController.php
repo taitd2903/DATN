@@ -74,19 +74,19 @@ class CheckoutController extends Controller
             'ward' => 'required|string|max:255',
             'payment_method' => 'required|in:cod,vnpay',
         ]);
-    
+
         $selectedItems = $request->items ? explode(',', $request->items) : [];
-    
+
         // Lấy sản phẩm trong giỏ hàng
         $cartItems = CartItem::with(['product', 'variant'])
             ->where('user_id', auth()->id())
             ->whereIn('id', $selectedItems)
             ->get();
-    
+
         if ($cartItems->isEmpty()) {
             return redirect()->route('cart.index')->with('error', 'Giỏ hàng trống.');
         }
-//=============================Quang Đạt đã để lại dấu răng ở đây (START)===========================//
+        //=============================Quang Đạt đã để lại dấu răng ở đây (START)===========================//
         $totalPrice = $cartItems->sum(fn($item) => $item->price * $item->quantity);
         $appliedCoupons = $request->session()->get('applied_coupons', []);
         if ($appliedCoupons) {
@@ -108,7 +108,7 @@ class CheckoutController extends Controller
                 }
             }
         }
-//=============================Quang Đạt đã để lại dấu răng ở đây (END)===========================//
+        //=============================Quang Đạt đã để lại dấu răng ở đây (END)===========================//
         // Kiểm tra giá thay đổi
         $checkoutPrices = session('checkout_prices', []);
         $priceChanged = false;
@@ -120,22 +120,22 @@ class CheckoutController extends Controller
                 break;
             }
         }
-    
+
         if ($priceChanged) {
             $message = 'Giá của sản phẩm "' . implode(', ', $changedItems) . '" đã thay đổi. Vui lòng kiểm tra lại giỏ hàng.';
             return redirect()->route('cart.index')->with('error', $message);
         }
-    
+
         session()->forget('checkout_prices');
-    
+
         // Tính toán giá trị
         $totalPrice = $cartItems->sum(fn($item) => $item->price * $item->quantity); // Tổng tiền gốc
         $shippingFee = 30000;
         $appliedCoupons = $request->session()->get('applied_coupons', []);
-    
+
         $discountOrder = 0;
         $discountShipping = 0;
-    
+
         if ($appliedCoupons) {
             $validCoupons = [];
             foreach ($appliedCoupons as $couponData) {
@@ -146,27 +146,27 @@ class CheckoutController extends Controller
                 }
                 $baseAmount = ($coupon->discount_target == 'shipping_fee') ? $shippingFee : $totalPrice;
                 $discountAmount = $this->calculateDiscount($coupon, $baseAmount);
-    
+
                 if ($coupon->minimum_order_value && $totalPrice < $coupon->minimum_order_value) {
                     continue;
                 }
-    
+
                 if ($coupon->discount_target == 'shipping_fee') {
                     $discountShipping += $discountAmount;
                 } else {
                     $discountOrder += $discountAmount;
                 }
-    
+
                 $validCoupons[] = [
                     'code' => $coupon->code,
                     'discount_amount' => $discountAmount,
                     'discount_target' => $coupon->discount_target,
                 ];
             }
-    
+
             $discountOrder = min($discountOrder, $totalPrice);
             $discountShipping = min($discountShipping, $shippingFee);
-    
+
             $totalDiscount = $discountOrder + $discountShipping;
             $maxDiscount = $totalPrice + $shippingFee;
             if ($totalDiscount > $maxDiscount) {
@@ -178,7 +178,7 @@ class CheckoutController extends Controller
                     $discountShipping = $totalDiscount - $discountOrder;
                 }
             }
-    
+
             $finalPrice = $totalPrice + $shippingFee - $totalDiscount;
             if ($finalPrice < 0) {
                 $finalPrice = 0;
@@ -186,20 +186,20 @@ class CheckoutController extends Controller
                 $discountShipping = min($discountShipping, $shippingFee);
                 $discountOrder = $totalDiscount - $discountShipping;
             }
-    
+
             $request->session()->put('applied_coupons', $validCoupons);
         } else {
             $totalDiscount = 0;
             $finalPrice = $totalPrice + $shippingFee;
         }
-    
+
         // Tính tổng số tiền giảm giá
         $discountAmount = $discountOrder + $discountShipping;
-    
+
         $note = " {$validated['address']}, {$request->ward_name}, {$request->district_name}, {$request->province_name}";
         $couponCodes = array_column($appliedCoupons, 'code');
         $couponCodeString = !empty($couponCodes) ? implode(',', $couponCodes) : null;
-    
+
         // Tạo đơn hàng với discount_amount
         $order = Order::create([
             'user_id' => auth()->id(),
@@ -217,7 +217,7 @@ class CheckoutController extends Controller
             'district' => $request->district,
             'ward' => $request->ward,
         ]);
-    
+
         // Lưu sản phẩm vào order_items và cập nhật kho hàng
         foreach ($cartItems as $item) {
             $variant = ProductVariant::find($item->variant_id);
@@ -229,9 +229,9 @@ class CheckoutController extends Controller
                 'price' => $item->price,
                 'size' => $variant->size ?? null,
                 'color' => $variant->color ?? null,
-                'original_price' => $variant->original_price?? null,
+                'original_price' => $variant->original_price ?? null,
             ]);
-    
+
             // Cập nhật tồn kho
             if ($item->variant) {
                 $variant = $item->variant;
@@ -257,7 +257,7 @@ class CheckoutController extends Controller
                 $product->save();
             }
         }
-    
+
         // Cập nhật mã giảm giá
         if ($appliedCoupons) {
             foreach ($appliedCoupons as $couponData) {
@@ -265,7 +265,7 @@ class CheckoutController extends Controller
                 if ($coupon) {
                     $coupon->used_count += 1;
                     $coupon->save();
-    
+
                     CouponUsage::create([
                         'user_id' => auth()->id(),
                         'coupon_id' => $coupon->id,
@@ -276,11 +276,11 @@ class CheckoutController extends Controller
                 }
             }
         }
-    
+
         // Xóa các mục trong giỏ hàng và session
         CartItem::where('user_id', auth()->id())->whereIn('id', $selectedItems)->delete();
         session()->forget(['discount', 'applied_coupons', 'total_price', 'discount_order', 'discount_shipping', 'checkout_prices']);
-    
+
         return redirect()->route('checkout.invoice', ['id' => $order->id])
             ->with('success', 'Đơn hàng đã được đặt thành công!');
     }
@@ -288,7 +288,7 @@ class CheckoutController extends Controller
     // Hiển thị sang trang invoice
     public function invoice($id)
     {
-        $order = Order::with(['orderItems.product', 'orderItems.variant', 'user','couponUsages.coupon'])->findOrFail($id);
+        $order = Order::with(['orderItems.product', 'orderItems.variant', 'user', 'couponUsages.coupon'])->findOrFail($id);
         $breadcrumbs = [
             ['name' => 'Trang chủ', 'url' => route('home')],
             ['name' => 'Đơn hàng', 'url' => null],
@@ -306,9 +306,9 @@ class CheckoutController extends Controller
             ['name' => 'Đơn hàng của tôi', 'url' => null],
         ];
         $orders = Order::where('user_id', Auth::id())
-        ->with('orderItems.product')
-        ->orderBy('created_at', 'desc')
-        ->get();
+            ->with('orderItems.product')
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return view('users.tracking.order_tracking', compact('breadcrumbs', 'orders'));
     }
@@ -412,21 +412,20 @@ class CheckoutController extends Controller
     // Cập nhật trạng thái qly đơn hàng trong admin
     public function updateStatus(Request $request, Order $order)
     {
-
         $request->validate([
             'status' => 'required|in:Chờ xác nhận,Đang giao,Hoàn thành,Hủy',
         ]);
-        $order->update([
-            'status' => $request->status
-        ]);
 
-        // Nếu đơn hàng đã bị huỷ trước đó, không cho phép cập nhật nữa
-        if ($order->status === 'Hủy') {
+        $oldStatus = $order->status;
+        $newStatus = $request->status;
+
+        // Không cho phép cập nhật nếu đơn hàng đã bị huỷ trước đó
+        if ($oldStatus === 'Hủy') {
             return redirect()->route('admin.orders.index')->with('error', 'Đơn hàng đã bị huỷ và không thể cập nhật trạng thái!');
         }
 
         // Nếu chuyển trạng thái sang "Hủy", hoàn lại hàng vào kho
-        if ($request->status === 'Hủy') {
+        if ($newStatus === 'Hủy') {
             foreach ($order->orderItems as $item) {
                 if ($item->variant) {
                     $variant = $item->variant;
@@ -465,34 +464,34 @@ class CheckoutController extends Controller
         }
 
         // Nếu đơn hàng là ship COD và hoàn thành, cập nhật trạng thái thanh toán
-        if ($order->payment_method === 'cod' && $request->status === 'Hoàn thành') {
+        if ($order->payment_method === 'cod' && $newStatus === 'Hoàn thành') {
             $order->payment_status = 'Đã thanh toán';
         }
 
         // Cập nhật trạng thái mới
-        $order->status = $request->status;
+        $order->status = $newStatus;
         $order->status_updated_at = now();
         $order->status_updated_by = Auth::id();
-        $order->status_updated_by = Auth::id(); // Ai cập nhật trạng thái
 
         // Nếu chuyển sang "Đang giao" và chưa có thời gian giao hàng
-        if ($request->status === 'Đang giao' && !$order->delivering_at) {
+        if ($newStatus === 'Đang giao' && !$order->delivering_at) {
             $order->delivering_at = now();
-            $order->delivering_by = Auth::id(); // Lưu ID người cập nhật
+            $order->delivering_by = Auth::id();
         }
 
         // Nếu chuyển sang "Hoàn thành" và chưa có thời gian hoàn thành
-        if ($request->status === 'Hoàn thành' && !$order->completed_at) {
+        if ($newStatus === 'Hoàn thành' && !$order->completed_at) {
             $order->completed_at = now();
-            $order->completed_by = Auth::id(); // Lưu ID người cập nhật
-
+            $order->completed_by = Auth::id();
         }
+
         $order->save();
 
         return redirect()
             ->route('admin.orders.index', ['page' => $request->input('page')])
             ->with('success', 'Cập nhật trạng thái thành công!');
     }
+
 
 
     public function show(Order $order)
@@ -606,7 +605,7 @@ class CheckoutController extends Controller
                 'message' => 'Bạn chỉ có thể áp dụng tối đa 1 mã giảm phí vận chuyển.'
             ]);
         }
-        
+
         $totalDiscountOrder = array_sum(array_filter(
             array_column($appliedCoupons, 'discount_amount'),
             fn($item) => $appliedCoupons[array_search($item, array_column($appliedCoupons, 'discount_amount'))]['discount_target'] == 'order_total'
