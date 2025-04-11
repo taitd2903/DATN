@@ -3,14 +3,15 @@
 @section('content')
     <div class="container mt-4">
         
-        <h1 class="mb-4 text-center">📊 Thống kê lợi nhuận</h1>
+        <h1 class="mb-4 text-center">📊 Thống kê</h1>
         <div class="mb-3">
-            <a href="{{ route('admin.statistics.index') }}" class="btn btn-secondary">
+            <!-- <a href="{{ route('admin.statistics.index') }}" class="btn btn-secondary">
                  sang trang sơ đồ thống kê 
-            </a>
+            </a> -->
         </div>
         <form method="GET" action="{{ route('admin.statistics.profit') }}" class="mb-4">
-            <input type="hidden" name="tab" id="currentTab" value="{{ request('tab', 'product-profit') }}">
+        <input type="hidden" name="tab" id="currentTab" value="{{ request('tab', 'bieudo-profit') }}">
+
             <div class="row">
                 <div class="col-md-3">
                     <label>Từ ngày:</label>
@@ -51,20 +52,33 @@
                         @endforeach
                     </select>
                 </div>
-                
+
+                <div class="row mt-3">
+    <div class="col-md-3">
+        <label>ID đơn hàng:</label>
+        <input type="text" name="order_id" class="form-control" placeholder="Nhập ID đơn hàng" value="{{ request('order_id') }}">
+    </div>
+    <div class="col-md-3">
+        <label>Giới tính:</label>
+        <select name="gender" class="form-control">
+            <option value="">Tất cả</option>
+            <option value="male" {{ request('gender') == 'male' ? 'selected' : '' }}>Nam</option>
+            <option value="female" {{ request('gender') == 'female' ? 'selected' : '' }}>Nữ</option>
+            <option value="unisex" {{ request('gender') == 'unisex' ? 'selected' : '' }}>Unisex</option>
+        </select>
+    </div>
+    <div class="col-md-6 d-flex align-items-end justify-content-end">
+        <button type="submit" class="btn btn-primary">🔍 Lọc dữ liệu</button>
+    </div>
+</div>
+
             </div>
 
-            <div class="row mt-3">
-                <div class="col-md-3">
-                    <label>ID đơn hàng:</label>
-                    <input type="text" name="order_id" class="form-control" placeholder="Nhập ID đơn hàng" value="{{ request('order_id') }}">
-                </div>
-                <div class="col-md-9 d-flex align-items-end justify-content-end">
-                    <button type="submit" class="btn btn-primary">🔍 Lọc dữ liệu</button>
-                </div>
-            </div>
+     
+            
         </form>
-        <canvas id="monthlyProfitChart" height="100"></canvas>
+        <!-- biểu đồ -->
+        <!-- <canvas id="monthlyProfitChart" height="100"></canvas>
         <div class="bieudo">
             <h4 class="text-center">Tỷ lệ sử dụng mã giảm giá</h4>
             <div class="row mb-4">
@@ -75,11 +89,20 @@
                     <canvas id="columnChart"></canvas>
                 </div>
             </div>
-        </div>
+        </div> -->
+        <!--  -->
         {{-- Tabs Bootstrap --}}
         <ul class="nav nav-tabs">
+        <li class="nav-item">
+        <a class="nav-link {{ request('tab', 'bieudo-profit') == 'bieudo-profit' ? 'active' : '' }}" 
+   href="?tab=bieudo-profit&from_date={{ request('from_date') }}&to_date={{ request('to_date') }}&product_name={{ request('product_name') }}&category_id={{ request('category_id') }}&order_id={{ request('order_id') }}">
+   Biểu đồ
+</a>
+
+            </li>
             <li class="nav-item">
-                <a class="nav-link {{ request('tab', 'product-profit') == 'product-profit' ? 'active' : '' }}" 
+            <a class="nav-link {{ request('tab') == 'product-profit' ? 'active' : '' }}"
+
                    href="?tab=product-profit&from_date={{ request('from_date') }}&to_date={{ request('to_date') }}&product_name={{ request('product_name') }}&category_id={{ request('category_id') }}&order_id={{ request('order_id') }}">
                    Lợi nhuận theo sản phẩm
                 </a>
@@ -99,35 +122,118 @@
         </ul>
 
         <div class="tab-content mt-3">
-            {{-- Bảng lợi nhuận theo sản phẩm --}}
-            <div class="tab-pane fade {{ request('tab', 'product-profit') == 'product-profit' ? 'show active' : '' }}" id="product-profit">
-                <h2 class="text-primary">🔹 Lợi nhuận theo sản phẩm</h2>
-                <table class="table table-bordered">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Sản phẩm</th>
-                            <th>Doanh thu</th>
-                            <th>Giá vốn</th>
-                            <th>Lợi nhuận</th>
-                            <th>Số lượng đã bán</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($productProfits as $product)
-                            <tr>
-                                <td>{{ $product['product_name'] }}</td>
-                                <td>{{ number_format($product['total_revenue']) }} VND</td>
-                                <td>{{ number_format($product['total_cost']) }} VND</td>
-                                <td>{{ number_format($product['total_profit']) }} VND</td>
-                                <td>{{ $product['total_sold'] }}</td>
-                            </tr>
-                        @empty
-                            <tr><td colspan="5" class="text-center">Không có dữ liệu.</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
+
+
+        {{-- Bảng thống kê --}}
+            <div class="tab-pane fade {{ request('tab', 'bieudo-profit') == 'bieudo-profit' ? 'show active' : '' }}" id="bieudo-profit">
+                <h2 class="text-primary">🔹 Lợi nhuận lãi của tất cả sản phẩm bán thành công theo từng tháng</h2>
+                <canvas id="monthlyProfitChart" height="100"></canvas>
+        <div class="bieudo">
+            <h4 class="text-center">Tỷ lệ sử dụng mã giảm giá</h4>
+            <div class="row mb-4">
+                <div class="col-md-5">
+                    <canvas id="pieChart"></canvas>
+                </div>
+                <div class="col-md-6">
+                    <canvas id="columnChart"></canvas>
+                </div>
+            </div>
+        </div>
             </div>
 
+
+
+
+
+            {{-- Bảng lợi nhuận theo sản phẩm --}}
+ <div class="tab-pane fade {{ request('tab') == 'product-profit' ? 'show active' : '' }}" id="product-profit">
+    <h2 class="text-primary">🔹 Lợi nhuận theo sản phẩm</h2>
+    <table class="table table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th>Sản phẩm</th>
+                <th>Doanh thu</th>
+                <th>Giá vốn</th>
+                <th>Lợi nhuận</th>
+                <th>Số lượng đã bán</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse ($productProfits as $product)
+                <tr>
+                    <td>{{ $product['product_name'] }}</td>
+                    <td>{{ number_format($product['total_revenue']) }} VND</td>
+                    <td>{{ number_format($product['total_cost']) }} VND</td>
+                    <td>{{ number_format($product['total_profit']) }} VND</td>
+                    <td>{{ $product['total_sold'] }}</td>
+                    
+                </tr>
+            @empty
+                <tr><td colspan="5" class="text-center">Không có dữ liệu.</td></tr>
+            @endforelse
+        </tbody>
+    </table>
+
+    {{-- Bảng thống kê Top 5 --}}
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <h4 class="text-success">🔥 Top 5 sản phẩm bán chạy</h4>
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>Sản phẩm</th>
+                        <th>Doanh thu</th>
+                        <th>Giá vốn</th>
+                        <th>Lợi nhuận</th>
+                        <th>Số lượng đã bán</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (collect($productProfits)->sortByDesc('total_sold')->take(5) as $product)
+                        <tr>
+                            <td>{{ $product['product_name'] }}</td>
+                            <td>{{ number_format($product['total_revenue']) }} VND</td>
+                            <td>{{ number_format($product['total_cost']) }} VND</td>
+                            <td>{{ number_format($product['total_profit']) }} VND</td>
+                            <td>{{ $product['total_sold'] }}</td>
+                            
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-6">
+            <h4 class="text-danger">🥶 Top 5 sản phẩm bán ít nhất</h4>
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>Sản phẩm</th>
+                        <th>Doanh thu</th>
+                        <th>Giá vốn</th>
+                        <th>Lợi nhuận</th>
+                        <th>Số lượng đã bán</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (collect($productProfits)->sortBy('total_sold')->take(5) as $product)
+                        <tr>
+                            <td>{{ $product['product_name'] }}</td>
+                            <td>{{ number_format($product['total_revenue']) }} VND</td>
+                            <td>{{ number_format($product['total_cost']) }} VND</td>
+                            <td>{{ number_format($product['total_profit']) }} VND</td>
+                            <td>{{ $product['total_sold'] }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+
+            
             {{-- Bảng lợi nhuận theo đơn hàng --}}
             <div class="tab-pane fade {{ request('tab') == 'order-profit' ? 'show active' : '' }}" id="order-profit">
                 <h2 class="text-success">🔸 Lợi nhuận theo đơn hàng</h2>
@@ -303,15 +409,7 @@
                             @endforelse
                         </tbody>
                     </table>
-                    <h4 class="text-center">Biểu đồ tỷ lệ sử dụng mã</h4>
-                    <div class="row mb-4">
-                        <div class="col-md-5">
-                            <canvas id="pieChart"></canvas>
-                        </div>
-                        <div class="col-md-6">
-                            <canvas id="columnChart"></canvas>
-                        </div>
-                    </div>
+                 
                 </div>
             </div>
         </div>
@@ -394,43 +492,51 @@
                 }
             });
         </script>
-        <script>
-            async function loadMonthlyProfitChart() {
-                const res = await fetch('{{ route('admin.statistics.monthlyProfitChart') }}');
-                const data = await res.json();
-        
-                const labels = data.map(item => item.month);
-                const profits = data.map(item => item.profit);
-        
-                const ctx = document.getElementById('monthlyProfitChart').getContext('2d');
-                new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Lợi nhuận theo tháng',
-                            data: profits,
-                            backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            borderWidth: 1,
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    callback: function(value) {
-                                        return value.toLocaleString('vi-VN') + ' đ';
-                                    }
-                                }
+
+
+
+<script>
+    async function loadMonthlyProfitChart() {
+     
+        const queryParams = window.location.search;
+
+  
+        const res = await fetch('{{ route('admin.statistics.monthlyProfitChart') }}' + queryParams);
+        const data = await res.json();
+
+        const labels = data.map(item => item.month);
+        const profits = data.map(item => item.profit);
+
+        const ctx = document.getElementById('monthlyProfitChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Lợi nhuận theo tháng',
+                    data: profits,
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1,
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function (value) {
+                                return value.toLocaleString('vi-VN') + ' đ';
                             }
                         }
                     }
-                });
+                }
             }
-        
-            document.addEventListener('DOMContentLoaded', loadMonthlyProfitChart);
-        </script>
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', loadMonthlyProfitChart);
+</script>
+
 @endsection

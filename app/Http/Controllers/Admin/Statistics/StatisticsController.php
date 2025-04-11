@@ -40,6 +40,7 @@ class StatisticsController extends Controller
         $productName = $request->input('product_name');
         $categoryId = $request->input('category_id');
         $orderId = $request->input('order_id');
+        $gender = $request->input('gender');
 
         $ordersQuery = Order::where('status', 'Hoàn thành')->with('orderItems');
 
@@ -65,7 +66,9 @@ class StatisticsController extends Controller
                 $variant = ProductVariant::find($item->variant_id);
                 $product = Product::find($item->product_id);
                 if (!$variant || !$product) continue;
-
+                if ($gender && $product->gender !== $gender) {
+                    continue;
+                }
                 if ($productName && stripos($product->name, $productName) === false) {
                     continue;
                 }
@@ -78,8 +81,9 @@ class StatisticsController extends Controller
                 }
 
                 $itemRevenue = $item->price * $item->quantity;
-                $itemCost = $variant->original_price * $item->quantity;
+                $itemCost = $item->original_price * $item->quantity;
                 $itemProfit = $itemRevenue - $itemCost;
+                $variantKey = $item->size;
 
                 if (!isset($productProfits[$product->id])) {
                     $productProfits[$product->id] = [
@@ -88,6 +92,8 @@ class StatisticsController extends Controller
                         'total_cost' => 0,
                         'total_profit' => 0,
                         'total_sold' => 0,
+                        'size' => $item->size,
+                        'color' => $item->color,
                     ];
                 }
 
@@ -261,7 +267,7 @@ class StatisticsController extends Controller
         $productName = $request->input('product_name');
         $categoryId = $request->input('category_id');
         $orderId = $request->input('order_id');
-
+        $gender = $request->input('gender');
         $ordersQuery = Order::where('status', 'Hoàn thành')->with('orderItems');
 
         if ($from) {
@@ -285,7 +291,9 @@ class StatisticsController extends Controller
                 $variant = ProductVariant::find($item->variant_id);
                 $product = Product::find($item->product_id);
                 if (!$variant || !$product) continue;
-
+    if ($gender && $product->gender !== $gender) {
+        continue;
+    }
                 if ($productName && stripos($product->name, $productName) === false) {
                     continue;
                 }
@@ -298,7 +306,7 @@ class StatisticsController extends Controller
                 }
 
                 $itemRevenue = $item->price * $item->quantity;
-                $itemCost = $variant->original_price * $item->quantity;
+                $itemCost = $item->original_price * $item->quantity;
 
                 $orderRevenue += $itemRevenue;
                 $orderCost += $itemCost;

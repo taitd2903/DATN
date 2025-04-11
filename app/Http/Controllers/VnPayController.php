@@ -186,7 +186,7 @@ class VnPayController extends Controller
                 'price' => $item->price,
                 'size' => $variant->size ?? null,
                 'color' => $variant->color ?? null,
-                'original_price' => $item->price ?? null,
+                'original_price' => $item->original_price ?? null,
             ]);
         }
 

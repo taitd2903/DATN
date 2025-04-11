@@ -12,7 +12,7 @@ class ProductVariantController extends Controller
     {
         $product = Product::findOrFail($productId);
 
-        // Kiểm tra xem có biến thể nào có size không
+       
         $hasSizeVariants = ProductVariant::where('product_id', $productId)
             ->whereNotNull('size')
             ->exists();
