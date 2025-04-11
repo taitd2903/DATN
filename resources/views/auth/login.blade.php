@@ -13,11 +13,8 @@
                 @if(session('success'))
                     <p class="success-message">{{ session('success') }}</p>
                 @endif
-                @if ($errors->has('email'))
-                <div class="alert alert-danger">
-                    {{ $errors->first('email') }}
-                </div>
-                 @endif
+                
+                 
                  @if (session('ban_reason'))
                     <script>
                         alert("Tài khoản của bạn đã bị khóa!\nLý do: {{ session('ban_reason') }}");

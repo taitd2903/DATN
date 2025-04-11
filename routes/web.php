@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\Banners\BannerController;
 use App\Http\Controllers\Admin\Coupons\CouponController;
+use App\Http\Controllers\Admin\UserPermissionController;
 use App\Http\Controllers\Auth\RegisterController;
 // use App\Http\Controllers\ComboController;
 use Illuminate\Support\Facades\Route;
@@ -62,6 +63,13 @@ Route::controller(AuthController::class)->group(function () {
 
 // Chuyển đổi sang user
 Route::middleware(['auth', 'role:admin'])->get('/switch-to-user', [AuthController::class, 'switchToUser'])->name('switch.to.user');
+//role staff
+Route::prefix('admin')->name('admin.')->middleware('check.permission')->group(function () {
+    Route::get('users/{id}/permissions', [UserPermissionController::class, 'edit'])->name('user.permissions.edit');
+    Route::post('users/{id}/permissions', [UserPermissionController::class, 'update'])->name('user.permissions.update');
+});
+
+
 
 // ========================= QUẢN TRỊ VIÊN (ADMIN) =========================
 Route::prefix('admin')->middleware(['auth', 'role:admin,staff'])->name('admin.')->group(function () {
@@ -69,7 +77,11 @@ Route::prefix('admin')->middleware(['auth', 'role:admin,staff'])->name('admin.')
     Route::resource('articles', ArticleController::class);
     Route::get('/', fn() => view('admin.dashboard'))->name('dashboard');
     Route::resource('categories', CategoryController::class)->except(['show']);
-    Route::resource('products', ProductController::class);
+
+    Route::middleware('check.permission:products')->group(function () {
+        Route::resource('products', ProductController::class);
+    });
+
     Route::delete('products/{product}/variants/{variant}', [ProductVariantController::class, 'destroy'])->name('products.variants.destroy');
     // HEAD
 

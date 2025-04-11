@@ -161,7 +161,7 @@
                                     @endif
                             
                                     {{-- Nút sửa --}}
-                                    <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-warning">Edit</a>
+                                    {{-- <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-warning">Edit</a> --}}
                             
                                     {{-- Nút xóa
                                     <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" style="display:inline;">
