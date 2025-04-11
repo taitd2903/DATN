@@ -229,6 +229,7 @@ class CheckoutController extends Controller
                 'price' => $item->price,
                 'size' => $variant->size ?? null,
                 'color' => $variant->color ?? null,
+                'original_price' => $variant->price?? null,
             ]);
     
             // Cập nhật tồn kho

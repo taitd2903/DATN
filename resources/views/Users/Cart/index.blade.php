@@ -55,7 +55,12 @@
                                     {{ $isOutOfStock ? 'disabled' : '' }}></td>
                             <td><img src="{{ asset('storage/' . $item->variant->image) }}" class="cart-image"></td>
                             <td>
-                              <b>  {{ $item->product->name }} ({{ $item->variant->size }} / {{ $item->variant->color }}) </b>
+                            <b>{{ $item->product->name }} ({{ $item->variant->size }} / <span style="display: inline-flex; align-items: center;">màu :
+        <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background-color: {{ $item->variant->color }}; border: 1px solid #ccc; margin-right: 4px;"></span>
+        
+    </span>)
+</b>
+
                                 <span class="stock-warning" style="color: red; display: none;"></span>
                             </td>
                             <td>{{ number_format($item->price, 0, ',', '.') }} đ</td>

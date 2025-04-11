@@ -85,7 +85,18 @@
                                     <p class="fw-bold mb-1">Tên sản phẩm: {{ $item->product->name }}</p>
                                     <p class="mb-1">Giá: {{ number_format($item->price, 0, ',', '.') }} VND</p>
                                     <p class="mb-1">Số lượng: {{ $item->quantity }}</p>
-                                    <p class="mb-0">Size: {{ $item->variant->size ?? 'Không có' }} | Màu: {{ $item->variant->color ?? 'Không có' }}</p>
+                                    <p class="mb-0">
+    Size: {{ $item->variant->size ?? 'Không có' }} |
+    Màu:
+    @if($item->variant->color)
+        <span style="display: inline-flex; align-items: center;">
+            <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background-color: {{ $item->variant->color }}; border: 1px solid #ccc; margin-right: 4px;"></span>
+           
+        </span>
+    @else
+        Không có
+    @endif
+</p>
                                 </div>
                             </div>
                         @endforeach

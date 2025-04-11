@@ -162,8 +162,8 @@ class VnPayController extends Controller
             'customer_address' => $request->input('address'),
             'user_id' => Auth::id(),
             'note' => $note,
-            'total_price' => $finalPrice, // Tổng tiền gốc
-            'discount_amount' => $discountAmount, // Số tiền giảm giá
+            'total_price' => $finalPrice,
+            'discount_amount' => $discountAmount, 
             
             'coupon_code' => $couponCodeString,
             'payment_method' => 'vnpay',
@@ -186,6 +186,7 @@ class VnPayController extends Controller
                 'price' => $item->price,
                 'size' => $variant->size ?? null,
                 'color' => $variant->color ?? null,
+                'original_price' => $item->price ?? null,
             ]);
         }
 

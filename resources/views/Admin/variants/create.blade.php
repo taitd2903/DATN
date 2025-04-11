@@ -13,8 +13,9 @@
     @csrf
 
     {{-- Nếu có biến thể có size thì hiển thị trường size --}}
+    <div class="row">
     @if($hasSizeVariants)
-        <div class="mb-3">
+        <div class="mb-3 col-md-6">
             <label class="form-label">Size:</label>
             <input type="text" name="size" class="form-control" value="{{ old('size') }}">
             @error('size')
@@ -23,13 +24,21 @@
         </div>
     @endif
 
-    <div class="mb-3">
+    <div class="mb-3 col-md-6">
         <label class="form-label">Màu:</label>
-        <input type="text" name="color" class="form-control" value="{{ old('color') }}" required>
+        <input 
+            type="color" 
+            name="color" 
+            class="form-control form-control-color"  
+            value="{{ old('color', '#000000') }}" 
+            required
+        >
         @error('color')
             <div class="text-danger">{{ $message }}</div>
         @enderror
     </div>
+</div>
+
 
     <div class="mb-3">
         <label class="form-label">Giá gốc:</label>

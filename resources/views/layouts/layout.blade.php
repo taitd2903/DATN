@@ -59,93 +59,85 @@
                     </a>
                 </div>
                 <ul class="nav">
-                    <li>
+                <li class="{{ request()->routeIs('admin.statistics.*') ? 'active' : '' }}">
+
                         <a class="nav-link" href="{{ route('admin.statistics.profit') }}">
                             <i class="nc-icon nc-chart-pie-35"></i>
                             <p>Thống kê</p>
                         </a>
                     </li>
                   
-                    <li>
-                        <a class="nav-link" href="{{ route('admin.users.index') }}">
-                            <i class="nc-icon nc-circle-09"></i>
-                            <p>Người dùng</p>
-                        </a>
-                    </li>
+                    <li class="{{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+    <a class="nav-link" href="{{ route('admin.users.index') }}">
+        <i class="nc-icon nc-circle-09"></i>
+        <p>Người dùng</p>
+    </a>
+</li>
+
                    
              
 
-                    <li class="nav-item ">
+<li class="{{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+
                         <a class="nav-link" href="{{ route('admin.categories.index') }}">
                             <i class="nc-icon nc-notes"></i>
                             <p>Danh mục</p>
                         </a>
                     </li>
-                    <li>
+                    <li class="{{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
+
                         <a class="nav-link" href="{{ route('admin.products.index') }}">
                             <i class="nc-icon nc-paper-2"></i>
                             <p>Sản phẩm</p>
                         </a>
                     </li>
-                    <li>
+                    <li class="{{ request()->routeIs('admin.coupons.*') ? 'active' : '' }}">
+
                         <a class="nav-link" href="{{ route('admin.coupons.index') }}">
                             <i class="nc-icon nc-atom"></i>
                             <p>Mã giảm giá</p>
                         </a>
                     </li>
-                    <li>
+                    <li class="{{ request()->routeIs('admin.banners.*') ? 'active' : '' }}">
+
                         <a class="nav-link" href="{{ route('admin.banners.index') }}">
                             <i class="nc-icon nc-atom"></i>
                             <p>quản lý Banner</p>
                         </a>
                     </li>
-                    <li>
+                    <li class="{{ request()->routeIs('admin.chat') ? 'active' : '' }}">
+
                         <a class="nav-link" href="{{ route('admin.chat') }}">
                             <i class="nc-icon nc-chat-round"></i>
                             <p>Tin nhắn</p>
                         </a>
                     </li>
-                    <li>
+                    <li class="{{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}">
+
                         <a class="nav-link" href="{{ route('admin.reviews.index') }}">
                             <i class="nc-icon nc-atom"></i>
                             <p>quản lý đánh giá</p>
                         </a>
                     </li>
                
-                    <li>
+                    <li class="{{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
+
                         <a class="nav-link" href="{{ route('admin.orders.index') }}">
                             <i class="nc-icon nc-cart-simple"></i> <!-- Đổi icon thành giỏ hàng -->
                             <p>Quản lý đơn hàng</p>
                         </a>
                     </li>
 
-                    <li>
+                    <li class="{{ request()->routeIs('admin.articles.*') ? 'active' : '' }}">
+
                         <a class="nav-link" href="{{ route('admin.articles.index') }}">
                             <i class="nc-icon nc-cart-simple"></i> <!-- Đổi icon thành giỏ hàng -->
                             <p>Quản lý bài viết </p>
                         </a>
                     </li>
 
-                    <!-- <li>
-                        {{-- admin.combos.index --}}
-                        <a class="nav-link" href="#">
-                            <i class="nc-icon nc-cart-simple"></i>
-                            <p>Combo</p>
-                        </a>
-                    </li> -->
-                    <!-- <li>
-                        <a class="nav-link" href="./notifications.html">
-                            <i class="nc-icon nc-bell-55"></i>
-                            <p>Thông báo</p>
-                        </a>
-                    </li> -->
-                    <!-- <li class="nav-item active active-pro">
-                         <a class="nav-link active" href="upgrade.html">
-                             <i class="nc-icon nc-alien-33"></i>
-                             <p>Upgrade to PRO</p>
-                         </a>
-                     </li> -->
-                     <li>
+                    <li class="{{ request()->routeIs('admin.trash.*') ? 'active' : '' }}">
+
                         <a class="nav-link" href="{{ route('admin.trash.index') }}">
                             <i class="nc-icon nc-pin-3"></i>
                             <p>Thùng rác</p>
@@ -202,11 +194,11 @@
                                     <span class="no-icon">{{ Auth::user()->name }}</span>
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                    <a class="dropdown-item" href="{{ route('admin.dashboard') }}">Thông tin tài
-                                        khoản</a>
+                                    <!-- <a class="dropdown-item" href="{{ route('admin.dashboard') }}">Thông tin tài
+                                        khoản</a> -->
 
-
-                                    <div class="divider"></div>
+<!-- 
+                                    <div class="divider"></div> -->
                                     <a class="dropdown-item" href="#"
                                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                         <span class="no-icon">Log out</span>

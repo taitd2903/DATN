@@ -110,7 +110,17 @@
                                             </td>
                                             <td class="py-3">{{ $item->product->name }}</td>
                                             <td class="py-3">{{ $item->size ?? 'Không có' }}</td>
-                                            <td class="py-3">{{ $item->color ?? 'Không có' }}</td>
+                                            <td class="py-3">
+    @if($item->color)
+        <span style="display: inline-flex; align-items: center;">
+            <span style="display: inline-block; width: 22px; height: 22px; border-radius: 50%; background-color: {{ $item->color }}; border: 1px solid #ccc; margin-right: 4px;"></span>
+     
+        </span>
+    @else
+        Không có
+    @endif
+</td>
+
                                             <td class="py-3">{{ $item->quantity }}</td>
                                             <td class="py-3">{{ number_format($item->price, 0, ',', '.') }} VND</td>
                                             <td class="py-3 fw-semibold text-dark">

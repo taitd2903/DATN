@@ -45,16 +45,30 @@
                     @endif
                 </td>
                 <td>{{ $variant->size }}</td>
-                <td>{{ $variant->color }}</td>
+                <td><div style="width: 30px; height: 30px; border-radius: 4px; background-color: {{ $variant->color }}; border: 1px solid #ccc;"></div></td>
+
                 <td>{{ number_format($variant->original_price) }}</td>
                 <td>{{ number_format($variant->price) }}</td>
                 <td>{{ $variant->stock_quantity }}</td>
                 <td>{{ $variant->sold_quantity }}</td>
+               
             </tr>
             @endforeach
         </tbody>
     </table>
 
-    <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">Quay lại danh sách</a>
+
+<div class="d-flex justify-content-between mb-3">
+    <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">
+        Quay lại danh sách
+    </a>
+
+    <a href="{{ route('admin.products.edit', $product->id) }}" class="btn btn-warning fw-bold">
+        ✏️ Sửa sản phẩm
+    </a>
+</div>
+
+
+
 </div>
 @endsection

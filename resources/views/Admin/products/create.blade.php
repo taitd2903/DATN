@@ -89,7 +89,7 @@ function addVariant() {
 
             <div class="col-md-2">
                 <label>Màu:</label>
-                <input type="text" class="form-control" name="variants[${variantIndex}][color]" required oninput="handleSizeInput()">
+                <input type="color" class="form-control" name="variants[${variantIndex}][color]" required oninput="handleSizeInput()">
 
             </div>
 
@@ -140,29 +140,27 @@ function handleSizeInput() {
 
     if (allSizeInputs.length === 0) return;
 
-    let firstSizeValue = allSizeInputs[0]?.value.trim(); // Lấy giá trị của ô đầu tiên
+    let firstSizeValue = allSizeInputs[0]?.value.trim(); 
 
     allSizeInputs.forEach((input, index) => {
         if (index === 0) {
-            input.required = false; // Ô đầu tiên không bị bắt buộc nhập
+            input.required = false; 
             input.disabled = false;
         } else {
-            let prevSizeValue = allSizeInputs[index - 1]?.value.trim(); // Lấy giá trị của ô trước đó
+            let prevSizeValue = allSizeInputs[index - 1]?.value.trim(); 
 
             if (prevSizeValue !== "") {
-                input.required = true; // Nếu ô trước có dữ liệu, bắt buộc nhập
+                input.required = true; 
                 input.disabled = false;
             } else {
-                input.required = false; // Nếu ô trước trống, vô hiệu hóa ô hiện tại
+                input.required = false; 
                 input.disabled = true;
-                input.value = ""; // Xóa giá trị nếu bị vô hiệu hóa
+                input.value = ""; 
             }
         }
     });
-
-    // Thêm kiểm tra trùng size + màu
     let allVariants = document.querySelectorAll('.variant');
-    let variantData = new Map(); // Lưu size + màu để kiểm tra trùng
+    let variantData = new Map(); 
 
     allVariants.forEach(variant => {
         let sizeInput = variant.querySelector('.size-input');
@@ -185,7 +183,6 @@ function handleSizeInput() {
 }
 
 
-// Cập nhật trạng thái hiển thị của nút "Xóa"
 function updateRemoveButtons() {
     let variants = document.querySelectorAll('.variant');
     let removeButtons = document.querySelectorAll('.btn-remove');
@@ -197,7 +194,6 @@ function updateRemoveButtons() {
     }
 }
 
-// Luôn tạo sẵn một ô biến thể mặc định
 addVariant();
 
 
