@@ -44,6 +44,13 @@
             <option value="desc">Bán chạy nhất</option>
             <option value="asc">Bán ít nhất</option>
         </select>
+        <select id="filter-stock" class="form-control w-20">
+    <option value="">Sắp xếp theo tồn kho</option>
+    <option value="desc">Tồn kho nhiều nhất</option>
+    <option value="asc">Tồn kho ít nhất</option>
+</select>
+<button id="reset-filters" class="btn btn-secondary">Reset lọc</button>
+
     </div>
 
     <div class="table-responsive">
@@ -57,6 +64,7 @@
                     <th>Danh mục</th>
                     <th>Giới tính</th>
                     <th>Số lượng tồn kho</th>
+                    <th>Đã bán </th>
                     <th>Số biến thể</th>
                     <th>Hành động</th>
                 </tr>
@@ -88,6 +96,8 @@
                         @endif
                     </td>
                     <td>{{ $product->variants->sum('stock_quantity') }}</td>
+                    <td>{{ $product->variants->sum('sold_quantity') }}</td>
+
                     <td>
                         <a href="{{ route('admin.products.show', $product->id) }}">
                             Chi tiết sản phẩm
@@ -143,6 +153,14 @@ document.addEventListener("DOMContentLoaded", function () {
             rows.forEach(row => tbody.appendChild(row));
         }
     }
+    document.getElementById("reset-filters").addEventListener("click", function () {
+    document.getElementById("filter-name").value = "";
+    document.getElementById("filter-category").value = "";
+    document.getElementById("filter-gender").value = "";
+    document.getElementById("filter-sold").value = "";
+    document.getElementById("filter-stock").value = "";
+    applyFilters();
+});
 
     document.getElementById("filter-name").addEventListener("input", applyFilters);
     document.getElementById("filter-category").addEventListener("change", applyFilters);
