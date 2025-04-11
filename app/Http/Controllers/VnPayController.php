@@ -332,23 +332,23 @@ class VnPayController extends Controller
                 }
 
                 $appliedCoupons = $request->session()->get('applied_coupons_for_vnpay', []);
-                if ($order->coupon_code && $appliedCoupons) {
+            if ($order->coupon_code && $appliedCoupons) {
                 $couponCodes = explode(',', $order->coupon_code);
-                foreach ($couponCodes as $code) {
+                foreach ($couponCodes as $index => $code) {
                     $code = trim($code);
                     if (!empty($code)) {
                         $coupon = Coupon::where('code', $code)->first();
                         if ($coupon) {
-                            $coupon->increment('used_count');
-                            $couponData = collect($appliedCoupons)->firstWhere('code', $code);
-                            $discountAmount = $couponData['discount_amount'] ?? $this->calculateDiscount($coupon, $order->total_price);
-
+                            $coupon->used_count += 1;
+                            $coupon->save();
                             CouponUsage::create([
                                 'user_id' => $order->user_id,
                                 'coupon_id' => $coupon->id,
                                 'order_id' => $order->id,
                                 'used_at' => now(),
-                                'applied_discount' => $discountAmount,
+                                'applied_discount' => $appliedCoupons[$index]['discount_amount'] ?? 0,
+                                'created_at' => now(),
+                                'updated_at' => now(),
                             ]);
                         }
                     }
@@ -373,7 +373,8 @@ class VnPayController extends Controller
                                     ->first();
                                 if ($couponUsage) {
                                     $couponUsage->delete();
-                                    $coupon->decrement('used_count');
+                                    $coupon->used_count = max(0, $coupon->used_count - 1);
+                                    $coupon->save();
                                 }
                             }
                         }
