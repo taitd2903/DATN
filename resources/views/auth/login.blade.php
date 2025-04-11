@@ -18,6 +18,11 @@
                     {{ $errors->first('email') }}
                 </div>
                  @endif
+                 @if (session('ban_reason'))
+                    <script>
+                        alert("Tài khoản của bạn đã bị khóa!\nLý do: {{ session('ban_reason') }}");
+                    </script>
+                @endif
 
             
 
