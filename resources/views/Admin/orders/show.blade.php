@@ -42,24 +42,68 @@
                             <strong>Trạng thái:</strong>
                             <span class="badge bg-{{ $order->status == 'Thành công' ? 'success' : 'info' }} py-1 px-2">{{ $order->status }}</span>
                         </li>
-                        <li class="list-group-item py-2 d-flex justify-content-between"><strong>Phương thức thanh toán:</strong> <span>{{ ($order->payment_method) }}</span></li>
-                        <li class="list-group-item py-2 d-flex justify-content-between"><strong>Trạng thái thanh toán:</strong> <span>{{ ($order->payment_status) }}</span></li>
                         <li class="list-group-item py-2 d-flex justify-content-between">
-                            <strong>Mã giảm giá:</strong>
-                            <span>{{ $order->coupon_code ?? 'Không có mã nào áp dụng' }}</span>
+                            <strong>Phương thức thanh toán:</strong>
+                            <span>{{ $order->payment_method }}</span>
                         </li>
-                        @if ($order->coupon_code && $order->discount_amount > 0)
+                        <li class="list-group-item py-2 d-flex justify-content-between">
+                            <strong>Trạng thái thanh toán:</strong>
+                            <span>{{ $order->payment_status }}</span>
+                        </li>
+                        <li class="list-group-item py-2 d-flex justify-content-between align-items-start">
+                            <strong>Mã giảm giá:</strong>
+                            <div>
+                                @php
+                                    $couponUsages = \App\Models\CouponUsage::where('order_id', $order->id)
+                                        ->with('coupon')
+                                        ->orderBy('created_at', 'asc')
+                                        ->get();
+                                @endphp
+                                @if($couponUsages->isNotEmpty())
+                                    <ul class="list-unstyled mb-0">
+                                        @foreach($couponUsages as $usage)
+                                            <li>
+                                                {{ $usage->coupon->code }} 
+                                                ({{ $usage->coupon->discount_target == 'shipping_fee' ? 'Giảm giá vận chuyển' : 'Giảm giá đơn hàng' }}): 
+                                                {{ number_format($usage->applied_discount, 0, ',', '.') }} VNĐ
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                @else
+                                    <span>Không có mã nào áp dụng</span>
+                                @endif
+                            </div>
+                        </li>
+                        @if($order->discount_amount > 0)
                             <li class="list-group-item py-2 d-flex justify-content-between">
-                                <strong>Số tiền giảm:</strong>
+                                <strong>Tổng số tiền giảm:</strong>
                                 <span>{{ number_format($order->discount_amount, 0, ',', '.') }} VNĐ</span>
                             </li>
                         @endif
-                        <li class="list-group-item py-2 d-flex justify-content-between"><strong>Tổng tiền:</strong> <span class="text-danger fw-bold">{{ number_format($order->total_price, 0, ',', '.') }} VND</span></li>
-                        <li class="list-group-item py-2 d-flex justify-content-between"><strong>Ngày đặt hàng:</strong> <span>{{ $order->created_at->format('d/m/Y H:i') }}</span></li>
-                        <li class="list-group-item py-2 d-flex justify-content-between"><strong>Ngày giao hàng:</strong> <span>{{ $order->delivering_at ?? 'Chưa cập nhật' }}</span></li>
-                        <li class="list-group-item py-2 d-flex justify-content-between"><strong>Ngày hoàn thành:</strong> <span>{{ $order->completed_at ?? 'Chưa hoàn thành' }}</span></li>
-                        <li class="list-group-item py-2 d-flex justify-content-between"><strong>Người cập nhật "Đang giao":</strong> <span>{{ $order->deliveringBy->name ?? 'Không xác định' }}</span></li>
-                        <li class="list-group-item py-2 d-flex justify-content-between"><strong>Người cập nhật "Hoàn thành":</strong> <span>{{ $order->completedBy->name ?? 'Không xác định' }}</span></li>
+                        <li class="list-group-item py-2 d-flex justify-content-between">
+                            <strong>Tổng tiền:</strong>
+                            <span class="text-danger fw-bold">{{ number_format($order->total_price, 0, ',', '.') }} VND</span>
+                        </li>
+                        <li class="list-group-item py-2 d-flex justify-content-between">
+                            <strong>Ngày đặt hàng:</strong>
+                            <span>{{ $order->created_at->format('d/m/Y H:i') }}</span>
+                        </li>
+                        <li class="list-group-item py-2 d-flex justify-content-between">
+                            <strong>Ngày giao hàng:</strong>
+                            <span>{{ $order->delivering_at ?? 'Chưa cập nhật' }}</span>
+                        </li>
+                        <li class="list-group-item py-2 d-flex justify-content-between">
+                            <strong>Ngày hoàn thành:</strong>
+                            <span>{{ $order->completed_at ?? 'Chưa hoàn thành' }}</span>
+                        </li>
+                        <li class="list-group-item py-2 d-flex justify-content-between">
+                            <strong>Người cập nhật "Đang giao":</strong>
+                            <span>{{ $order->deliveringBy->name ?? 'Không xác định' }}</span>
+                        </li>
+                        <li class="list-group-item py-2 d-flex justify-content-between">
+                            <strong>Người cập nhật "Hoàn thành":</strong>
+                            <span>{{ $order->completedBy->name ?? 'Không xác định' }}</span>
+                        </li>
                     </ul>
                 </div>
             </div>

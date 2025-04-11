@@ -41,7 +41,7 @@ class Order extends Model
     }
     public function couponUsages()
     {
-        return $this->hasMany(CouponUsage::class);
+        return $this->hasMany(CouponUsage::class)->orderBy('id');
     }
     public function updatedBy()
     {

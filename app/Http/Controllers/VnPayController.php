@@ -404,12 +404,14 @@ class VnPayController extends Controller
         });
         // Xóa session mã giảm giá
         $request->session()->forget(['applied_coupons', 'applied_coupons_for_vnpay', 'discount', 'total_price']);
-
+        $appliedCoupons = $request->session()->get('applied_coupons_for_vnpay', []);
         return view('Users.Checkout.invoice', [
             'order' => $order,
-            'status' => $request->query('vnp_ResponseCode') == '00' ? 'Thành công' : 'Thất bại'
+            'status' => $request->query('vnp_ResponseCode') == '00' ? 'Thành công' : 'Thất bại',
+            'appliedCoupons' => $appliedCoupons,
         ]);
     }
+
     public function updateStatus(Request $request, Order $order)
     {
         // Nếu đơn hàng thanh toán bằng VNPay thì không cho phép cập nhật thành "Hủy"

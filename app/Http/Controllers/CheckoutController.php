@@ -288,7 +288,7 @@ class CheckoutController extends Controller
     // Hiển thị sang trang invoice
     public function invoice($id)
     {
-        $order = Order::with(['orderItems.product', 'orderItems.variant', 'user'])->findOrFail($id);
+        $order = Order::with(['orderItems.product', 'orderItems.variant', 'user','couponUsages.coupon'])->findOrFail($id);
         $breadcrumbs = [
             ['name' => 'Trang chủ', 'url' => route('home')],
             ['name' => 'Đơn hàng', 'url' => null],
@@ -489,7 +489,9 @@ class CheckoutController extends Controller
         }
         $order->save();
 
-        return redirect()->route('admin.orders.index')->with('success', 'Cập nhật trạng thái thành công!');
+        return redirect()
+            ->route('admin.orders.index', ['page' => $request->input('page')])
+            ->with('success', 'Cập nhật trạng thái thành công!');
     }
 
 

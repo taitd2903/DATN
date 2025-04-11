@@ -116,6 +116,7 @@
                                     class="status-form" style="display: none;">
                                     @csrf
                                     @method('PUT')
+                                    <input type="hidden" name="page" value="{{ request('page') }}">
                                     <select name="status" class="form-control status-select mt-2"
                                         onchange="this.form.submit()">
                                         @foreach ($statusOptions as $status)

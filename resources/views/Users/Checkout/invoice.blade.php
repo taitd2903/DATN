@@ -25,8 +25,8 @@
                                 <div class="bg-white p-4 rounded-3 shadow-sm">
                                     <h5 class="text-primary fw-semibold mb-3">Khách Hàng</h5>
                                     <div class="d-flex flex-column gap-2">
-                                        <div><i class="fas fa-user me-2 text-muted"></i> {{ $order->user->name  }}</div>
-                                        <div><i class="fas fa-envelope me-2 text-muted"></i> {{ $order->user->email  }}</div>
+                                        <div><i class="fas fa-user me-2 text-muted"></i> {{ $order->user->name }}</div>
+                                        <div><i class="fas fa-envelope me-2 text-muted"></i> {{ $order->user->email }}</div>
                                         <div><i class="fas fa-phone me-2 text-muted"></i>
                                             {{ $order->customer_phone ?? 'Chưa cập nhật' }}</div>
                                         <div>
@@ -51,34 +51,60 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="bg-white p-4 rounded-3 shadow-sm">
-                                    <h5 class="text-primary fw-semibold mb-3">Thông Tin Thanh Toán</h5>
-                                    <div class="d-flex flex-column gap-2">
-                                        <div><strong>Thời gian đặt hàng:</strong>
-                                            {{ $order->created_at->format('d/m/Y H:i') }}</div>
-                                        <div><strong>Thời gian thanh toán:</strong>
-                                            {{ $order->updated_at->format('d/m/Y H:i') }}</div>
-                                        <div><strong>Phương thức:</strong> {{ $order->payment_method }}</div>
-                                        <div><strong>Trạng thái:</strong> {{ $order->payment_status }}</div>
-                                        @if (!empty($order->coupon_code))
-                                        <p class="mb-2">
-                                            <strong>Mã giảm giá:</strong>
-                                            <span>{{ $order->coupon_code }}</span>
-                                        </p>
-                                        @if ($order->discount_amount > 0)
-                                            <p class="mb-2">
-                                                <strong>Số tiền giảm:</strong>
-                                                <span>{{ number_format($order->discount_amount, 0, ',', '.') }} VNĐ</span>
-                                            </p>
-                                        @endif
-                                    @endif
-                                    <div class="alert alert-success d-flex align-items-center mb-3" role="alert">
-                                        <strong class="me-2">Tổng tiền:</strong>
-                                        <span class="fw-bold fs-4">{{ number_format($order->total_price, 0, ',', '.') }} VND</span>
-                                    </div>
+                                    <h5 class="text-primary fw-semibold mb-4">Thông Tin Thanh Toán</h5>
+                                    <div class="d-flex flex-column gap-3">
 
+                                        <div><strong>🕒 Thời gian đặt hàng:</strong>
+                                            {{ $order->created_at->format('d/m/Y H:i') }}</div>
+                                        <div><strong>💳 Thời gian thanh toán:</strong>
+                                            {{ $order->updated_at->format('d/m/Y H:i') }}</div>
+                                        <div><strong>📦 Phương thức:</strong> {{ ucfirst($order->payment_method) }}</div>
+                                        <div><strong>📌 Trạng thái:</strong> {{ $order->payment_status }}</div>
+
+                                        <!-- Hiển thị mã giảm giá -->
+                                        @if ($order->couponUsages->isNotEmpty())
+                                            <div>
+                                                <h6 class="fw-semibold text-dark mb-2">🎁 Mã giảm giá đã áp dụng:</h6>
+                                                <ul class="list-group list-group-flush">
+                                                    @foreach ($order->couponUsages as $usage)
+                                                        <li
+                                                            class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                                            <div>
+                                                                <div class="text-muted">Mã:
+                                                                    <strong>{{ $usage->coupon->code }}</strong></div>
+                                                                <small class="text-secondary fst-italic">
+                                                                    @if ($usage->coupon->discount_target === 'shipping_fee')
+                                                                        ➤ Giảm phí vận chuyển
+                                                                    @elseif ($usage->coupon->discount_target === 'order_total')
+                                                                        ➤ Giảm trực tiếp vào tổng đơn hàng
+                                                                    @else
+                                                                        ➤ Loại giảm giá không xác định
+                                                                    @endif
+                                                                </small>
+                                                            </div>
+                                                            <div class="text-success">-
+                                                                {{ number_format($usage->applied_discount, 0, ',', '.') }}
+                                                                ₫</div>
+                                                        </li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+                                        @else
+                                            <div class="text-muted">Không có mã giảm giá nào được áp dụng.</div>
+                                        @endif
+
+
+                                        <div class="alert alert-success d-flex justify-content-between align-items-center mt-3 mb-0"
+                                            role="alert">
+                                            <strong class="me-2">💰 Tổng tiền:</strong>
+                                            <span
+                                                class="fw-bold fs-4 mb-0">{{ number_format($order->total_price, 0, ',', '.') }}
+                                                VND</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -111,15 +137,16 @@
                                             <td class="py-3">{{ $item->product->name }}</td>
                                             <td class="py-3">{{ $item->size ?? 'Không có' }}</td>
                                             <td class="py-3">
-    @if($item->color)
-        <span style="display: inline-flex; align-items: center;">
-            <span style="display: inline-block; width: 22px; height: 22px; border-radius: 50%; background-color: {{ $item->color }}; border: 1px solid #ccc; margin-right: 4px;"></span>
-     
-        </span>
-    @else
-        Không có
-    @endif
-</td>
+                                                @if ($item->color)
+                                                    <span style="display: inline-flex; align-items: center;">
+                                                        <span
+                                                            style="display: inline-block; width: 22px; height: 22px; border-radius: 50%; background-color: {{ $item->color }}; border: 1px solid #ccc; margin-right: 4px;"></span>
+
+                                                    </span>
+                                                @else
+                                                    Không có
+                                                @endif
+                                            </td>
 
                                             <td class="py-3">{{ $item->quantity }}</td>
                                             <td class="py-3">{{ number_format($item->price, 0, ',', '.') }} VND</td>
