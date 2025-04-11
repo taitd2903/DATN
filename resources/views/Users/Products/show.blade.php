@@ -13,32 +13,31 @@
 
     @if($product->image)
     <div class="row">
-        <div class="col-md-6">
-            <!-- Ảnh chính ban đầu là ảnh của sản phẩm -->
-            <div class="mt-3 d-flex " id="variant-thumbnails">
-                <div class="zoom-box">
-                <img id="variant-image" src="{{ asset('storage/' . $product->image) }}" 
-                     alt="{{ $product->name }}" class="img-fluid" width="600px" height="60%">
-                </div>
-            </div>
-
-            <!-- Ảnh nhỏ: Gồm ảnh sản phẩm chung + ảnh của các biến thể -->
-            <div class="mt-3 d-flex" style="max-width: 600px">
-             
-
-                    <div class="mt-3 d-flex" id="variant-thumbnails">
-                        @foreach ($product->variants as $variant)
-                            <img src="{{ asset('storage/' . $variant->image) }}" 
-                                 alt="{{ $variant->color }} - {{ $variant->size }}" 
-                                 class="img-thumbnail me-2 variant-thumbnail"
-                                 width="20%" height="20%"
-                                 data-variant-id="{{ $variant->id }}"
-                                 data-size="{{ $variant->size }}"
-                                 data-color="{{ $variant->color }}">
-                        @endforeach
-                    </div>
+    <div class="col-md-6">
+    <div class="d-flex align-items-start">
+        <!-- Cột trái: Ảnh nhỏ -->
+        <div class="me-3">
+            <div class="d-flex flex-column gap-2 align-items-center">
+                @foreach ($product->variants->take(3) as $variant)
+                    <img src="{{ asset('storage/' . $variant->image) }}" 
+                         alt="{{ $variant->color }} - {{ $variant->size }}" 
+                         class="img-thumbnail variant-thumbnail"
+                         width="80"
+                         height="80"
+                         data-variant-id="{{ $variant->id }}"
+                         data-size="{{ $variant->size }}"
+                         data-color="{{ $variant->color }}">
+                @endforeach
             </div>
         </div>
+
+        <!-- Cột phải: Ảnh lớn -->
+        <div class="zoom-box">
+            <img id="variant-image" src="{{ asset('storage/' . $product->image) }}" 
+                 alt="{{ $product->name }}" class="img-fluid zoom-image">
+        </div>
+    </div>
+</div>
 @else
     <p>{{ __('messages.no_image') }}</p>
 @endif
@@ -78,9 +77,6 @@
     </div> -->
     
 
-    <button class="dashed-line-btn"></button>
-
-
     <form action="{{ route('cart.add') }}" method="POST" id="addToCartForm">
         @csrf
         <input type="hidden" name="product_id" value="{{ $product->id }}">
@@ -104,7 +100,7 @@
        
       
             <div id="color-options">
-            <strong class="mt-2">{{ __('messages.color') }}:</strong>
+            <strong class="mt-2">{{ __('messages.color') }}</strong>
              @foreach ($product->variants->unique('color') as $variant)
     <button type="button" class="color-btn"
         data-color="{{ $variant->color }}"
@@ -136,11 +132,6 @@
 </div>
 
         <div class="mt-3 d-flex align-items-center">
-    <!-- Nút yêu thích -->
-    <!-- <button type="button" id="favoriteButton" class="favorite-btn">
-        <i class="bi bi-heart"></i>
-    </button> -->
-
     <!-- Nút thêm vào giỏ hàng -->
     <button type="submit" id="addToCartButton" disabled class="btn btn-outline-dark ms-2">
     {{ __('messages.add_to_cart') }}
@@ -159,16 +150,26 @@
     </div>
 </div>
 <br>
-<div class="policy-support">
-    <ul class="list-unstyled">
-        <li><i class="fa fa-check-square"></i> Chính sách bảo mật - Bảo vệ thông tin khách hàng</li>
-        <li><i class="fa fa-truck"></i> Chính sách giao hàng - Nhanh chóng, tiện lợi</li>
-        <li><i class="fa fa-sync-alt"></i> Chính sách đổi trả - Đảm bảo quyền lợi khách hàng</li>
-        <li><i class="fa fa-credit-card"></i> Chính sách thanh toán - Linh hoạt, an toàn</li>
-        <li><i class="fa fa-headphones"></i> Hỗ trợ khách hàng - Tư vấn 24/7</li>
-    </ul>
+<div class="info-banner">
+    <div class="info-box">
+        <img src="https://img.icons8.com/ios-filled/40/000000/phone.png" alt="Call icon">
+        <div>
+            <p>Mua hàng: <span class="highlight">0912.743.443</span> từ 8h00 -<br>21h30 mỗi ngày</p>
+        </div>
+    </div>
+    <div class="info-box">
+        <img src="https://img.icons8.com/ios-filled/40/000000/delivery.png" alt="Free Shipping icon">
+        <div>
+            <p>Miễn phí vận chuyển<br><span class="highlight">Cho đơn hàng trên 499k</span></p>
+        </div>
+    </div>
+    <div class="info-box">
+        <img src="https://img.icons8.com/ios-filled/40/000000/return-purchase.png" alt="Return icon">
+        <div>
+            <p>Đổi sản phẩm trong vòng<br><span class="highlight">45 ngày</span></p>
+        </div>
+    </div>
 </div>
-
                 
 {{--========================== Phần này của Đạt thông báo lỗi ============================--}}
                 @if (session('error'))
@@ -503,19 +504,6 @@ document.addEventListener("DOMContentLoaded", function () {
     image.addEventListener("mouseleave", function () {
         image.style.transformOrigin = "center center";
     });
-});
-
-//nut yeu thich
-document.getElementById("favoriteButton").addEventListener("click", function() {
-    this.classList.toggle("liked");
-    let icon = this.querySelector("i");
-    if (this.classList.contains("liked")) {
-        icon.classList.remove("bi-heart");
-        icon.classList.add("bi-heart-fill");
-    } else {
-        icon.classList.remove("bi-heart-fill");
-        icon.classList.add("bi-heart");
-    }
 });
 
 // so luong
