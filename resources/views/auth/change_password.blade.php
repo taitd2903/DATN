@@ -2,8 +2,8 @@
 
 @section('content')
 
-
-<h2>Đổi mật khẩu</h2>
+<br>
+<h2 class="doimatkhau">Đổi mật khẩu</h2>
 
 @if (session('success'))
     <div style="color: green">{{ session('success') }}</div>

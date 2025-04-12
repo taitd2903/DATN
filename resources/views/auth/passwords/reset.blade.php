@@ -7,8 +7,8 @@
 <div class="container">
     <div class="reset-wrapper">
         <div class="reset-box">
-            <h2>Reset Password</h2>
-            <p>Enter your new password to reset your account</p>
+            <h2>Đặt lại mật khẩu</h2>
+            <p>Nhập mật khẩu mới để đặt lại tài khoản của bạn</p>
 
             @if (session('status'))
                 <p class="success-message">{{ session('status') }}</p>
@@ -20,20 +20,20 @@
 
                 <div class="input-box">
                     <label for="email"><i class="fa-solid fa-envelope"></i> Email</label>
-                    <input type="email" name="email" placeholder="Enter your email" required>
+                    <input type="email" name="email" placeholder="Email của bạn" required>
                 </div>
 
                 <div class="input-box">
-                    <label for="password"><i class="fa-solid fa-lock"></i> New Password</label>
-                    <input type="password" name="password" placeholder="Enter new password" required>
+                    <label for="password"><i class="fa-solid fa-lock"></i>Mật khầu mới</label>
+                    <input type="password" name="password" placeholder="Nhập mật khẩu mới" required>
                 </div>
 
                 <div class="input-box">
-                    <label for="password_confirmation"><i class="fa-solid fa-lock"></i> Confirm Password</label>
-                    <input type="password" name="password_confirmation" placeholder="Confirm password" required>
+                    <label for="password_confirmation"><i class="fa-solid fa-lock"></i> Xác nhận mật khẩu</label>
+                    <input type="password" name="password_confirmation" placeholder="Xác nhận mật khẩu" required>
                 </div>
 
-                <button type="submit" class="btn">Reset Password</button>
+                <button type="submit" class="btn">Đặt lại mật khẩu</button>
             </form>
 
             @if ($errors->any())
@@ -44,7 +44,7 @@
                 </div>
             @endif
 
-            <p>Remembered your password? <a href="{{ route('login') }}">Sign in</a></p>
+            <p>Bạn nhớ mật khẩu?<a href="{{ route('login') }}">Đăng nhập</a></p>
         </div>
     </div>
 </div>

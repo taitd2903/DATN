@@ -243,22 +243,12 @@
                     <h6>Đăng ký nhận tin</h6>
                     <div class="footer__newslatter">
                         <p>Hãy là người đầu tiên biết về sản phẩm mới, lookbook, khuyến mãi & ưu đãi!</p>
-                        <form action="#">
-                            <input type="text" placeholder="Email của bạn">
-                            <button type="submit"><span class="icon_mail_alt"></span></button>
-                        </form>
+                        <p>Liên hệ hotline: 099.999.999</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-lg-12 text-center">
-                <div class="footer__copyright__text">
-                    <p>Bản quyền  </p>
-                </div>
-            </div>
-        </div>
     </div>
 </footer>
 
