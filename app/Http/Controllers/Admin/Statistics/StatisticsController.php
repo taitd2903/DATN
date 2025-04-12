@@ -142,7 +142,7 @@ class StatisticsController extends Controller
         $totalUsages = $usageQuery->count();
         $shippingUsages = $usageQuery->clone()->whereHas('coupon', fn($q) => $q->where('discount_target', 'shipping_fee'))->count();
         $orderUsages = $usageQuery->clone()->whereHas('coupon', fn($q) => $q->where('discount_target', 'order_total'))->count();
-        $totalDiscountQuery = Order::whereNotNull('coupon_code')->where('status', '!=', 'Đã hủy');
+        $totalDiscountQuery = Order::whereNotNull('coupon_code')->where('status', 'Hoàn thành');
         if ($from) $totalDiscountQuery->whereDate('created_at', '>=', $from);
         if ($to) $totalDiscountQuery->whereDate('created_at', '<=', $to);
         $totalDiscount = $totalDiscountQuery->sum('discount_amount');
@@ -203,11 +203,11 @@ class StatisticsController extends Controller
         $couponOrders = $orderQuery->clone()->whereNotNull('coupon_code')->count();
         $couponOrderRate = $totalOrders > 0 ? ($couponOrders / $totalOrders) * 100 : 0;
         $totalRevenue = $orderQuery->sum('total_price');
-        $affectedRevenueQuery = Order::where('status', '!=', 'Đã hủy');
+        $affectedRevenueQuery = Order::where('status', 'Hoàn thành');
         if ($from) $affectedRevenueQuery->whereDate('created_at', '>=', $from);
         if ($to) $affectedRevenueQuery->whereDate('created_at', '<=', $to);
         $affectedRevenue = $affectedRevenueQuery->sum('total_price');
-        $originalRevenueQuery = Order::where('status', '!=', 'Đã hủy');
+        $originalRevenueQuery = Order::where('status', 'Hoàn thành');
         if ($from) $originalRevenueQuery->whereDate('created_at', '>=', $from);
         if ($to) $originalRevenueQuery->whereDate('created_at', '<=', $to);
         $originalRevenue = $originalRevenueQuery->sum(DB::raw('total_price + discount_amount'));

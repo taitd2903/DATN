@@ -125,9 +125,9 @@
     <div class="quantity-wrapper">
     <label for="quantity" class="quantity-label">Số lượng:</label>
     <div class="quantity-controls">
-        <button type="button" class="quantity-btn" id="decrease">−</button>
-        <input type="number" id="quantity" name="quantity" value="1" min="1" class="quantity-input">
-        <button type="button" class="quantity-btn" id="increase">+</button>
+        <button type="button" class="quantity-btn" id="decrease" disabled>−</button>
+        <input type="number" id="quantity" name="quantity" value="1" min="1" class="quantity-input" disabled>
+        <button type="button" class="quantity-btn" id="increase" disabled>+</button>
     </div>
 </div>
 
@@ -373,6 +373,9 @@
                     document.getElementById("variant-price").textContent =
                         new Intl.NumberFormat('vi-VN').format(variant.price) + " VNĐ";
                     document.getElementById("addToCartButton").disabled = false;
+                    document.getElementById("quantity").disabled = false;
+                    document.getElementById("increase").disabled = false;
+                    document.getElementById("decrease").disabled = false;
         
                     // Cập nhật ảnh biến thể
                     variantImageElement.src = "/storage/" + variant.image;
@@ -397,6 +400,12 @@
                     document.getElementById("stock-info").textContent = "";
                     document.getElementById("variant-price").textContent = "";
                     document.getElementById("addToCartButton").disabled = true;
+                    document.getElementById("quantity").disabled = true;
+                    document.getElementById("increase").disabled = true;
+                    document.getElementById("decrease").disabled = true;
+                    quantityInput.style.opacity = "0.5";
+                    increaseBtn.style.opacity = "0.5";
+                    decreaseBtn.style.opacity = "0.5";
                     variantImageElement.src = defaultImage;
                     selectedVariantInfo.textContent = "Chưa chọn";
                 }
