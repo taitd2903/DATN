@@ -85,12 +85,13 @@
 
                     <h5>${{ number_format($price, 2) }}</h5>
 
-                    <div class="product__color__select">
-                        @foreach($product->variants->take(3) as $key => $variant)
-                            <label class="{{ $key === 0 ? 'active' : '' }} {{ strtolower($variant->color) }}" for="pc-{{ $variant->id }}">
-                                <input type="radio" id="pc-{{ $variant->id }}" name="color-{{ $product->id }}">
-                            </label>
-                        @endforeach
+                    <div id="color-options" class="product__color__select">
+                @foreach ($product->variants->unique('color') as $variant)
+                <button type="button" class="color-btn"
+                data-color="{{ $variant->color }}"
+                style="background-color: {{ $variant->color }}; width: 20px; height: 20px; border: 1px solid #ccc; border-radius: 50%; display: inline-block;">
+                    </button>
+                    @endforeach
                     </div>
                 </div>
             </div>

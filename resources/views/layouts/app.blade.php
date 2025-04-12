@@ -348,6 +348,20 @@
             rightContentMobile.style.display = 'none';
         });
     });
+
+     //cam xuc bai viet
+     document.querySelectorAll('.reaction-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            let countSpan = button.querySelector('.count');
+            let currentCount = parseInt(countSpan.innerText);
+            countSpan.innerText = currentCount + 1;
+
+            button.classList.add('animate');
+            setTimeout(() => {
+                button.classList.remove('animate');
+            }, 400);
+        });
+    });
 </script>
 </body>
 

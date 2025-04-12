@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('content')
  <!-- Blog Details Hero Begin -->
+ <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
  <section class="blog-hero spad">
         <div class="container">
             <div class="row d-flex justify-content-center">
@@ -28,7 +29,7 @@
                 </div>
                 <div class="col-lg-8">
                     <div class="blog__details__content">
-                        <div class="blog__details__share">
+                        <!-- <div class="blog__details__share">
                             <span>share</span>
                             <ul>
                                 <li><a href="#"><i class="fa fa-facebook"></i></a></li>
@@ -36,18 +37,18 @@
                                 <li><a href="#" class="youtube"><i class="fa fa-youtube-play"></i></a></li>
                                 <li><a href="#" class="linkedin"><i class="fa fa-linkedin"></i></a></li>
                             </ul>
-                        </div>
+                        </div> -->
                         <div class="blog__details__text">
-                        <p><strong>Mô tả:</strong> {{ $article->description }}</p>
+                        <p><strong>Slug:</strong> {{ $article->slug }}</p>
+                        <!-- <p><strong>Mô tả:</strong> {{ $article->description }}</p> -->
                         </div>
                         <div class="blog__details__quote">
                             <i class="fa fa-quote-left"></i>
-                            <p>“When designing an advertisement for a particular product many things should be
-                                researched like where it should be displayed.”</p>
-                            <h6>_ John Smith _</h6>
+                            <p><strong>Mô tả:</strong> {{ $article->description }}</p>
                         </div>
                         <div class="blog__details__text">
-                        <p><strong>Nội dung:</strong> {!! nl2br(e($article->content)) !!}</p>
+                            <!-- Nội dung -->
+                        <p><strong></strong> {!! nl2br(e($article->content)) !!}</p>
                         </div>
                         <div class="blog__details__option">
                             <div class="row">
@@ -57,20 +58,61 @@
                                             <img src="img/blog/details/blog-author.jpg" alt="">
                                         </div>
                                         <div class="blog__details__author__text">
-                                            <h5>Aiden Blair</h5>
+                                            <h5></h5>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-6">
                                     <div class="blog__details__tags">
-                                        <a href="#">#Fashion</a>
-                                        <a href="#">#Trending</a>
-                                        <a href="#">#2020</a>
+                                        <a href="#">{{ $article->seo_title }}</a>
+                                        <a href="#"> {{ $article->seo_keywords }}</a>
+                                        <a href="#">{{ $article->is_active ? 'Hiển thị' : 'Ẩn' }}</a>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="blog__details__btns">
+
+    <div class="blog__details__reactions">
+    <span>Bạn cảm thấy bài viết này thế nào?</span>
+    <ul class="reaction-list d-flex gap-3">
+        <li>
+            <button class="reaction-btn" data-type="cute" title="Dễ thương">
+                <i class="bi bi-emoji-smile"></i>
+                <span class="count">0</span>
+            </button>
+        </li>
+        <li>
+            <button class="reaction-btn" data-type="funny" title="Hài hước">
+                <i class="bi bi-emoji-laughing"></i>
+                <span class="count">0</span>
+            </button>
+        </li>
+        <li>
+            <!-- <button class="reaction-btn" data-type="wow" title="Ngạc nhiên">
+                <i class="bi bi-emoji-surprise"></i>
+                <span class="count">0</span>
+            </button>
+        </li> -->
+        <li>
+            <button class="reaction-btn" data-type="sad" title="Buồn">
+                <i class="bi bi-emoji-frown"></i>
+                <span class="count">0</span>
+            </button>
+        </li>
+        <li>
+            <button class="reaction-btn" data-type="love" title="Tuyệt vời">
+                <i class="bi bi-heart-fill text-danger"></i>
+                <span class="count">0</span>
+            </button>
+        </li>
+    </ul>
+</div>
+
+                        <div class="col-lg-12 text-center">
+                        <a href="{{ route('article.index') }}" class="site-btn">Quay lại</a>
+                                     
+                        </div>
+                        <!-- <div class="blog__details__btns">
                             <div class="row">
                                 <div class="col-lg-6 col-md-6 col-sm-6">
                                     <a href="" class="blog__details__btns__item">
@@ -85,8 +127,8 @@
                                     </a>
                                 </div>
                             </div>
-                        </div>
-                        <div class="blog__details__comment">
+                        </div> -->
+                        <!-- <div class="blog__details__comment">
                             <h4>Leave A Comment</h4>
                             <form action="#">
                                 <div class="row">
@@ -105,14 +147,14 @@
                                     </div>
                                 </div>
                             </form>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
         </div>
     </section>
     </div>
-<div class="container">
+<!-- <div class="container">
     <h2>{{ $article->name }}</h2>
     <p><strong>Slug:</strong> {{ $article->slug }}</p>
 
@@ -129,5 +171,5 @@
     <p><strong>Trạng thái:</strong> {{ $article->is_active ? 'Hiển thị' : 'Ẩn' }}</p>
 
     <a href="{{ route('article.index') }}" class="btn btn-secondary mt-3">Quay lại</a>
-</div>
+</div> -->
 @endsection
