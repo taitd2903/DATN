@@ -135,6 +135,12 @@
                             <p>Quản lý bài viết </p>
                         </a>
                     </li>
+                    <li class="{{ request()->routeIs('admin.contacts.*') ? 'active' : '' }}">
+                        <a class="nav-link" href="{{ route('admin.contacts.index') }}">
+                            <i class="nc-icon nc-email-85"></i>
+                            <p>Quản lý liên hệ</p>
+                        </a>
+                    </li>
 
                     <li class="{{ request()->routeIs('admin.trash.*') ? 'active' : '' }}">
 

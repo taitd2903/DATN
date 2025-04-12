@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\ContactMail;
+use App\Models\Contact;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -19,9 +20,13 @@ class ContactController extends Controller
             'message' => 'required|string',
         ]);
 
-        $data = $request->only('name', 'email', 'message');
+        Contact::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'message' => $request->message,
+        ]);
 
-        Mail::to('nguyensang012456@gmail.com')->send(new ContactMail($data));
+        Mail::to('nguyensang012456@gmail.com')->send(new ContactMail($request->all()));
 
         return back()->with('success', 'Cảm ơn bạn đã liên hệ với chúng tôi!');
     }

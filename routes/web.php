@@ -30,6 +30,8 @@ use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\Admin\Returns\AdminReturnController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\Article\ArticleController;
+use App\Http\Controllers\Admin\ContactManageController;
+use App\Http\Controllers\ContactController;
 
 /*
 |--------------------------------------------------------------------------
@@ -75,10 +77,13 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/change-password', [UserController::class, 'updatePassword'])->name('user.change-password');
 });
 //liên hệ
-use App\Http\Controllers\ContactController;
-
 Route::get('/lien-he', [ContactController::class, 'showForm'])->name('contact.form');
 Route::post('/lien-he', [ContactController::class, 'submitForm'])->name('contact.submit');
+Route::prefix('admin')->middleware('auth')->group(function () {
+    Route::get('/contacts', [ContactManageController::class, 'index'])->name('admin.contacts.index');
+    Route::get('/contacts/{id}', [ContactManageController::class, 'show'])->name('admin.contacts.show');
+    Route::delete('/contacts/{id}', [ContactManageController::class, 'destroy'])->name('admin.contacts.destroy');
+});
 
 // ========================= QUẢN TRỊ VIÊN (ADMIN) =========================
 Route::prefix('admin')->middleware(['auth', 'role:admin,staff'])->name('admin.')->group(function () {
