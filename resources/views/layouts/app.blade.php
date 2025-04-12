@@ -112,13 +112,14 @@
             
             <div class="collapse navbar-collapse" id="navbar-menu">
                 <ul class="nav navbar-nav ml-auto" data-in="fadeInDown" data-out="fadeOutUp">
-                    <li class="nav-item active"><a class="nav-link" href="{{ url('/') }}">{{ __('messages.home') }}</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url('/') }}">{{ __('messages.home') }}</a></li>
                    
-                           <li class="nav-item"><a class="nav-link" href={{ url('bai-viet') }}>Bài viết</a>
+                           <li class="nav-item  {{ request()->is('bai-viet') ? 'active' : '' }}"><a class="nav-link" href={{ url('bai-viet') }}>Bài viết</a>
                            </li>
                  
-                    <li class="nav-item"><a class="nav-link"
-                                            href={{ url('categories') }}>{{ __('messages.categories') }}</a></li>
+                           <li class="nav-item {{ request()->is('categories') ? 'active' : '' }}">
+    <a class="nav-link" href="{{ url('categories') }}">{{ __('messages.categories') }}</a>
+</li>
                     <li class="nav-item"><a class="nav-link" href="contact-us.html">{{ __('messages.contact') }}</a>
                     </li>
 
