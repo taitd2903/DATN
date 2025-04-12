@@ -21,7 +21,7 @@
     </ul>
 @endif
 
-<form method="POST" action="{{ route('user.change-password') }}">
+<form method="POST" action="{{ route('user.change-password') }}" class="doimk">
      @csrf
  
      <label for="current_password">Mật khẩu hiện tại:</label>

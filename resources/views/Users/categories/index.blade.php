@@ -23,7 +23,8 @@
     <div class="row">
         <div class="col-md-3">
             <form method="GET" action="{{ route('categories.show') }}">
-              
+                <br>
+                <h4 class="mb-3"></h4>
                 <div class="mb-3">
                     <input type="text" name="name" class="form-control" placeholder="Tìm kiếm" value="{{ request('name') }}">
                 </div>
