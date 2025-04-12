@@ -120,7 +120,7 @@
                            <li class="nav-item {{ request()->is('categories') ? 'active' : '' }}">
     <a class="nav-link" href="{{ url('categories') }}">{{ __('messages.categories') }}</a>
 </li>
-                    <li class="nav-item"><a class="nav-link" href="contact-us.html">{{ __('messages.contact') }}</a>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('contact.form')}}">{{ __('messages.contact') }}</a>
                     </li>
 
                 </ul>

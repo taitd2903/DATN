@@ -311,11 +311,11 @@ public function updatePassword(Request $request)
             'required',
             'string',
             'min:8',              
-            'regex:/[a-z]/',      // ít nhất 1 chữ thường
-            'regex:/[A-Z]/',      // ít nhất 1 chữ in hoa
-            'regex:/[0-9]/',      // ít nhất 1 chữ số
-            'regex:/[@$!%*#?&]/', // ít nhất 1 ký tự đặc biệt
-            'confirmed'           // phải khớp với new_password_confirmation
+            'regex:/[a-z]/',      
+            'regex:/[A-Z]/',      
+            'regex:/[0-9]/',      
+            'regex:/[@$!%*#?&]/', 
+            'confirmed'           
         ],
         function ($attribute, $value, $fail) {
             if (!Hash::check($value, Auth::user()->password)) {

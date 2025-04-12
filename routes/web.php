@@ -74,7 +74,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/change-password', [UserController::class, 'showChangePasswordForm'])->name('password.form');
     Route::post('/change-password', [UserController::class, 'updatePassword'])->name('user.change-password');
 });
+//liên hệ
+use App\Http\Controllers\ContactController;
 
+Route::get('/lien-he', [ContactController::class, 'showForm'])->name('contact.form');
+Route::post('/lien-he', [ContactController::class, 'submitForm'])->name('contact.submit');
 
 // ========================= QUẢN TRỊ VIÊN (ADMIN) =========================
 Route::prefix('admin')->middleware(['auth', 'role:admin,staff'])->name('admin.')->group(function () {
