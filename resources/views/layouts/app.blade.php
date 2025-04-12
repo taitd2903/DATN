@@ -95,25 +95,21 @@
 </div>
 <!-- End Main Top -->
 
-<!-- Start Main Top -->
+<!-- End Main Top -->
 <header class="main-header" >
-    <!-- Start Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-default bootsnav">
         <div class="container">
-            <!-- Start Header Navigation -->
 
-            <!-- Start Header Navigation -->
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu"
                     aria-controls="navbars-rs-food" aria-expanded="false" aria-label="Toggle navigation">
                 <i class="fa fa-bars"></i>
             </button>
+
             <div class="navbar-header">
                 <a class="navbar-brand" href="{{ url('/') }}"><img src="{{ asset('assets/img/logoo.png') }}"
                                                                    class="logo" alt=""></a>
             </div>
-            <!-- End Header Navigation -->
-
-            <!-- Collect the nav links, forms, and other content for toggling -->
+            
             <div class="collapse navbar-collapse" id="navbar-menu">
                 <ul class="nav navbar-nav ml-auto" data-in="fadeInDown" data-out="fadeOutUp">
                     <li class="nav-item active"><a class="nav-link" href="{{ url('/') }}">{{ __('messages.home') }}</a></li>
@@ -128,7 +124,7 @@
 
                 </ul>
             </div>
-            <!-- /.navbar-collapse -->
+            
             <div class="right__content--mobile">
                 <ul class="d-flex justify-content-center align-items-center gap-4">
                     <li class="side-menu">
@@ -181,9 +177,9 @@
                                 </li>
                             </ul>
                         @else
-                            <a href="{{ route('login') }}">
-                                <i class="fas fa-user"></i>
-                            </a>
+                        <a href="{{ route('login') }}" class="user-icon">
+    <i class="fas fa-user"></i>
+</a>
                         @endif
                     </li>
                 </ul>
@@ -203,75 +199,69 @@
 </main>
 
 <!-- Start Footer  -->
-<footer>
-    <div class="footer-main">
-        <div class="container">
-            <div class="row">
-                <!-- Cột 1: Về Chúng Tôi -->
-                <div class="col-lg-4 col-md-12 col-sm-12">
-                    <div class="footer-widget">
-                        <h4>{{ __('messages.about_us') }}</h4>
-                        <p>{{ __('messages.new_products') }}</p>
-                        <ul class="social-icons">
-                            <li><a href="#"><i class="fab fa-facebook" aria-hidden="true"></i></a></li>
-                            <li><a href="#"><i class="fab fa-twitter" aria-hidden="true"></i></a></li>
-                            <li><a href="#"><i class="fab fa-linkedin" aria-hidden="true"></i></a></li>
-                            <li><a href="#"><i class="fab fa-google-plus" aria-hidden="true"></i></a></li>
-                            <li><a href="#"><i class="fa fa-rss" aria-hidden="true"></i></a></li>
-                            <li><a href="#"><i class="fab fa-pinterest-p" aria-hidden="true"></i></a></li>
-                            <li><a href="#"><i class="fab fa-whatsapp" aria-hidden="true"></i></a></li>
-                        </ul>
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+         
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="footer__about">
+                    <div class="footer__logo">
+                        <a href="#"><img src="img/footer-logo.png" alt=""></a>
+                    </div>
+                    <p>Khách hàng là trung tâm trong mô hình kinh doanh độc đáo của chúng tôi, bao gồm cả thiết kế.</p>
+                    <a href="#"><img src="img/payment.png" alt=""></a>
+                </div>
+            </div>
+
+            <div class="col-lg-2 offset-lg-1 col-md-3 col-sm-6">
+                <div class="footer__widget">
+                    <h6>Mua sắm</h6>
+                    <ul>
+                        <li><a href="#">Cửa hàng thời trang</a></li>
+                        <li><a href="#">Giày đang thịnh hành</a></li>
+                        <li><a href="#">Phụ kiện</a></li>
+                        <li><a href="#">Khuyến mãi</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-md-3 col-sm-6">
+                <div class="footer__widget">
+                    <h6>Hỗ trợ</h6>
+                    <ul>
+                        <li><a href="#">Liên hệ</a></li>
+                        <li><a href="#">Phương thức thanh toán</a></li>
+                        <li><a href="#">Giao hàng</a></li>
+                        <li><a href="#">Đổi trả & hoàn tiền</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-lg-3 offset-lg-1 col-md-6 col-sm-6">
+                <div class="footer__widget">
+                    <h6>Đăng ký nhận tin</h6>
+                    <div class="footer__newslatter">
+                        <p>Hãy là người đầu tiên biết về sản phẩm mới, lookbook, khuyến mãi & ưu đãi!</p>
+                        <form action="#">
+                            <input type="text" placeholder="Email của bạn">
+                            <button type="submit"><span class="icon_mail_alt"></span></button>
+                        </form>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <!-- Cột 2: Thông tin liên hệ -->
-                <div class="col-lg-4 col-md-12 col-sm-12">
-                    <div class="footer-link">
-                        <h4>{{ __('messages.contact_info') }}</h4>
-                        <ul>
-                            <li><a href="#">{{ __('messages.about_us') }}</a></li>
-                            <li><a href="#">{{ __('messages.services') }}</a></li>
-                            <li><a href="#">{{ __('messages.address') }}</a></li>
-                            <li><a href="#">{{ __('messages.additional_services') }}</a></li>
-                            <li><a href="#">{{ __('messages.privacy_policy') }}</a></li>
-                            <li><a href="#">{{ __('messages.information') }}</a></li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Cột 3: Liên hệ với chúng tôi -->
-                <div class="col-lg-4 col-md-12 col-sm-12">
-                    <div class="footer-link-contact">
-                        <h4>{{ __('messages.contact_us') }}</h4>
-                        <ul>
-                            <li>
-                                <p>
-                                    <i class="fas fa-map-marker-alt"></i> {{ __('messages.address_details', ['address' => 'Số 2, 17 Kiều Mai, KS 67213']) }}
-                                </p>
-                            </li>
-                            <li>
-                                <p><i class="fas fa-phone-square"></i> {{ __('messages.phone') }}:
-                                    <a href="tel:+1-888705770">+1-888 705 770</a>
-                                </p>
-                            </li>
-                            <li>
-                                <p><i class="fas fa-envelope"></i> {{ __('messages.email') }}:
-                                    <a href="mailto:contactinfo@gmail.com">contactinfo@gmail.com</a>
-                                </p>
-                            </li>
-                        </ul>
-                    </div>
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div class="footer__copyright__text">
+                    <p>Bản quyền  </p>
                 </div>
             </div>
         </div>
     </div>
 </footer>
+
 <!-- End Footer  -->
-<!-- Start copyright  -->
-<div class="footer-copyright">
-    <p class="footer-company">Tất cả tạo nên thương hiệu &copy; 2018 <a href="#">OceanSport</a>
-</div>
-<!-- End copyright  -->
 
 <a href="#" id="back-to-top" title="Back to top" style="display: none;">&uarr;</a>
 
@@ -290,6 +280,17 @@
 <script src="{{ asset('assets/js/baguetteBox.min.js') }}"></script>
 <script src="{{ asset('assets/js/form-validator.min.js') }}"></script>
 <script src="{{ asset('assets/js/custom.js') }}"></script>
+
+<script src="{{ asset('assets/js/jquery-3.3.1.min.js') }}"></script>
+<script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
+<script src="{{ asset('assets/js/jquery.nice-select.min.js') }}"></script>
+<script src="{{ asset('assets/js/jquery.nicescroll.min.js') }}"></script>
+<script src="{{ asset('assets/js/jquery.magnific-popup.min.js') }}"></script>
+<script src="{{ asset('assets/js/jquery.countdown.min.js') }}"></script>
+<script src="{{ asset('assets/js/jquery.slicknav.js') }}"></script>
+<script src="{{ asset('assets/js/mixitup.min.js') }}"></script>
+<script src="{{ asset('assets/js/owl.carousel.min.js') }}"></script>
+<!-- <script src="{{ asset('assets/js/main.js') }}"></script> -->
 
 <script>
     $(document).ready(function () {

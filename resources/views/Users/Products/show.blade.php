@@ -160,13 +160,13 @@
     <div class="info-box">
         <img src="https://img.icons8.com/ios-filled/40/000000/delivery.png" alt="Free Shipping icon">
         <div>
-            <p>Miễn phí vận chuyển<br><span class="highlight">Cho đơn hàng trên 499k</span></p>
+            <p>Giao hàng nhanh<br><span class="highlight">3-5 ngày</span></p>
         </div>
     </div>
     <div class="info-box">
         <img src="https://img.icons8.com/ios-filled/40/000000/return-purchase.png" alt="Return icon">
         <div>
-            <p>Đổi sản phẩm trong vòng<br><span class="highlight">45 ngày</span></p>
+            <p>Tiết kiệm lên tới<br><span class="highlight">20%</span></p>
         </div>
     </div>
 </div>

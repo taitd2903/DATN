@@ -1,20 +1,6 @@
 @extends('layouts.app')
 @section('content')
 
-Bài viết 
-@foreach($articles as $article)
-    <div class="article">
-        <img id="article-image" src="{{ asset('storage/' . $article->image) }}" 
-        alt="{{ $article->name }}" class="img-fluid" width="600px" height="60%">
-        <h2>{{ $article->name }}</h2>
-        <p>{{ $article->description }}</p>
-        <p><strong>Lượt xem:</strong> {{ $article->views }}</p>
-        <a href="{{ route('articles.showUser', $article->id) }}" class="btn btn-primary">Xem thêm</a>
-    </div>
-
-@endforeach
-
-
     <div id="slides-shop" class="cover-slides">
         <ul class="slides-container">
             @foreach ($banners as $key => $banner)
@@ -38,522 +24,83 @@ Bài viết
         </ul>
     </div>
 
-    <div class="container my-5">
-        <!-- Sản phẩm mới -->
-        <div class="row mb-5">
-            <div class="col-12 text-center mb-4 animate__animated animate__fadeIn">
-                <h1>Sản phẩm mới</h1>
+  <br>
+    <!-- Product Section Begin -->
+    <section class="product spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <ul class="filter__controls">
+                        <li class="active" data-filter="*">Sản phẩm hot</li>
+                        <li data-filter=".new-arrivals">Danh mục</li>
+                        <li data-filter=".hot-sales">Bán chạy</li>
+                    </ul>
+                </div>
             </div>
-            <div class="col-12">
-                <div class="carousel slide" id="newProductsCarousel" data-bs-ride="carousel">
-                    <div class="carousel-inner">
-                        @foreach($products->chunk(4) as $chunk)
-                            <div class="carousel-item {{ $loop->first ? 'active' : '' }}">
-                                <div class="row justify-content-center">
-                                    @foreach($chunk as $product)
-                                        <div class="col-md-2 col-6 mb-4 animate__animated animate__fadeInUp">
-                                            <div class="card h-100 border-0 product-card">
-                                                <a href="{{ route('products.show', $product->id) }}">
-                                                    @php
-                                                        $defaultImage = $product->image ? asset('storage/' . $product->image) : asset('path/to/default-image.jpg');
-                                                        $firstVariantImage = $product->variants->whereNotNull('image')->first();
-                                                        $defaultImage = $firstVariantImage ? asset('storage/' . $firstVariantImage->image) : $defaultImage;
-                                                    @endphp
-                                                    <img src="{{ $defaultImage }}" class="card-img-top product-image" data-default-image="{{ $defaultImage }}" style="height: 280px; object-fit: cover;" alt="{{ $product->name }}">
-                                                </a>
-                                                <div class="card-body">
-                                                    <p class="card-title">{{ Str::limit($product->name, 30) }}</p>
 
-                                                    @php
-                                                        $minPrice = $product->variants->min('price') ?? 0;
-                                                        $maxPrice = $product->variants->max('price') ?? 0;
-                                                    @endphp
-                                                    <p class="card-text text-danger text-left">{{ number_format($minPrice, 0, ',', '.') }}đ</p>
+            <div class="row product__filter">
+          
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+@foreach($products as $product)
+<div class="col-lg-3 col-md-6 col-sm-6 mix new-arrivals">
+            <div class="product__item">
+               
+                <div class="product__item__pic set-bg">
+                @if($product->image)
+<img src="{{ asset('storage/' . $product->image) }}" 
+     class="card-img-top product-img" 
+     alt="{{ $product->name }}" 
+     style="width: 100%; aspect-ratio: 1 / 1; object-fit: cover;">
+                         @else
+                        <div class="p-3 text-center text-muted">Chưa có hình ảnh</div>
+                    @endif
 
-                                                    <div class="d-flex justify-content-between">
-                                                        <div>
-                                                            @foreach($product->variants as $variant)
-                                                                @if($variant->color)
-                                                                    <span class="color-dot variant-color" data-image="{{ $variant->image ? asset('storage/' . $variant->image) : $defaultImage }}" style="background-color: {{ $variant->color }}; width: 12px; height: 12px; border-radius: 50%; margin: 0 3px; display: inline-block; cursor: pointer;"></span>
-                                                                @endif
-                                                            @endforeach
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                                        <span class="rating" style="font-size: 10px;">
-                                                            ⭐⭐⭐⭐⭐ <span class="reviews">(0)</span>
-                                                        </span>
-                                                        <span class="ms-2" style="font-size: 12px; color: #777;">({{ $product->variants->sum('sold_quantity') }} đã bán)</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#newProductsCarousel" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#newProductsCarousel" data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    </button>
+                    <span class="label">New</span>
+
+                 <ul class="product__hover">
+    <li><a href="#"><i class="bi bi-eye"></i></a></li>
+    <li><a href="#"><i class="bi bi-eye-fill"></i></a></li>
+    <li><a href="#"><i class="bi bi-eye-slash"></i></a></li>
+</ul>
                 </div>
 
-                <div class="product-list">
-                    <div class="row justify-content-center">
-                        @foreach($products->take(8) as $product)
-                            <div class="col-md-2 col-6 mb-4 animate__animated animate__fadeInUp">
-                                <div class="card h-100 border-0 product-card">
-                                    <a href="{{ route('products.show', $product->id) }}">
-                                        @php
-                                            $defaultImage = $product->image ? asset('storage/' . $product->image) : asset('path/to/default-image.jpg');
-                                            $firstVariantImage = $product->variants->whereNotNull('image')->first();
-                                            $defaultImage = $firstVariantImage ? asset('storage/' . $firstVariantImage->image) : $defaultImage;
-                                        @endphp
-                                        <img src="{{ $defaultImage }}" class="card-img-top product-image" data-default-image="{{ $defaultImage }}" style="height: 250px; object-fit: cover;" alt="{{ $product->name }}">
-                                    </a>
-                                    <div class="card-body">
-                                    <p class="card-title">{{ Str::limit($product->name, 30) }}</p>
-                                    @php
-                                            $minPrice = $product->variants->min('price') ?? 0;
-                                            $maxPrice = $product->variants->max('price') ?? 0;
-                                        @endphp
-                                        <p class="card-text text-danger text-left">{{ number_format($minPrice, 0, ',', '.') }}đ</p>
-                                        <div class="d-flex justify-content-between">
-                                            <div>
-                                                @foreach($product->variants as $variant)
-                                                    @if($variant->color)
-                                                        <span class="color-dot variant-color" data-image="{{ $variant->image ? asset('storage/' . $variant->image) : $defaultImage }}" style="background-color: {{ $variant->color }}; width: 12px; height: 12px; border-radius: 50%; margin: 0 3px; display: inline-block; cursor: pointer;"></span>
-                                                    @endif
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <span class="rating" style="font-size: 10px;">
-                                                ⭐⭐⭐⭐⭐ <span class="reviews">(0)</span>
-                                            </span>
-                                            <span class="ms-2" style="font-size: 12px; color: #777;">({{ $product->variants->sum('sold_quantity') }} đã bán)</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+             
+                <div class="product__item__text">
+                    <h6>{{ $product->name }}</h6>
+                    <a href="{{ route('products.show', $product->id) }}" class="add-cart" style="text-decoration: none">Xem chi tiết</a>
+
+                 
+                    <div class="rating">
+                        <i class="fa fa-star-o"></i>
+                        <i class="fa fa-star-o"></i>
+                        <i class="fa fa-star-o"></i>
+                        <i class="fa fa-star-o"></i>
+                        <i class="fa fa-star-o"></i>
+                    </div>
+
+                    @php
+                        $firstVariant = $product->variants->first();
+                        $price = $firstVariant ? $firstVariant->price : '0.00';
+                    @endphp
+
+                    <h5>${{ number_format($price, 2) }}</h5>
+
+                    <div class="product__color__select">
+                        @foreach($product->variants->take(3) as $key => $variant)
+                            <label class="{{ $key === 0 ? 'active' : '' }} {{ strtolower($variant->color) }}" for="pc-{{ $variant->id }}">
+                                <input type="radio" id="pc-{{ $variant->id }}" name="color-{{ $product->id }}">
+                            </label>
                         @endforeach
                     </div>
                 </div>
             </div>
         </div>
+    @endforeach
+</div>
 
-        <!-- Banner quảng cáo giữa các phần -->
-        <div class="row my-5">
-            <div class="col-12">
-                <div class="promo-banner animate__animated animate__fadeIn">
-                    <img src="https://file.hstatic.net/1000398692/collection/thai-hien-sport-banner-dung-cu-tap-the-thao_726300d647d34b3297269d9609f1209d.jpg" alt="Promo Banner" class="img-fluid rounded">
-                    <div class="banner-content">
-                        <h3 class="text-white">Ưu Đãi Đặc Biệt!</h3>
-                        <p class="text-white">Giảm giá lên đến 50% cho các sản phẩm mới!</p>
-                        <a href="#" class="btn btn-primary rounded-pill">Khám phá ngay</a>
-                    </div>
-                </div>
-            </div>
         </div>
-
-        <!-- Sản phẩm nổi bật -->
-        <div class="row mb-5">
-            <div class="col-12 text-center mb-4 animate__animated animate__fadeIn">
-                <h1>Sản phẩm nổi bật</h1>
-            </div>
-            <div class="col-12">
-                <div class="carousel slide" id="featuredProductsCarousel" data-bs-ride="carousel">
-                    <div class="carousel-inner">
-                        @foreach($products->chunk(4) as $chunk)
-                            <div class="carousel-item {{ $loop->first ? 'active' : '' }}">
-                                <div class="row justify-content-center">
-                                    @foreach($chunk as $product)
-                                        <div class="col-md-2 col-6 mb-4 animate__animated animate__fadeInUp">
-                                            <div class="card h-100 border-0 product-card">
-                                                <a href="{{ route('products.show', $product->id) }}">
-                                                    @php
-                                                        $defaultImage = $product->image ? asset('storage/' . $product->image) : asset('path/to/default-image.jpg');
-                                                        $firstVariantImage = $product->variants->whereNotNull('image')->first();
-                                                        $defaultImage = $firstVariantImage ? asset('storage/' . $firstVariantImage->image) : $defaultImage;
-                                                    @endphp
-                                                    <img src="{{ $defaultImage }}" class="card-img-top product-image" data-default-image="{{ $defaultImage }}" style="height: 250px; object-fit: cover;" alt="{{ $product->name }}">
-                                                </a>
-                                                <div class="card-body">
-                                                <p class="card-title">{{ Str::limit($product->name, 30) }}</p>
-
-                                                    @php
-                                                        $minPrice = $product->variants->min('price') ?? 0;
-                                                        $maxPrice = $product->variants->max('price') ?? 0;
-                                                    @endphp
-                                                    <p class="card-text text-danger text-left">{{ number_format($minPrice, 0, ',', '.') }}đ</p>
-                                                    <div class="d-flex justify-content-between">
-                                                        <div>
-                                                            @foreach($product->variants as $variant)
-                                                                @if($variant->color)
-                                                                    <span class="color-dot variant-color" data-image="{{ $variant->image ? asset('storage/' . $variant->image) : $defaultImage }}" style="background-color: {{ $variant->color }}; width: 12px; height: 12px; border-radius: 50%; margin: 0 3px; display: inline-block; cursor: pointer;"></span>
-                                                                @endif
-                                                            @endforeach
-                                                        </div>
-                                                    </div>
-                                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                                        <span class="rating" style="font-size: 10px;">
-                                                            ⭐⭐⭐⭐⭐ <span class="reviews">(0)</span>
-                                                        </span>
-                                                        <span class="ms-2" style="font-size: 12px; color: #777;">({{ $product->variants->sum('sold_quantity') }} đã bán)</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#featuredProductsCarousel" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#featuredProductsCarousel" data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    </button>
-                </div>
-
-                <div class="product-list">
-                    <div class="row justify-content-center">
-                        @foreach($products->take(8) as $product)
-                            <div class="col-md-2 col-6 mb-4 animate__animated animate__fadeInUp">
-                                <div class="card h-100 border-0 product-card">
-                                    <a href="{{ route('products.show', $product->id) }}">
-                                        @php
-                                            $defaultImage = $product->image ? asset('storage/' . $product->image) : asset('path/to/default-image.jpg');
-                                            $firstVariantImage = $product->variants->whereNotNull('image')->first();
-                                            $defaultImage = $firstVariantImage ? asset('storage/' . $firstVariantImage->image) : $defaultImage;
-                                        @endphp
-                                        <img src="{{ $defaultImage }}" class="card-img-top product-image" data-default-image="{{ $defaultImage }}" style="height: 250px; object-fit: cover;" alt="{{ $product->name }}">
-                                    </a>
-                                    <div class="card-body">
-                                    <p class="card-title">{{ Str::limit($product->name, 30) }}</p>
-
-                                        @php
-                                            $minPrice = $product->variants->min('price') ?? 0;
-                                            $maxPrice = $product->variants->max('price') ?? 0;
-                                        @endphp
-                                        <p class="card-text text-danger text-left">{{ number_format($minPrice, 0, ',', '.') }}đ</p>
-                                        <div class="d-flex justify-content-between">
-                                            <div>
-                                                @foreach($product->variants as $variant)
-                                                    @if($variant->color)
-                                                        <span class="color-dot variant-color" data-image="{{ $variant->image ? asset('storage/' . $variant->image) : $defaultImage }}" style="background-color: {{ $variant->color }}; width: 12px; height: 12px; border-radius: 50%; margin: 0 3px; display: inline-block; cursor: pointer;"></span>
-                                                    @endif
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <span class="rating" style="font-size: 10px;">
-                                                ⭐⭐⭐⭐⭐ <span class="reviews">(0)</span>
-                                            </span>
-                                            <span class="ms-2" style="font-size: 12px; color: #777;">({{ $product->variants->sum('sold_quantity') }} đã bán)</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Banner quảng cáo thứ hai -->
-        <!-- <div class="row my-5">
-            <div class="col-12">
-                <div class="promo-banner animate__animated animate__fadeIn">
-                    <img src="https://file.hstatic.net/1000398692/collection/banner_giay_pan_ps_7686edaa13ec4b06a1f244428a72d164.jpg" alt="Promo Banner 2" class="img-fluid rounded">
-                    <div class="banner-content">
-                        <h3 class="text-white">Khuyến Mãi Lớn!</h3>
-                        <p class="text-white">Mua 1 tặng 1 cho tất cả các sản phẩm nổi bật!</p>
-                        <a href="#" class="btn btn-warning rounded-pill">Xem ngay</a>
-                    </div>
-                </div>
-            </div>
-        </div> -->
-
-        <!-- Sản phẩm nhiều người chú ý -->
-        <!-- <div class="row mb-5">
-            <div class="col-12 text-center mb-4 animate__animated animate__fadeIn">
-                <h1 class="display-6 section-title">Sản phẩm nhiều người chú ý <i class="fas fa-eye text-success ms-2"></i></h1>
-            </div>
-            <div class="col-12">
-                <div class="carousel slide" id="notableProductsCarousel" data-bs-ride="carousel">
-                    <div class="carousel-inner">
-                        @foreach($products->chunk(4) as $chunk)
-                            <div class="carousel-item {{ $loop->first ? 'active' : '' }}">
-                                <div class="row justify-content-center">
-                                    @foreach($chunk as $product)
-                                        <div class="col-md-2 col-6 mb-4 animate__animated animate__fadeInUp">
-                                            <div class="card h-100 border-0 product-card">
-                                                <a href="{{ route('products.show', $product->id) }}">
-                                                    @php
-                                                        $defaultImage = $product->image ? asset('storage/' . $product->image) : asset('path/to/default-image.jpg');
-                                                        $firstVariantImage = $product->variants->whereNotNull('image')->first();
-                                                        $defaultImage = $firstVariantImage ? asset('storage/' . $firstVariantImage->image) : $defaultImage;
-                                                    @endphp
-                                                    <img src="{{ $defaultImage }}" class="card-img-top product-image" data-default-image="{{ $defaultImage }}" style="height: 250px; object-fit: cover;" alt="{{ $product->name }}">
-                                                </a>
-                                                <div class="card-body">
-                                                    <p class="card-title" style="font-size: 14px; font-weight: 500;">{{ Str::limit($product->name, 30) }}</p>
-                                                    @php
-                                                        $minPrice = $product->variants->min('price') ?? 0;
-                                                        $maxPrice = $product->variants->max('price') ?? 0;
-                                                    @endphp
-                                                    <p class="card-text text-danger text-left">{{ number_format($minPrice, 0, ',', '.') }}đ</p>
-                                                    <div class="d-flex justify-content-between">
-                                                        <div>
-                                                            @foreach($product->variants as $variant)
-                                                                @if($variant->color)
-                                                                    <span class="color-dot variant-color" data-image="{{ $variant->image ? asset('storage/' . $variant->image) : $defaultImage }}" style="background-color: {{ $variant->color }}; width: 12px; height: 12px; border-radius: 50%; margin: 0 3px; display: inline-block; cursor: pointer;"></span>
-                                                                @endif
-                                                            @endforeach
-                                                        </div>
-                                                    </div>
-                                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                                        <span class="rating" style="font-size: 10px;">
-                                                            ⭐⭐⭐⭐⭐ <span class="reviews">(0)</span>
-                                                        </span>
-                                                        <span class="ms-2" style="font-size: 12px; color: #777;">({{ $product->variants->sum('sold_quantity') }} đã bán)</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#notableProductsCarousel" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#notableProductsCarousel" data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    </button>
-                </div>
-
-                <div class="product-list">
-                    <div class="row justify-content-center">
-                        @foreach($products->take(8) as $product)
-                            <div class="col-md-2 col-6 mb-4 animate__animated animate__fadeInUp">
-                                <div class="card h-100 border-0 product-card">
-                                    <a href="{{ route('products.show', $product->id) }}">
-                                        @php
-                                            $defaultImage = $product->image ? asset('storage/' . $product->image) : asset('path/to/default-image.jpg');
-                                            $firstVariantImage = $product->variants->whereNotNull('image')->first();
-                                            $defaultImage = $firstVariantImage ? asset('storage/' . $firstVariantImage->image) : $defaultImage;
-                                        @endphp
-                                        <img src="{{ $defaultImage }}" class="card-img-top product-image" data-default-image="{{ $defaultImage }}" style="height: 250px; object-fit: cover;" alt="{{ $product->name }}">
-                                    </a>
-                                    <div class="card-body">
-                                        <p class="card-title" style="font-size: 14px; font-weight: 500;">{{ Str::limit($product->name, 30) }}</p>
-                                        @php
-                                            $minPrice = $product->variants->min('price') ?? 0;
-                                            $maxPrice = $product->variants->max('price') ?? 0;
-                                        @endphp
-                                        <p class="card-text text-danger text-left">{{ number_format($minPrice, 0, ',', '.') }}đ</p>
-                                        <div class="d-flex justify-content-between">
-                                            <div>
-                                                @foreach($product->variants as $variant)
-                                                    @if($variant->color)
-                                                        <span class="color-dot variant-color" data-image="{{ $variant->image ? asset('storage/' . $variant->image) : $defaultImage }}" style="background-color: {{ $variant->color }}; width: 12px; height: 12px; border-radius: 50%; margin: 0 3px; display: inline-block; cursor: pointer;"></span>
-                                                    @endif
-                                                @endforeach
-                                            </div>
-                                            <span class="heart-icon" style="color: #ff4d4f; font-size: 12px;">❤️</span>
-                                        </div>
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <span class="rating" style="font-size: 10px;">
-                                                ⭐⭐⭐⭐⭐ <span class="reviews">(0)</span>
-                                            </span>
-                                            <span class="ms-2" style="font-size: 12px; color: #777;">({{ $product->variants->sum('sold_quantity') }} đã bán)</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-        </div> -->
-
-        <!-- Banner quảng cáo thứ ba -->
-        <div class="row my-5">
-            <div class="col-12">
-                <div class="promo-banner animate__animated animate__fadeIn">
-                    <img src="https://www.shutterstock.com/image-vector/sports-fitness-products-banner-design-260nw-1919898449.jpg" alt="Promo Banner 3" class="img-fluid rounded">
-                    <div class="banner-content">
-                        <h3 class="text-white">Flash Sale!</h3>
-                        <p class="text-white">Giảm giá cực sốc trong 24 giờ!</p>
-                        <a href="#" class="btn btn-danger rounded-pill">Mua ngay</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Giảm giá sốc -->
-        <div class="row mb-5">
-            <div class="col-12 text-center mb-4 animate__animated animate__fadeIn">
-                <h1>Giảm giá sốc</h1>
-            </div>
-            <div class="col-12">
-                <div class="carousel slide" id="discountProductsCarousel" data-bs-ride="carousel">
-                    <div class="carousel-inner">
-                        @foreach($products->chunk(4) as $chunk)
-                            <div class="carousel-item {{ $loop->first ? 'active' : '' }}">
-                                <div class="row justify-content-center">
-                                    @foreach($chunk as $product)
-                                        <div class="col-md-2 col-6 mb-4 animate__animated animate__fadeInUp">
-                                            <div class="card h-100 border-0 product-card">
-                                                <a href="{{ route('products.show', $product->id) }}">
-                                                    @php
-                                                        $defaultImage = $product->image ? asset('storage/' . $product->image) : asset('path/to/default-image.jpg');
-                                                        $firstVariantImage = $product->variants->whereNotNull('image')->first();
-                                                        $defaultImage = $firstVariantImage ? asset('storage/' . $firstVariantImage->image) : $defaultImage;
-                                                    @endphp
-                                                    <img src="{{ $defaultImage }}" class="card-img-top product-image" data-default-image="{{ $defaultImage }}" style="height: 250px; object-fit: cover;" alt="{{ $product->name }}">
-                                                </a>
-                                                <div class="card-body">
-                                                <p class="card-title">{{ Str::limit($product->name, 30) }}</p>
-                                                @php
-                                                        $minPrice = $product->variants->min('price') ?? 0;
-                                                        $maxPrice = $product->variants->max('price') ?? 0;
-                                                    @endphp
-                                                    <p class="card-text text-danger text-left">{{ number_format($minPrice, 0, ',', '.') }}đ</p>
-                                                    <div class="d-flex justify-content-between">
-                                                        <div>
-                                                            @foreach($product->variants as $variant)
-                                                                @if($variant->color)
-                                                                    <span class="color-dot variant-color" data-image="{{ $variant->image ? asset('storage/' . $variant->image) : $defaultImage }}" style="background-color: {{ $variant->color }}; width: 12px; height: 12px; border-radius: 50%; margin: 0 3px; display: inline-block; cursor: pointer;"></span>
-                                                                @endif
-                                                            @endforeach
-                                                        </div>
-                                                    </div>
-                                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                                        <span class="rating" style="font-size: 10px;">
-                                                            ⭐⭐⭐⭐⭐ <span class="reviews">(0)</span>
-                                                        </span>
-                                                        <span class="ms-2" style="font-size: 12px; color: #777;">({{ $product->variants->sum('sold_quantity') }} đã bán)</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#discountProductsCarousel" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#discountProductsCarousel" data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    </button>
-                </div>
-
-                <div class="product-list">
-                    <div class="row justify-content-center">
-                        @foreach($products->take(8) as $product)
-                            <div class="col-md-2 col-6 mb-4 animate__animated animate__fadeInUp">
-                                <div class="card h-100 border-0 product-card">
-                                    <a href="{{ route('products.show', $product->id) }}">
-                                        @php
-                                            $defaultImage = $product->image ? asset('storage/' . $product->image) : asset('path/to/default-image.jpg');
-                                            $firstVariantImage = $product->variants->whereNotNull('image')->first();
-                                            $defaultImage = $firstVariantImage ? asset('storage/' . $firstVariantImage->image) : $defaultImage;
-                                        @endphp
-                                        <img src="{{ $defaultImage }}" class="card-img-top product-image" data-default-image="{{ $defaultImage }}" style="height: 250px; object-fit: cover;" alt="{{ $product->name }}">
-                                    </a>
-                                    <div class="card-body">
-                                    <p class="card-title">{{ Str::limit($product->name, 30) }}</p>
-                                    @php
-                                            $minPrice = $product->variants->min('price') ?? 0;
-                                            $maxPrice = $product->variants->max('price') ?? 0;
-                                        @endphp
-                                        <p class="card-text text-danger text-left">{{ number_format($minPrice, 0, ',', '.') }}đ</p>
-                                        <div class="d-flex justify-content-between">
-                                            <div>
-                                                @foreach($product->variants as $variant)
-                                                    @if($variant->color)
-                                                        <span class="color-dot variant-color" data-image="{{ $variant->image ? asset('storage/' . $variant->image) : $defaultImage }}" style="background-color: {{ $variant->color }}; width: 12px; height: 12px; border-radius: 50%; margin: 0 3px; display: inline-block; cursor: pointer;"></span>
-                                                    @endif
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <span class="rating" style="font-size: 10px;">
-                                                ⭐⭐⭐⭐⭐ <span class="reviews">(0)</span>
-                                            </span>
-                                            <span class="ms-2" style="font-size: 12px; color: #777;">({{ $product->variants->sum('sold_quantity') }} đã bán)</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- Sản phẩm bán chạy -->
-    <div class="container my-5">
-        <div class="row">
-            <div class="col-12 text-center mb-4 animate__animated animate__fadeIn">
-                <h1 class="display-6 section-title">Sản phẩm bán chạy <i class="fas fa-fire text-danger ms-2"></i></h1>
-            </div>
-        </div>
-        <div class="row justify-content-center">
-            @foreach($products as $product)
-                <div class="col-md-2 col-6 mb-4 animate__animated animate__fadeInUp">
-                    <div class="card h-100 border-0 product-card">
-                        <a href="{{ route('products.show', $product->id) }}">
-                            @php
-                                $defaultImage = $product->image ? asset('storage/' . $product->image) : asset('path/to/default-image.jpg');
-                                $firstVariantImage = $product->variants->whereNotNull('image')->first();
-                                $defaultImage = $firstVariantImage ? asset('storage/' . $firstVariantImage->image) : $defaultImage;
-                            @endphp
-                            <img src="{{ $defaultImage }}" class="card-img-top product-image" data-default-image="{{ $defaultImage }}" style="height: 250px; object-fit: cover;" alt="{{ $product->name }}">
-                        </a>
-                        <div class="card-body">
-                            <p class="card-title" style="font-size: 14px; font-weight: 500;">{{ Str::limit($product->name, 30) }}</p>
-                            @php
-                                $minPrice = $product->variants->min('price') ?? 0;
-                                $maxPrice = $product->variants->max('price') ?? 0;
-                            @endphp
-                            <p class="card-text text-danger text-left">{{ number_format($minPrice, 0, ',', '.') }}đ</p>
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    @foreach($product->variants as $variant)
-                                        @if($variant->color)
-                                            <span class="color-dot variant-color" data-image="{{ $variant->image ? asset('storage/' . $variant->image) : $defaultImage }}" style="background-color: {{ $variant->color }}; width: 12px; height: 12px; border-radius: 50%; margin: 0 3px; display: inline-block; cursor: pointer;"></span>
-                                        @endif
-                                    @endforeach
-                                </div>
-                                <span class="heart-icon" style="color: #ff4d4f; font-size: 12px;">❤️</span>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="rating" style="font-size: 10px;">
-                                    ⭐⭐⭐⭐⭐ <span class="reviews">(0)</span>
-                                </span>
-                                <span class="ms-2" style="font-size: 12px; color: #777;">({{ $product->variants->sum('sold_quantity') }} đã bán)</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @endforeach
-        </div>
-    </div>
-
+    </section>
+ 
     <!-- Phần giới thiệu -->
     <section class="about py-5 bg-light">
         <div class="container">
@@ -570,6 +117,38 @@ Bài viết
             </div>
         </div>
     </section>
+
+        <!-- tin tuc -->
+        <section class="latest spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="section-title">
+                    <span>BÀI VIẾT MỚI</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            @foreach($articles as $article)
+                <div class="col-lg-4 col-md-6 col-sm-6 mb-4">
+                    <div class="blog__item">
+                    <div class="blog__item__pic set-bg" 
+                             style="background-image: url('{{ asset('storage/' . $article->image) }}');
+                                   ">
+                        </div>
+                        <div class="blog__item__text">
+                            <span><i class="bi bi-calendar3"></i> {{ $article->created_at->format('d M Y') }}</span>
+                            <h5>{{ $article->name }}</h5>
+                            <p>{{ \Illuminate\Support\Str::limit($article->description, 100) }}</p>
+                            <a href="{{ route('articles.showUser', $article->id) }}" style="text-decoration: none">Xem thêm</a>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+</section>
 
     @include('Users.chat')
 @endsection
