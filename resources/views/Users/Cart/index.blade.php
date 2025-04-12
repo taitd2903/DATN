@@ -3,9 +3,10 @@
 @section('content')
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <div class="cart-container">
-    <h2 style="text-align:center">{{ __('messages.your_cart') }}</h2>
-            <br>
+  <section class="shopping-cart spad">
+    <div class="container">
+        <h2 style="text-align:center">{{ __('messages.your_cart') }}</h2>
+        <br>
 
         @if (session('success'))
             <div class="alert alert-success" id="success-message">
@@ -30,45 +31,52 @@
         @endif
 
         @if ($cartItems->count() > 0)
-            <table class="cart-table">
-                <thead>
-                    <tr>
-                    <th></th>
-                    <th>{{ __('messages.image') }}</th>
-                    <th>{{ __('messages.product') }}</th>
-                    <th>{{ __('messages.price') }}</th>
-                    <th>{{ __('messages.quantity') }}</th>
-                    <th>{{ __('messages.total') }}</th>
-                    <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @php $total = 0; @endphp
-                    @foreach ($cartItems as $item)
-                        @php
-                            $subtotal = $item->quantity * $item->price;
-                            // $total += $subtotal;
-                            $isOutOfStock = $item->variant->stock_quantity == 0;
-                        @endphp
-                        <tr data-cart-id="{{ $item->id }}">
-                            <td><input type="checkbox" class="select-item" data-id="{{ $item->id }}"
-                                    {{ $isOutOfStock ? 'disabled' : '' }}></td>
-                            <td><img src="{{ asset('storage/' . $item->variant->image) }}" class="cart-image"></td>
-                            <td>
-                            <b>{{ $item->product->name }} ({{ $item->variant->size }} / <span style="display: inline-flex; align-items: center;">màu :
-        <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background-color: {{ $item->variant->color }}; border: 1px solid #ccc; margin-right: 4px;"></span>
-        
-    </span>)
-</b>
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="shopping__cart__table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" id="select-all"></th>
+                                <th>{{ __('messages.image') }}</th>
+                                <th>{{ __('messages.product') }}</th>
+                                <th>{{ __('messages.price') }}</th>
+                                <th>Số lượng</th>
+                                <th>{{ __('messages.total') }}</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @php $total = 0; @endphp
+                            @foreach ($cartItems as $item)
+                                @php
+                                    $subtotal = $item->quantity * $item->price;
+                                    $total += $subtotal;
+                                    $isOutOfStock = $item->variant->stock_quantity == 0;
+                                @endphp
+                                <tr data-cart-id="{{ $item->id }}">
+                                    <td><input type="checkbox" class="select-item" data-id="{{ $item->id }}"
+                                            {{ $isOutOfStock ? 'disabled' : '' }}></td>
+                                    <td class="product__cart__item__pic">
+                                        <img src="{{ asset('storage/' . $item->variant->image) }}" alt="" class="cart-image" style="max-width: 80px;">
+                                    </td>
+                                    <td class="product__cart__item__text">
+                                        <b>{{ $item->product->name }} <br> {{ $item->variant->size }} / 
+                                            <span style="display: inline-flex; align-items: center;">
+                                                <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background-color: {{ $item->variant->color }}; border: 1px solid #ccc; margin-right: 4px;"></span>
+                                            </span>
+                                        </b>
+                                        <span class="stock-warning" style="color: red; display: none;"></span>
+                                    </td>
 
-                                <span class="stock-warning" style="color: red; display: none;"></span>
-                            </td>
-                            <td>{{ number_format($item->price, 0, ',', '.') }} đ</td>
-                            <td>
-                                <form action="{{ route('cart.update', $item->id) }}" method="POST" class="update-form">
-                                    @csrf
-                                    @method('PATCH')
-                                    <div class="quantity-container">
+                                    <td class="cart__price">{{ number_format($item->price, 0, ',', '.') }} đ</td>
+
+                                    <td class="quantity__item">
+                                        <form action="{{ route('cart.update', $item->id) }}" method="POST" class="update-form">
+                                            @csrf
+                                            @method('PATCH')
+
+                                            <div class="quantity-container">
                                         <button type="button" class="btn decrement" data-id="{{ $item->id }}"
                                             {{ $isOutOfStock ? 'disabled' : '' }}>-</button>
                                         <input type="number" name="quantity" value="{{ $item->quantity }}" min="1"
@@ -77,49 +85,55 @@
                                         <button type="button" class="btn increment" data-id="{{ $item->id }}"
                                             {{ $isOutOfStock ? 'disabled' : '' }}>+</button>
                                     </div>
-                                    <div class="error-message" style="color: red; font-size: 0.9em; margin-top: 5px;"></div>
-                                </form>
-                            </td>
-                           <td class="subtotal" style="font-weight: bold; color: red;"> {{ number_format($subtotal, 0, ',', '.') }} đ</td>
-                            <td>
-                                <form action="{{ route('cart.remove', $item->id) }}" method="POST" class="remove-form">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger">X</button>
-                                </form>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-              
-            </table>
-         <div class="select-all-container">
-                 <input type="checkbox" id="select-all">
-                  <label for="select-all">{{ __('messages.select_all') }}</label>
+                                    
+
+                                            <div class="error-message" style="color: red; font-size: 0.9em; margin-top: 5px;"></div>
+                                        </form>
+                                    </td>
+                                    <td class="cart__price subtotal" style="font-weight: bold; color: red;">{{ number_format($subtotal, 0, ',', '.') }} đ</td>
+                                    <td class="cart__close">
+                                        <form action="{{ route('cart.remove', $item->id) }}" method="POST" class="remove-form">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger">X</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
-            <!-- <div
-                style="font-family: Arial, sans-serif; padding: 10px; margin-top: 15px; background-color: #f4f4f4; border: 1px solid #ccc; border-radius: 5px; display: flex; align-items: center; gap: 10px;">
-                <input type="checkbox" id="select-all">Chọn tất cả
-            </div> -->
-            <div class="cart-summary">
-                <h3>{{ __('messages.order_summary') }}</h3>
-                <b><p>{{ __('messages.subtotal') }}: <span class="total-amount">{{ number_format($total, 0, ',', '.') }} đ</span></p></b>
-                <div class="cart-actions">
-                    <!-- <a href="{{ route('products.index') }}" class="btn btn-secondary">Tiếp tục mua hàng</a> -->
-                
-                    <a class="back-btn" href="{{ route('products.index') }}">
-                    <i class="fas fa-arrow-left"></i> {{ __('messages.continue_shopping') }}
-                </a>
-                <a class="back-btn" href="{{ route('checkout') }}" id="checkout-btn">
-                {{ __('messages.checkout') }} <i class="fas fa-arrow-right"></i>
-                </a>
-                    <!-- <a href="{{ route('checkout') }}" class="btn btn-checkout" id="checkout-btn">Thanh toán</a> -->
+
+                <div class="select-all-container" style="margin-top: 10px;">
+                    <!-- <input type="checkbox" id="select-all"> -->
+                    <label for="select-all">Chọn tất cả</label>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-lg-6">
+                        <div class="continue__btn">
+                            <a href="{{ route('products.index') }}"><i class="fas fa-arrow-left"></i> {{ __('messages.continue_shopping') }}</a>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <div class="col-lg-4">
+                <div class="cart__total">
+                    <h6>{{ __('messages.order_summary') }}</h6>
+                    <ul>
+                        <li>{{ __('messages.subtotal') }} <span class="total-amount">{{ number_format($total, 0, ',', '.') }} đ</span></li>
+                        <!-- <li>{{ __('messages.total') }} <span class="total-amount">{{ number_format($total, 0, ',', '.') }} đ</span></li> -->
+                    </ul>
+                    <a href="{{ route('checkout') }}" class="primary-btn" id="checkout-btn">{{ __('messages.checkout') }}</a>
+                </div>
+            </div>
+        </div>
         @else
             <p>{{ __('messages.cart_empty') }}</p>
         @endif
     </div>
+</section>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
