@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 use App\Models\User;
+
 use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-
+use Illuminate\Support\Facades\Validator;
 class UserController extends Controller
 {
      // Hiển thị danh sách users
@@ -296,6 +298,51 @@ public function unban($id)
 
     return redirect()->back()->with('success', 'Tài khoản đã được mở khóa.');
 }
+public function showChangePasswordForm()
+{
+    return view('auth.change_password');
+}
 
+public function updatePassword(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'current_password' => ['required'],
+        'new_password' => [
+            'required',
+            'string',
+            'min:8',              
+            'regex:/[a-z]/',      // ít nhất 1 chữ thường
+            'regex:/[A-Z]/',      // ít nhất 1 chữ in hoa
+            'regex:/[0-9]/',      // ít nhất 1 chữ số
+            'regex:/[@$!%*#?&]/', // ít nhất 1 ký tự đặc biệt
+            'confirmed'           // phải khớp với new_password_confirmation
+        ],
+        function ($attribute, $value, $fail) {
+            if (!Hash::check($value, Auth::user()->password)) {
+                $fail('Mật khẩu hiện tại không đúng');
+            }
+        },
+    ], [
+        
+        'new_password.required' => 'Vui lòng nhập mật khẩu mới',
+        'new_password.min' => 'Mật khẩu phải có ít nhất 8 ký tự',
+        'new_password.regex' => 'Mật khẩu phải bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt',
+        'new_password.confirmed' => 'Xác nhận mật khẩu không khớp',
+        'current_password.required' => 'Vui lòng nhập mật khẩu hiện tại',
+    ]);
+    if ($validator->fails()) {
+        return back()->withErrors($validator)->withInput();
+    }
+    $user = Auth::user();
+
+    // if (!Hash::check($request->current_password, $user->password)) {
+    //     return back()->with('error', 'Mật khẩu hiện tại không đúng');
+    // }
+
+    $user->password = Hash::make($request->new_password);
+    $user->save();
+
+    return back()->with('success', 'Đổi mật khẩu thành công');
+}
 
 }

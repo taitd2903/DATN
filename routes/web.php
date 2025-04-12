@@ -64,11 +64,16 @@ Route::controller(AuthController::class)->group(function () {
 // Chuyển đổi sang user
 Route::middleware(['auth', 'role:admin'])->get('/switch-to-user', [AuthController::class, 'switchToUser'])->name('switch.to.user');
 //role staff
-Route::prefix('admin')->name('admin.')->middleware('check.permission')->group(function () {
-    Route::get('users/{id}/permissions', [UserPermissionController::class, 'edit'])->name('user.permissions.edit');
-    Route::post('users/{id}/permissions', [UserPermissionController::class, 'update'])->name('user.permissions.update');
-});
+// Route::prefix('admin')->name('admin.')->middleware('check.permission')->group(function () {
+//     Route::get('users/{id}/permissions', [UserPermissionController::class, 'edit'])->name('user.permissions.edit');
+//     Route::post('users/{id}/permissions', [UserPermissionController::class, 'update'])->name('user.permissions.update');
+// });
 
+// đổi mật khẩu
+Route::middleware(['auth'])->group(function () {
+    Route::get('/change-password', [UserController::class, 'showChangePasswordForm'])->name('password.form');
+    Route::post('/change-password', [UserController::class, 'updatePassword'])->name('user.change-password');
+});
 
 
 // ========================= QUẢN TRỊ VIÊN (ADMIN) =========================
