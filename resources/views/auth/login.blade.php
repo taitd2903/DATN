@@ -34,7 +34,7 @@
                     <br>
                     <div class="options">
                         {{-- <label><input type="checkbox" name="remember"> {{ __('messages.remember_me') }}</label> --}}
-                        <a href="{{ route('password.request') }}">{{ __('messages.forgot_password') }}</a>
+                        <a href="{{ route('password.request') }}" style="margin-right: 30px">{{ __('messages.forgot_password') }}</a>
                     </div>
                     <br>
                     <button type="submit" class="btn">{{ __('messages.login') }}</button>

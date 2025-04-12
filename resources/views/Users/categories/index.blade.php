@@ -55,8 +55,9 @@
                     </select>
                 </div>
                 <div class="mb-3">
-                    <input type="number" name="min_price" class="form-control mb-2" placeholder="Min Price" value="{{ request('min_price') }}">
-                    <input type="number" name="max_price" class="form-control" placeholder="Max Price" value="{{ request('max_price') }}">
+                    <!-- <h3>tìm kiếm theo khoảng giá</h3> -->
+                    <input type="number" name="min_price" class="form-control mb-2" placeholder="Giá thấp" value="{{ request('min_price') }}">
+                    <input type="number" name="max_price" class="form-control" placeholder="Giá cao" value="{{ request('max_price') }}">
                 </div>
 
                 <button type="submit" class="btn btn-primary w-100">Tìm kiếm</button>

@@ -7,8 +7,8 @@
 <div class="container">
     <div class="forgot-wrapper">
         <div class="forgot-box">
-            <h2>Forgot Password?</h2>
-            <p>Enter your email to receive a password reset link</p>
+            <h2>Quên mật khẩu?</h2>
+            <p>Nhập email của bạn để nhận liên kết đặt lại mật khẩu</p>
 
             @if (session('status'))
                 <p class="success-message">{{ session('status') }}</p>
@@ -18,10 +18,10 @@
                 @csrf
                 <div class="input-box">
                     <label for="email"><i class="fa-solid fa-envelope"></i> Email</label>
-                    <input type="email" name="email" placeholder="Enter your email" required>
+                    <input type="email" name="email" placeholder="Nhập email của bạn" required>
                 </div>
 
-                <button type="submit" class="btn">Send Request</button>
+                <button type="submit" class="btn">Gửi yêu cầu</button>
             </form>
 
             @if ($errors->any())
@@ -32,7 +32,7 @@
                 </div>
             @endif
 
-            <p>Remember your password? <a href="{{ route('login') }}">Sign in</a></p>
+            <p>Bạn nhớ lại mật khẩu?<a href="{{ route('login') }}">Đăng nhập</a></p>
         </div>
     </div>
 </div>
