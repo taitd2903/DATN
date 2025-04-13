@@ -136,6 +136,8 @@ class ProductController extends Controller {
             ['name' => $product->name, 'url' => null],
         ];
 
+        
+
         return view('users.products.show', compact('breadcrumbs','product', 'reviews', 'userCanReview','minPrice' ,'maxPrice'));
     }
 

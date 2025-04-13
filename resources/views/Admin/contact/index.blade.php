@@ -23,9 +23,10 @@
      <table class="table table-bordered">
            <thead>
                  <tr>
+                        <th>STT</th>
                        <th>Họ tên</th>
                        <th>Email</th>
-
+                        <th>Nội dung</th>
                        <th>Thời gian</th>
                        <th>Trạng thái</th>
                        <th>Hành động</th>
@@ -34,8 +35,10 @@
            <tbody>
                  @foreach($contacts as $contact)
                           <tr>
+                              <td>{{ $contact->id }}</td>
                                  <td>{{ $contact->name }}</td>
                                  <td>{{ $contact->email }}</td>
+                                    <td>{{ $contact->message }}</td>
 
                                  <td>{{ $contact->created_at->format('d/m/Y H:i') }}</td>
                                  <td>

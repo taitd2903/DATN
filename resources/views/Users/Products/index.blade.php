@@ -31,7 +31,7 @@
                 <div class="col-lg-12">
                     <ul class="filter__controls">
                         <li class="active" data-filter="*">Sản phẩm hot</li>
-                        
+
                         <li data-filter=".hot-sales">Bán chạy</li>
                     </ul>
                 </div>
@@ -110,8 +110,8 @@
                                 <div class="product__item__pic set-bg">
                                     @if ($product->image)
                                         <img src="{{ asset('storage/' . $product->image) }}"
-                                             class="card-img-top product-img" alt="{{ $product->name }}"
-                                             style="width: 100%; aspect-ratio: 1 / 1; object-fit: cover;">
+                                            class="card-img-top product-img" alt="{{ $product->name }}"
+                                            style="width: 100%; aspect-ratio: 1 / 1; object-fit: cover;">
                                     @else
                                         <div class="p-3 text-center text-muted">Chưa có hình ảnh</div>
                                     @endif
@@ -122,14 +122,14 @@
                                         <li><a href="#"><i class="bi bi-eye-slash"></i></a></li>
                                     </ul>
                                 </div>
-            
+
                                 <!-- Product Details -->
                                 <div class="product__item__text">
                                     <h6>{{ $product->name }}</h6>
                                     <a href="{{ route('products.show', $product->id) }}" class="add-cart"
-                                       style="text-decoration: none">Xem chi tiết</a>
+                                        style="text-decoration: none">Xem chi tiết</a>
                                     <p>Đã bán: {{ $product->total_sold_quantity }}</p>
-            
+
                                     <!-- Rating (Placeholder) -->
                                     <div class="rating">
                                         <i class="fa fa-star-o"></i>
@@ -138,16 +138,17 @@
                                         <i class="fa fa-star-o"></i>
                                         <i class="fa fa-star-o"></i>
                                     </div>
-            
+
                                     <!-- Price Range -->
-                                    <h5>{{ number_format($product->min_price) }} - {{ number_format($product->max_price) }} VNĐ</h5>
-            
+                                    <h5>{{ number_format($product->min_price) }} -
+                                        {{ number_format($product->max_price) }} VNĐ</h5>
+
                                     <!-- Color Variants -->
                                     @if ($product->variants && $product->variants->count() > 0)
                                         <div id="color-options" class="product__color__select">
                                             @foreach ($product->variants->unique('color') as $variant)
                                                 <button type="button" class="color-btn" data-color="{{ $variant->color }}"
-                                                        style="background-color: {{ $variant->color }}; width: 20px; height: 20px; border: 1px solid #ccc; border-radius: 50%; display: inline-block;">
+                                                    style="background-color: {{ $variant->color }}; width: 20px; height: 20px; border: 1px solid #ccc; border-radius: 50%; display: inline-block;">
                                                 </button>
                                             @endforeach
                                         </div>
@@ -166,8 +167,15 @@
             <div class="row align-items-center animate__animated animate__fadeIn">
                 <div class="col-md-6 mb-4 mb-md-0">
                     <h2 class="display-6 section-title">Phong cách thời trang</h2>
-                    <p class="text-muted">Xu hướng thời trang năm 2025</p>
-                    <p class="text-muted">Thời trang bền vững suốt đời</p>
+                    <p class="text-muted">Xu hướng thời trang năm 2025 đang chứng kiến sự trỗi dậy mạnh mẽ của phong cách
+                        tối giản, cá tính và hướng đến sự linh hoạt trong từng chuyển động. Những bộ outfit không chỉ đẹp
+                        mắt mà còn giúp người mặc cảm thấy thoải mái, tự tin cả khi vận động hay trong đời sống thường ngày.
+                    </p>
+                    <p class="text-muted">Thời trang bền vững không còn là xu hướng nhất thời – đó là tuyên ngôn sống. Chúng
+                        tôi cam kết mang đến những sản phẩm thân thiện với môi trường, sử dụng chất liệu tái chế và quy
+                        trình sản xuất tiết kiệm năng lượng. Hãy cùng chúng tôi xây dựng một phong cách sống xanh và hiện
+                        đại, nơi cái đẹp đồng hành cùng trách nhiệm.</p>
+
                     <a href={{ url('categories') }} class="btn btn-primary rounded-pill px-4">Xem thêm thời trang</a>
                 </div>
                 <div class="col-md-6">
@@ -200,7 +208,8 @@
                                 <span><i class="bi bi-calendar3"></i> {{ $article->created_at->format('d M Y') }}</span>
                                 <h5>{{ $article->name }}</h5>
                                 <p>{{ \Illuminate\Support\Str::limit($article->description, 100) }}</p>
-                                <a href="{{ route('articles.showUser', $article->id) }}" style="text-decoration: none">Xem
+                                <a href="{{ route('articles.showUser', $article->id) }}"
+                                    style="text-decoration: none">Xem
                                     thêm</a>
                             </div>
                         </div>

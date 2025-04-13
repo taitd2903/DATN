@@ -1,42 +1,93 @@
-@extends('layouts.app') 
+@extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h2>Liên hệ với chúng tôi</h2>
+    <div class="container">
+        @if (session('success'))
+            <div id="alert-success" class="alert alert-success position-fixed fade show"
+                style="top: 20px; right: 20px; z-index: 1050; max-width: 300px;">
+                {{ session('success') }}
+            </div>
+        @endif
+    </div>
 
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
-
-    <form action="{{ route('contact.submit') }}" method="POST">
-        @csrf
-        <div class="mb-3">
-            <label>Họ và tên</label>
-            <input type="text" name="name" class="form-control" required>
+    {{-- <section class="breadcrumb-option">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="breadcrumb__text">
+                        <h4>Liên hệ</h4>
+                        <div class="breadcrumb__links">
+                            <a href={{ url('/') }}>Trang Chủ</a>
+                            <span>Liên hệ</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="mb-3">
-            <label>Email</label>
-            <input type="email" name="email" class="form-control" required>
+    </section> --}}
+    <div class="map ">
+        <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d475751.27447118296!2d105.31016925896422!3d21.318647831431896!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x313455e940879933%3A0xcf10b34e9f1a03df!2zVHLGsOG7nW5nIENhbyDEkeG6s25nIEZQVCBQb2x5dGVjaG5pYw!5e0!3m2!1svi!2s!4v1744562942644!5m2!1svi!2s"
+            height="500" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+    </div>
+    <!-- Contact Section Begin -->
+    <section class="contact spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 col-md-6">
+                    <div class="contact__text">
+                        <div class="section-title">
+                            <span>Thông tin liên hệ</span>
+                            <h2>Liên hệ với Oceansport</h2>
+                            <p>
+                                Oceansport luôn sẵn sàng hỗ trợ bạn trong hành trình chinh phục đam mê thể thao.
+                                Đừng ngần ngại liên hệ với chúng tôi nếu bạn có bất kỳ thắc mắc nào về sản phẩm, đơn hàng
+                                hoặc chương trình khuyến mãi.
+                            </p>
+                        </div>
+                        <h5 class="fw-semibold mt-4">Chi nhánh Hà Nội</h5>
+                        <p>13 Trịnh Văn Bô, Phường Canh, Hà Nội<br>
+                            Hotline: <strong>0866043950</strong></p>
+
+                        <h5 class="fw-semibold mt-4">Email & Hỗ trợ</h5>
+                        <p>
+                            Email: <a href="mailto:oceansport@oceansport.vn">oceansport@oceansport.vn</a><br>
+                            Thời gian làm việc: 8:00 - 22:00 (T2 - CN)
+                        </p>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6">
+                    <div class="contact__form">
+                        <form action="{{ route('contact.submit') }}" method="POST">
+                            @csrf
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <input type="text" name="name" class="form-control" required placeholder="Tên">
+                                </div>
+                                <div class="col-lg-6">
+                                    <input type="email" name="email" class="form-control" required placeholder="Email">
+                                </div>
+                                <div class="col-lg-12">
+                                    <textarea name="message" class="form-control" required placeholder="Nội dung"></textarea>
+                                    <button type="submit" class="btn btn-primary">Gửi liên hệ</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="mb-3">
-            <label>Nội dung</label>
-            <textarea name="message" class="form-control" rows="5" required></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary">Gửi liên hệ</button>
-    </form>
-
-    <hr>
-
-    <h4>Địa chỉ của chúng tôi</h4>
-    <p>Tòa cao đăng FPT Polytechnic</p>
-
-    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d5005.76929523086!2d105.74808022113872!3d21.037996512997534!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x313455e940879933%3A0xcf10b34e9f1a03df!2zVHLGsOG7nW5nIENhbyDEkeG6s25nIEZQVCBQb2x5dGVjaG5pYw!5e1!3m2!1svi!2s!4v1744481136656!5m2!1svi!2s" 
-    width="100%" 
-    height="500" 
-    style="border:0; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.15);" 
-    allowfullscreen="" 
-    loading="lazy" 
-    referrerpolicy="no-referrer-when-downgrade">
-     </iframe>
-</div>
+    </section>
+    <!-- Contact Section End -->
 @endsection
+<script>
+    setTimeout(() => {
+        const alert = document.getElementById('alert-success');
+        if (alert) {
+            alert.classList.remove('show');
+            alert.classList.add('fade');
+            setTimeout(() => alert.remove(), 500); // Xóa hẳn khỏi DOM sau animation
+        }
+    }, 3000); // 3 giây
+</script>
+
