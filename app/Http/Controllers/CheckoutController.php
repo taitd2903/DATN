@@ -842,4 +842,54 @@ class CheckoutController extends Controller
 
         return min($discountAmount, $totalPrice);
     }
+    public function getAvailableCoupons(Request $request)
+{
+    $user = Auth::user();
+    $totalPrice = $request->session()->get('total_price', 0);
+    $shippingFee = 30000;
+
+    $coupons = Coupon::where('status', 1)
+        ->where('is_delete', 0)
+        ->where('start_date', '<=', now())
+        ->where('end_date', '>=', now())
+        ->where('used_count', '<', DB::raw('usage_limit'))
+        ->get();
+
+    $availableCoupons = [];
+    foreach ($coupons as $coupon) {
+        if (!$this->isCouponValid($coupon, $user)) {
+            continue;
+        }
+        if ($coupon->minimum_order_value && $totalPrice < $coupon->minimum_order_value) {
+            continue;
+        }
+
+        $baseAmount = ($coupon->discount_target == 'shipping_fee') ? $shippingFee : $totalPrice;
+        $discountAmount = $this->calculateDiscount($coupon, $baseAmount);
+
+        $discountText = '';
+        if ($coupon->discount_target == 'shipping_fee') {
+            $discountText = number_format($discountAmount, 0, ',', '.') . ' VNĐ phí vận chuyển';
+        } else {
+            if ($coupon->discount_type == 1) {
+                $discountText = $coupon->discount_value . '% giá trị đơn hàng';
+                if ($coupon->max_discount_amount) {
+                    $discountText .= ' (tối đa ' . number_format($coupon->max_discount_amount, 0, ',', '.') . ' VNĐ)';
+                }
+            } else {
+                $discountText = number_format($discountAmount, 0, ',', '.') . ' VNĐ giá trị đơn hàng';
+            }
+        }
+
+        $availableCoupons[] = [
+            'code' => $coupon->code,
+            'discount_text' => $discountText,
+        ];
+    }
+
+    return response()->json([
+        'success' => true,
+        'coupons' => $availableCoupons,
+    ]);
+}
 }

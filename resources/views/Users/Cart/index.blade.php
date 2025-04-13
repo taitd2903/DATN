@@ -151,11 +151,26 @@
                         input.setAttribute('data-price', e.price);
 
                         updateTotals();
+                        showNotification('Giá sản phẩm trong giỏ hàng đã được cập nhật!');
                     } else {
                         console.log('Row not found for cart ID:', e.id);
                     }
                 });
-
+            function showNotification(message) {
+                    let notif = document.createElement('div');
+                    notif.textContent = message;
+                    notif.style.position = 'fixed';
+                    notif.style.top = '20px';
+                    notif.style.right = '20px';
+                    notif.style.background = '#38c172';
+                    notif.style.color = '#fff';
+                    notif.style.padding = '10px 20px';
+                    notif.style.borderRadius = '8px';
+                    notif.style.boxShadow = '0 0 10px rgba(0,0,0,0.15)';
+                    notif.style.zIndex = '9999';
+                    document.body.appendChild(notif);
+                    setTimeout(() => notif.remove(), 5000);
+                }
 
             function updateTotals() {
                 let total = 0;

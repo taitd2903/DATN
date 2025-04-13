@@ -189,6 +189,7 @@ Route::get('/checkout/get-applied-coupons', [CheckoutController::class, 'getAppl
 Route::post('/checkout/remove-coupon', [CheckoutController::class, 'removeCoupon'])->name('checkout.removeCoupon')->middleware('auth');
 Route::post('/checkout/place-order', [CheckoutController::class, 'placeOrder'])->name('checkout.placeOrder');
 Route::get('/checkout/invoice/{id}', [CheckoutController::class, 'invoice'])->name('checkout.invoice');
+Route::get('/checkout/available-coupons', [CheckoutController::class, 'getAvailableCoupons'])->name('checkout.availableCoupons');
 
 //admin/oder
 Route::prefix('admin')->name('admin.')->group(function () {

@@ -2,8 +2,80 @@
 
 @section('content')
     <link rel="stylesheet" href="{{ asset('assets/css/thanhtoan.css') }}">
-
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        #available_coupon_list {
+            font-size: 14px;
+            padding: 8px;
+        }
+        #couponDropdownMenu {
+            width: 100%;
+            max-height: 150px;
+            overflow-y: auto;
+            z-index: 1000;
+            background: #fff;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        #couponDropdownMenu[aria-expanded="true"] {
+            display: block !important;
+        }
+        #available_coupon_list > div:last-child {
+            border-bottom: none;
+        }
+        #loadingMessage {
+            color: #6c757d;
+            text-align: center;
+        }
+        #couponDropdown {
+            background: #ffffff;
+            border: 2px solid #007bff;
+            color: #007bff;
+            font-weight: 500;
+            padding: 10px 15px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        #couponDropdown:hover {
+            background: #007bff;
+            color: #ffffff;
+            border-color: #0056b3;
+        }
+        #couponDropdown:focus {
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+        #couponDropdown span i {
+            font-size: 16px;
+        }
+        #available_coupon_list button[id^="copy-coupon-"] {
+            padding: 4px 10px;
+            font-size: 12px;
+            background: #f8f9fa;
+            border: 1px solid #6c757d;
+            color: #6c757d;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            max-width:50px;
+        }
+        #available_coupon_list button[id^="copy-coupon-"]:hover {
+            background: #6c757d;
+            color: #ffffff;
+            border-color: #5a6268;
+        }
+        #available_coupon_list > div {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        #available_coupon_list > div > span {
+            font-size: 14px;
+            color: #343a40;
+        }
+        </style>
     <div class="container my-5">
         <div class="row g-4">
             <!-- Thông tin thanh toán -->
@@ -103,6 +175,21 @@
 
                         <!-- Mã giảm giá -->
                         <div class="mt-4">
+                            <div class="mt-3">
+                                <h5>Ưu đãi dành cho bạn</h5>
+                                <div class="dropdown">
+                                    <button class="btn btn-outline-primary w-100 text-start d-flex justify-content-between align-items-center" type="button" id="couponDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Chọn mã giảm giá
+                                        <span><i class="bi bi-chevron-down"></i></span>
+                                    </button>
+                                    <div class="dropdown-menu w-100" aria-labelledby="couponDropdown" style="max-height: 150px; overflow-y: auto;">
+                                        <div id="available_coupon_list" class="p-2">
+                                            <div class="text-muted text-center">Đang tải mã giảm giá...</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
                             <h5>Nhập mã giảm giá</h5>
                             <div class="input-group mb-3">
                                 <input type="text" id="coupon_code" name="coupon_code" class="form-control" placeholder="Mã giảm giá">
@@ -374,7 +461,89 @@
             }
         });
     </script>
+    <script>
+    (function() {
+        document.addEventListener('DOMContentLoaded', function() {
+            const couponCodeInput = document.getElementById('coupon_code');
+            const couponMessage = document.getElementById('coupon_message');
+            const availableCouponList = document.getElementById('available_coupon_list');
 
+            if (!couponCodeInput || !couponMessage || !availableCouponList) {
+                console.error('Missing DOM elements:', {
+                    couponCodeInput: !!couponCodeInput,
+                    couponMessage: !!couponMessage,
+                    availableCouponList: !!availableCouponList
+                });
+                return;
+            }
+
+            function fetchAvailableCoupons() {
+                fetch('{{ route('checkout.availableCoupons') }}', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    availableCouponList.innerHTML = '';
+                    if (data.success && data.coupons && data.coupons.length > 0) {
+                        data.coupons.forEach(coupon => {
+                            const couponItem = document.createElement('div');
+                            couponItem.classList.add('d-flex', 'justify-content-between', 'align-items-center', 'p-2', 'border-bottom');
+                            couponItem.innerHTML = `
+                                <span>${coupon.code} (-${coupon.discount_text})</span>
+                                <button type="button" id="copy-coupon-" class="btn btn-sm btn-outline-secondary copy-coupon-btn" data-code="${coupon.code}" data-bs-dismiss="dropdown">Copy</button>
+                            `;
+                            availableCouponList.appendChild(couponItem);
+                        });
+                        document.querySelectorAll('.copy-coupon-btn').forEach(button => {
+                            button.addEventListener('click', function() {
+                                const code = this.getAttribute('data-code');
+                                navigator.clipboard.writeText(code)
+                                    .then(() => {
+                                        couponCodeInput.value = code;
+                                        setTimeout(() => {
+                                            couponMessage.innerHTML = '';
+                                        }, 3000);
+                                    })
+                                    .catch(err => {
+                                        console.error('Copy error:', err);
+                                        couponMessage.innerHTML = `<div class="alert alert-danger">Lỗi khi sao chép mã</div>`;
+                                    });
+                            });
+                        });
+                    } else {
+                        availableCouponList.innerHTML = '<div class="text-muted text-center">Không có mã giảm giá nào</div>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                    availableCouponList.innerHTML = '<div class="text-muted text-center">Lỗi tải dữ liệu</div>';
+                });
+            }
+            couponDropdown.addEventListener('click', function() {
+                fetchAvailableCoupons();
+            });
+            fetchAvailableCoupons();
+        });
+        document.getElementById('couponToggle').addEventListener('click', function() {
+        const couponList = document.getElementById('couponList');
+        couponList.style.display = couponList.style.display === 'none' ? 'block' : 'none';
+    });
+    document.addEventListener('click', function(event) {
+        const couponList = document.getElementById('couponList');
+        const couponToggle = document.getElementById('couponToggle');
+        if (!couponList.contains(event.target) && !couponToggle.contains(event.target)) {
+            couponList.style.display = 'none';
+        }
+    });
+    })();
+    </script>
     {{-- Đổ dữ liệu API về tỉnh ,thành phố, xã --}}
     <script>
         // Hàm hiển thị loading indicator (tùy chọn)
