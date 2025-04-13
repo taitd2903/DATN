@@ -2,9 +2,6 @@
 
 @section('content')
     <div class="container mt-4">
-        <p>Tổng số đơn hàng: {{ $totalAllOrders }}</p>
-<p>Số đơn bị hủy: {{ $totalCancelledOrders }}</p>
-<p>Tỷ lệ hủy: {{ number_format($cancelledOrderRate, 2) }}%</p>
 
         <h1 class="mb-4 text-center">📊 Thống kê</h1>
         <div class="mb-3">
@@ -114,6 +111,12 @@
                 <a class="nav-link {{ request('tab') == 'order-profit' ? 'active' : '' }}" 
                    href="?tab=order-profit&from_date={{ request('from_date') }}&to_date={{ request('to_date') }}&product_name={{ request('product_name') }}&category_id={{ request('category_id') }}&order_id={{ request('order_id') }}">
                    Lợi nhuận theo đơn hàng
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request('tab') == 'huydonhang' ? 'active' : '' }}" 
+                   href="?tab=huydonhang&from_date={{ request('from_date') }}&to_date={{ request('to_date') }}&product_name={{ request('product_name') }}&category_id={{ request('category_id') }}&order_id={{ request('order_id') }}">
+                   Tỷ lệ hủy đơn hàng
                 </a>
             </li>
             <li class="nav-item">
@@ -265,6 +268,20 @@
                     </tbody>
                 </table>
             </div>
+
+   {{-- Bảng tỷ lệ hủy đơn hàng --}}
+   <div class="tab-pane fade {{ request('tab') == 'huydonhang' ? 'show active' : '' }}" id="huydonhang">
+    <h2 class="text-success">🔸 Tỷ lệ hủy đơn hàng</h2>
+
+    <canvas class="canvasprohuyhang" id="cancelRateChart"></canvas>
+
+
+    <p>Tổng số đơn hàng: {{ $totalAllOrders }}</p>
+    <p>Số đơn bị hủy: {{ $totalCancelledOrders }}</p>
+    <p>Tỷ lệ hủy: {{ number_format($cancelledOrderRate, 2) }}%</p>
+</div>
+
+
             <!-- Thống kê mã giảm giá -->
             <div class="tab-pane fade {{ request('tab') == 'coupon-stats' ? 'show active' : '' }}" id="coupon-stats">
                 <h2 class="text-center">Thống kê mã giảm giá</h2>
@@ -542,4 +559,50 @@
     document.addEventListener('DOMContentLoaded', loadMonthlyProfitChart);
 </script>
 
+{{-- hoàn hàng --}}
+<script>
+    const ctx = document.getElementById('cancelRateChart').getContext('2d');
+    const cancelRateChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Đơn hoàn thành', 'Đơn bị hủy'],
+            datasets: [{
+                data: [
+                    {{ $totalAllOrders - $totalCancelledOrders }},
+                    {{ $totalCancelledOrders }}
+                ],
+                backgroundColor: ['#28a745', '#dc3545'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Tỷ lệ hủy đơn hàng'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.label || '';
+                            let value = context.raw || 0;
+                            let total = {{ $totalAllOrders }};
+                            let percentage = total > 0 ? (value / total * 100).toFixed(2) : 0;
+                            return `${label}: ${value} đơn (${percentage}%)`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
 @endsection
+
+<style>
+    .canvasprohuyhang{
+        width: 350px !important     ;
+        height: 350px !important;
+        margin: 0 auto;
+    }
+</style>

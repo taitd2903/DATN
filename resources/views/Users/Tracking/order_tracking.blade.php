@@ -165,7 +165,7 @@
 </div>
 
 <!-- JavaScript xử lý lọc -->
-<script>
+{{-- <script>
     // Lấy dữ liệu đơn hàng từ Blade
     const orders = @json($orders);
 
@@ -368,7 +368,7 @@
 
     // Khởi tạo hiển thị ban đầu
     renderOrders(orders);
-</script>
+</script> --}}
 
     <style>
         body {

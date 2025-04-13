@@ -81,8 +81,25 @@ class ProductController extends Controller {
             $representativeProductsByParentCategory[$parentCategory->id] = $representativeProduct;
         }
 
+        $topSellingProducts = Product::with('category', 'variants')
+        ->where('is_delete', false)
+        ->get()
+        ->sortByDesc(function ($product) {
+            return $product->variants->sum('sold_quantity');
+        })
+        ->take(4); // Lấy 5 sản phẩm bán chạy nhất
 
-        return view('users.products.index', compact( 'articles','products', 'categories', 'banners', 'topSellingProductsByCategory', 'representativeProductsByParentCategory'));
+    // Tính toán số lượng tồn kho, đã bán, giá min/max cho sản phẩm bán chạy
+    foreach ($topSellingProducts as $product) {
+        $product->total_stock_quantity = $product->variants->sum('stock_quantity');
+        $product->total_sold_quantity = $product->variants->sum('sold_quantity');
+        $prices = $product->variants->pluck('price');
+        $product->min_price = $prices->min() ?? 0;
+        $product->max_price = $prices->max() ?? 0;
+    }
+
+
+        return view('users.products.index', compact( 'articles','products', 'categories', 'banners', 'topSellingProductsByCategory', 'representativeProductsByParentCategory','topSellingProducts'));
     }
 
 
