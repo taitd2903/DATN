@@ -79,6 +79,7 @@ Route::middleware(['auth'])->group(function () {
 //liên hệ
 Route::get('/lien-he', [ContactController::class, 'showForm'])->name('contact.form');
 Route::post('/lien-he', [ContactController::class, 'submitForm'])->name('contact.submit');
+Route::post('/admin/contacts/update-status/{id}', [ContactManageController::class, 'updateStatus'])->name('admin.contacts.updateStatus');
 Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/contacts', [ContactManageController::class, 'index'])->name('admin.contacts.index');
     Route::get('/contacts/{id}', [ContactManageController::class, 'show'])->name('admin.contacts.show');

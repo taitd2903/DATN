@@ -6,6 +6,17 @@
      @if(session('success'))
            <div class="alert alert-success">{{ session('success') }}</div>
       @endif
+      <form method="GET" action="{{ route('admin.contacts.index') }}" class="mb-3 d-flex gap-2">
+            <input type="text" name="name" placeholder="Tìm theo tên" value="{{ request('name') }}" class="form-control" />
+            <input type="email" name="email" placeholder="Tìm theo email" value="{{ request('email') }}" class="form-control" />
+            <select name="status" class="form-control">
+                <option value="">-- Trạng thái --</option>
+                <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>Chưa trả lời</option>
+                <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>Đã trả lời</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Lọc</button>
+        </form>
+        
 
      <table class="table table-bordered">
            <thead>
@@ -26,13 +37,29 @@
 
                                  <td>{{ $contact->created_at->format('d/m/Y H:i') }}</td>
                                  <td>
-                                          @if ($contact->status)
-                                                         <span class="badge bg-success">Đã trả lời</span>
-                                                    @else
-                                                                        <span class="badge bg-warning">Chưa trả lời</span>
-                                                                   @endif
-                                 </td>
+                                    @if ($contact->status == 1)
+                                        <span class="badge bg-success">Đã trả lời</span>
+                                    @else
+                                        <span class="badge bg-warning">Chưa trả lời</span>
+                                    @endif
+                                    <form action="{{ route('admin.contacts.updateStatus', $contact->id) }}" method="POST">
+                                          @csrf
+                                          <label>Trạng thái:</label>
+                                          <select name="status" onchange="this.form.submit()" class="form-select">
+                                                @if($contact->status == 0)
+                                                    <option value="0" selected>Chưa trả lời</option>
+                                                    <option value="1">Đã trả lời</option>
+                                                @else
+                                                    <option value="1" selected>Đã trả lời</option>
+                                                @endif
+                                            </select>
+                                            
+                                      </form>
+                                      
+                                </td>
+                                
                                  <td>
+                                    
                                           <a href="{{ route('admin.contacts.show', $contact->id) }}" class="btn btn-info btn-sm">Xem</a>
 
 
