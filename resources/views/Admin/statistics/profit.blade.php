@@ -2,7 +2,10 @@
 
 @section('content')
     <div class="container mt-4">
-        
+        <p>Tổng số đơn hàng: {{ $totalAllOrders }}</p>
+<p>Số đơn bị hủy: {{ $totalCancelledOrders }}</p>
+<p>Tỷ lệ hủy: {{ number_format($cancelledOrderRate, 2) }}%</p>
+
         <h1 class="mb-4 text-center">📊 Thống kê</h1>
         <div class="mb-3">
             <!-- <a href="{{ route('admin.statistics.index') }}" class="btn btn-secondary">

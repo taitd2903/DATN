@@ -201,11 +201,14 @@ class CheckoutController extends Controller
         $couponCodeString = !empty($couponCodes) ? implode(',', $couponCodes) : null;
 
         // Tạo đơn hàng với discount_amount
+        foreach ($cartItems as $item) {
+            $variant = ProductVariant::find($item->variant_id);
+            if ($variant->stock_quantity >= $item->quantity) {
         $order = Order::create([
             'user_id' => auth()->id(),
             'note' => $note,
             'total_price' => $finalPrice,
-            'discount_amount' => $discountAmount, // Số tiền giảm giá
+            'discount_amount' => $discountAmount, 
             'payment_method' => strtolower($validated['payment_method']),
             'status' => 'Chờ xác nhận',
             'customer_name' => $request->name,
@@ -217,7 +220,11 @@ class CheckoutController extends Controller
             'district' => $request->district,
             'ward' => $request->ward,
         ]);
-
+    } 
+    else{
+        return redirect()->route('cart.index')->with('error', 'Sản phẩm "' . $item->product->name . '"mua thất bại hãy kiểm tra lại.');
+    }
+    }
         // Lưu sản phẩm vào order_items và cập nhật kho hàng
         foreach ($cartItems as $item) {
             $variant = ProductVariant::find($item->variant_id);

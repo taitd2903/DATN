@@ -220,6 +220,48 @@ class StatisticsController extends Controller
 
         $categories = Category::with('children')->whereNull('parent_id')->get();
 
+// Thống kê tỷ lệ hủy đơn
+$allOrdersQuery = Order::query()->with('orderItems.product');
+$cancelledOrdersQuery = Order::where('status', 'Hủy')->with('orderItems.product');
+
+$productName = $request->input('product_name');
+$categoryId = $request->input('category_id');
+$gender = $request->input('gender');
+
+if ($from) {
+    $allOrdersQuery->whereDate('created_at', '>=', $from);
+    $cancelledOrdersQuery->whereDate('created_at', '>=', $from);
+}
+if ($to) {
+    $allOrdersQuery->whereDate('created_at', '<=', $to);
+    $cancelledOrdersQuery->whereDate('created_at', '<=', $to);
+}
+
+// Lọc theo tên sản phẩm, giới tính, danh mục
+$applyProductFilter = function ($query) use ($productName, $gender, $categoryId) {
+    $query->whereHas('product', function ($productQuery) use ($productName, $gender, $categoryId) {
+        if ($productName) {
+            $productQuery->where('name', 'like', '%' . $productName . '%');
+        }
+
+        if ($gender) {
+            $productQuery->where('gender', $gender);
+        }
+
+        if ($categoryId) {
+            $categoryIds = \App\Models\Category::getDescendantsAndSelfIds($categoryId);
+            $productQuery->whereIn('category_id', $categoryIds);
+        }
+    });
+};
+
+$allOrdersQuery->whereHas('orderItems', $applyProductFilter);
+$cancelledOrdersQuery->whereHas('orderItems', $applyProductFilter);
+
+$totalAllOrders = $allOrdersQuery->count();
+$totalCancelledOrders = $cancelledOrdersQuery->count();
+$cancelledOrderRate = $totalAllOrders > 0 ? ($totalCancelledOrders / $totalAllOrders) * 100 : 0;
+
 
         return view('Admin.statistics.profit', compact(
             'productProfits',
@@ -230,7 +272,8 @@ class StatisticsController extends Controller
             'totalCoupons', 'activeCoupons', 'expiredCoupons', 'shippingCoupons', 'orderCoupons',
             'totalUsages', 'shippingUsages', 'orderUsages', 'totalDiscount', 'uniqueUsers',
             'topUsedCoupons', 'leastUsedCoupons', 'totalOrders', 'couponOrders', 'couponOrderRate', 'totalRevenue',
-            'affectedRevenue', 'originalRevenue', 'pieChartData', 'columnChartData'
+            'affectedRevenue', 'originalRevenue', 'pieChartData', 'columnChartData',
+            'totalAllOrders', 'totalCancelledOrders', 'cancelledOrderRate'
         ));
     }
     private function getCouponUsageByTime(Request $request)
