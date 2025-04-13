@@ -14,13 +14,17 @@ class ContactManageController extends Controller
     $query = Contact::query();
 
     
-    if ($request->filled('name')) {
-        $query->where('name', 'LIKE', '%' . $request->name . '%');
+    if ($request->filled('keyword')) {
+        $keyword = $request->input('keyword');
+        $query->where(function($q) use ($keyword) {
+            $q->where('name', 'like', "%$keyword%")
+              ->orWhere('email', 'like', "%$keyword%");
+        });
     }
 
     
-    if ($request->filled('email')) {
-        $query->where('email', 'LIKE', '%' . $request->email . '%');
+    if ($request->filled('start_date') && $request->filled('end_date')) {
+        $query->whereBetween('created_at', [$request->start_date, $request->end_date]);
     }
 
     if ($request->has('status') && $request->status !== '') {

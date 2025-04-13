@@ -7,8 +7,10 @@
            <div class="alert alert-success">{{ session('success') }}</div>
       @endif
       <form method="GET" action="{{ route('admin.contacts.index') }}" class="mb-3 d-flex gap-2">
-            <input type="text" name="name" placeholder="Tìm theo tên" value="{{ request('name') }}" class="form-control" />
-            <input type="email" name="email" placeholder="Tìm theo email" value="{{ request('email') }}" class="form-control" />
+            <input type="text" name="keyword" placeholder="Tìm theo tên hoặc email" value="{{ request('keyword') }}" class="border px-2 py-1 rounded" />
+            <input type="date" name="start_date" value="{{ request('start_date') }}" class="border px-2 py-1 rounded" />
+            <input type="date" name="end_date" value="{{ request('end_date') }}" class="border px-2 py-1 rounded" />
+
             <select name="status" class="form-control">
                 <option value="">-- Trạng thái --</option>
                 <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>Chưa trả lời</option>
