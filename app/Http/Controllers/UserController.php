@@ -36,7 +36,7 @@ class UserController extends Controller
      // Hiển thị form tạo user
      public function create()
      {
-         return view('admin.users.create'); // Tạo view để nhập thông tin người dùng mới
+         return view('admin.users.create'); 
      }
 
      /**
@@ -136,14 +136,14 @@ class UserController extends Controller
          if ($user->image) {
              $imagePath = public_path('storage/' . $user->image);
              if (file_exists($imagePath)) {
-                 unlink($imagePath); // Xóa file ảnh
+                 unlink($imagePath);
              }
          }
 
-         // Xóa người dùng khỏi cơ sở dữ liệu
+       
          $user->delete();
 
-         // Chuyển hướng lại trang danh sách với thông báo thành công
+         
          return redirect()->route('admin.users.index')->with('success', 'xóa người dùng thành công');
      }
 
@@ -211,7 +211,7 @@ public function updateProfile(Request $request)
     $user->district = $request->district;
     $user->city = $request->city;
 
-    // Xử lý ảnh mới
+    
     if ($request->hasFile('image')) {
         if ($user->image) {
             $oldImagePath = public_path('storage/' . $user->image);
@@ -224,7 +224,7 @@ public function updateProfile(Request $request)
         $user->image = $imagePath;
     }
 
-    $user->save(); // Lưu dữ liệu
+    $user->save(); 
 
     return redirect('/')->with('success', 'cập nhật tài khoản thành công!');
 
@@ -275,7 +275,7 @@ public function ban(Request $request, $id)
     $user = User::findOrFail($id);
     $user->status = 'banned';
 
-    // Nếu chọn "Khác" thì dùng custom_reason, ngược lại dùng lý do mặc định
+    
     if ($request->ban_reason === 'Khác') {
         $user->ban_reason = $request->custom_reason ?? 'Không rõ lý do';
     } else {

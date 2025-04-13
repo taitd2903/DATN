@@ -24,7 +24,7 @@
             <h2>Quản lý tài khoản</h2>
 
 
-            <!-- Nếu có thông báo thành công -->
+            
             @if (session('success'))
                 <div class="alert alert-success">
                     {{ session('success') }}
@@ -111,11 +111,11 @@
                             <td>
                                 @if ($user->role !== 'admin')
                             
-                                    {{-- Khóa tài khoản --}}
+                                    
                                     @if ($user->status === 'active')
                                         <button type="button" data-bs-toggle="modal" data-bs-target="#banModal{{ $user->id }}" class="btn btn-warning btn-sm">Khóa</button>
                             
-                                        <!-- Modal Khóa -->
+                                        
                                         <div class="modal fade" id="banModal{{ $user->id }}" tabindex="-1">
                                             <div class="modal-dialog">
                                                 <form action="{{ route('admin.users.ban', $user->id) }}" method="POST" class="ban-form">
@@ -152,7 +152,7 @@
                                         </div>
                                     @endif
                             
-                                    {{-- Mở khóa tài khoản --}}
+                                    
                                     @if ($user->status === 'banned')
                                         <form action="{{ route('admin.users.unban', $user->id) }}" method="POST" style="display:inline;">
                                             @csrf
@@ -160,10 +160,9 @@
                                         </form>
                                     @endif
                             
-                                    {{-- Nút sửa --}}
-                                    {{-- <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-warning">Edit</a> --}}
+                                    {{-- <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-warning">Edit</a> 
                             
-                                    {{-- Nút xóa
+                                    
                                     <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" style="display:inline;">
                                         @csrf
                                         @method('DELETE')
@@ -171,7 +170,7 @@
                                     </form> --}}
                             
                                 @else
-                                    {{-- Nếu là admin, không cho sửa/xóa chính mình --}}
+                                    
                                     <span class="text-muted">Không thao tác</span>
                                 @endif
                             </td>
@@ -181,8 +180,7 @@
                 </tbody>
             </table>
 
-            {{-- <!-- Pagination -->
-            {{ $users->links() }} --}}
+            
         @else
             <script>
                 alert("bạn không có quyền truy cập! vui lòng liên hệ với admin.")

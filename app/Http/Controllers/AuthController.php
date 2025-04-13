@@ -97,7 +97,7 @@ class AuthController extends Controller
     public function switchToUser()
     {
         if (Auth::user()->role === 'admin') {
-            session(['is_admin' => true]); // Lưu trạng thái admin vào session
+            session(['is_admin' => true]); 
             return redirect()->route('users.dashboard')->with('success', 'Bạn đang xem với tư cách User');
         }
 

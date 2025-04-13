@@ -41,7 +41,7 @@
                 </form>
             </div>
 
-            <!-- Phần Đăng Ký -->
+            
             <div class="signup-box">
                 <h2>{{ __('messages.welcome_message') }}</h2>
                 <p>{{ __('messages.signup_prompt') }}</p>

@@ -92,9 +92,9 @@ Route::prefix('admin')->middleware(['auth', 'role:admin,staff'])->name('admin.')
     Route::get('/', fn() => view('admin.dashboard'))->name('dashboard');
     Route::resource('categories', CategoryController::class)->except(['show']);
 
-    Route::middleware('check.permission:products')->group(function () {
+   
         Route::resource('products', ProductController::class);
-    });
+    
 
     Route::delete('products/{product}/variants/{variant}', [ProductVariantController::class, 'destroy'])->name('products.variants.destroy');
     // HEAD
