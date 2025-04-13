@@ -17,6 +17,7 @@
                     <option value="Chờ xác nhận">Chờ xác nhận</option>
                     <option value="Đang giao">Đang giao</option>
                     <option value="Hoàn thành">Hoàn thành</option>
+                    
                     <option value="Hủy">Hủy</option>
                 </select>
             </div>

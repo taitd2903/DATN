@@ -132,7 +132,7 @@
 
         {{-- Bảng thống kê --}}
             <div class="tab-pane fade {{ request('tab', 'bieudo-profit') == 'bieudo-profit' ? 'show active' : '' }}" id="bieudo-profit">
-                <h2 class="text-primary">🔹 Lợi nhuận lãi của tất cả sản phẩm bán thành công theo từng tháng</h2>
+                <h2 class="text-primary">🔹 Lợi nhuận lãi của tất cả sản phẩm bán thành công</h2>
                 <canvas id="monthlyProfitChart" height="100"></canvas>
         <div class="bieudo">
             <h4 class="text-center">Tỷ lệ sử dụng mã giảm giá</h4>
@@ -533,7 +533,7 @@
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Lợi nhuận theo tháng',
+                    label: 'Lợi nhuận',
                     data: profits,
                     backgroundColor: 'rgba(54, 162, 235, 0.6)',
                     borderColor: 'rgba(54, 162, 235, 1)',
