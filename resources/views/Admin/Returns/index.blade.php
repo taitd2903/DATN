@@ -13,6 +13,9 @@
                             <th>Đơn Hàng</th>
                             <th>Lý Do</th>
                             <th>Ảnh Minh Chứng</th>
+                            <th>Số tài khoản</th>
+                            <th>Ngân hàng</th>
+                            <th>Tên chủ tài khoản</th>
                             <th>Tên người dùng</th>
                             <th>Trạng Thái</th>
                             <th>Cập nhật trạng thái</th>
@@ -32,6 +35,9 @@
                                             <span>Không có ảnh</span>
                                         @endif
                                     </td>
+                                    <td>{{ $return->bank_account }}</td>
+                                    <td>{{ $return->bank_name }}</td>
+                                    <td>{{ $return->account_holder }}</td>
                                     <td>{{ $return->order->user->name ?? 'Không có người dùng' }}</td>
                                     <td>
                                         <span class="badge 

@@ -32,12 +32,64 @@ class OrderReturnController extends Controller
     // Xử lý yêu cầu hoàn hàng
    
 
-    public function store(Request $request)
+//     public function store(Request $request)
+// {
+//     $request->validate([
+//         'order_id' => 'required|exists:orders,id',
+//         'reason' => 'required|string|max:500',
+//         'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+//     ]);
+
+//     // Kiểm tra xem đơn hàng có thuộc về người dùng và đã hoàn thành chưa
+//     $order = Order::where('id', $request->order_id)
+//                   ->where('user_id', Auth::id())
+//                   ->where('status', 'Đã giao hàng thành công')
+//                   ->first();
+
+//     if (!$order) {
+//         return redirect()->route('orders.index')->with('error', 'Bạn không thể yêu cầu hoàn hàng cho đơn hàng này.');
+//     }
+
+//     // Kiểm tra xem người dùng đã yêu cầu hoàn hàng cho đơn hàng này với trạng thái 'pending' hoặc 'completed' chưa
+//     $existingReturnRequest = OrderReturn::where('order_id', $request->order_id)
+//                                         ->where('user_id', Auth::id())
+//                                         ->whereIn('status', ['pending', 'completed'])
+//                                         ->first();
+
+//     if ($existingReturnRequest) {
+//         return redirect()->route('returns.index')->with('error', 'Bạn đã yêu cầu hoàn hàng cho đơn hàng này rồi.');
+//     }
+
+//     // Lưu ảnh nếu có
+//     $imagePath = $request->file('image') ? $request->file('image')->store('returns', 'public') : null;
+
+//     // Tạo yêu cầu hoàn hàng mới với trạng thái 'pending'
+//     $orderReturn = OrderReturn::create([
+//         'order_id' => $request->order_id,
+//         'user_id' => Auth::id(),
+//         'reason' => $request->reason,
+//         'image' => $imagePath,
+//         'status' => 'pending',  // Trạng thái 'pending' khi yêu cầu hoàn hàng được tạo
+//     ]);
+
+//     // Cập nhật trạng thái của đơn hàng trong bảng 'orders'
+//     $order->update([
+//         'return_request_status' => 'completed',  // Đổi trạng thái thành 'completed'
+//     ]);
+
+//     return redirect()->route('returns.index')->with('success', 'Yêu cầu hoàn hàng đã được gửi.');
+// }
+
+
+public function store(Request $request)
 {
     $request->validate([
         'order_id' => 'required|exists:orders,id',
         'reason' => 'required|string|max:500',
         'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        'bank_account' => 'required|string|max:50',
+        'account_holder' => 'required|string|max:100',
+        'bank_name' => 'required|string|max:100',
     ]);
 
     // Kiểm tra xem đơn hàng có thuộc về người dùng và đã hoàn thành chưa
@@ -69,6 +121,9 @@ class OrderReturnController extends Controller
         'user_id' => Auth::id(),
         'reason' => $request->reason,
         'image' => $imagePath,
+        'bank_account' => $request->bank_account,
+        'account_holder' => $request->account_holder,
+        'bank_name' => $request->bank_name,
         'status' => 'pending',  // Trạng thái 'pending' khi yêu cầu hoàn hàng được tạo
     ]);
 
