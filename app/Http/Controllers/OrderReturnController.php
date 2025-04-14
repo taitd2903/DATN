@@ -20,7 +20,7 @@ class OrderReturnController extends Controller
     public function create($order_id)
     {
         // Kiểm tra xem đơn hàng có tồn tại và thuộc về người dùng hiện tại không
-        $order = Order::where('id', $order_id)->where('user_id', Auth::id())->where('status', 'Hoàn thành')->first();
+        $order = Order::where('id', $order_id)->where('user_id', Auth::id())->where('status', 'Đã giao hàng thành công')->first();
 
         if (!$order) {
             return redirect()->route('orders.index')->with('error', 'Bạn không thể yêu cầu hoàn hàng cho đơn hàng này.');
@@ -43,7 +43,7 @@ class OrderReturnController extends Controller
     // Kiểm tra xem đơn hàng có thuộc về người dùng và đã hoàn thành chưa
     $order = Order::where('id', $request->order_id)
                   ->where('user_id', Auth::id())
-                  ->where('status', 'Hoàn thành')
+                  ->where('status', 'Đã giao hàng thành công')
                   ->first();
 
     if (!$order) {
