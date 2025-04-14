@@ -114,11 +114,19 @@
                     </li>
                     <li class="{{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}">
 
+                        <a class="nav-link" href="{{ route('admin.returns.index') }}">
+                            <i class="nc-icon nc-atom"></i>
+                            <p>quản lý đơn hoàn</p>
+                        </a>
+                    </li>
+                    <li class="{{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}">
+
                         <a class="nav-link" href="{{ route('admin.reviews.index') }}">
                             <i class="nc-icon nc-atom"></i>
                             <p>quản lý đánh giá</p>
                         </a>
                     </li>
+                    
                
                     <li class="{{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
 

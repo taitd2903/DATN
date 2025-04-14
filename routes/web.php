@@ -210,7 +210,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::patch('/returns/{id}/approve', [AdminReturnController::class, 'approve'])->name('returns.approve');
     Route::patch('/returns/{id}/reject', [AdminReturnController::class, 'reject'])->name('returns.reject');
     Route::patch('/returns/{id}/update-process', [AdminReturnController::class, 'updateReturnProcess'])->name('returns.update_process');
-
+    Route::patch('/returns/{id}/refunded', [AdminReturnController::class, 'refunded'])->name('returns.refunded');
 });
 // phần user người mua show ra
 Route::middleware(['auth'])->group(function () {

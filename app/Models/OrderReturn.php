@@ -10,7 +10,11 @@ class OrderReturn extends Model
     use HasFactory;
     protected $fillable = ['order_id', 'user_id', 'reason', 'image', 'status','return_process_status','rejection_reason','return_request_status','bank_account',
         'account_holder',
-        'bank_name',];
+        'bank_name',
+        'refund_image',
+        'refund_note',
+        'refunded_at',
+    ];
 
     public function order() {
         return $this->belongsTo(Order::class);
