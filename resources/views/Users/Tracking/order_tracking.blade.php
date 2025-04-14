@@ -16,6 +16,7 @@
                     <option value="">Tất cả</option>
                     <option value="Chờ xác nhận">Chờ xác nhận</option>
                     <option value="Đang giao">Đang giao</option>
+                    <option value="Đã giao hàng thành công">Đã giao hàng thành công</option>
                     <option value="Hoàn thành">Hoàn thành</option>
                     
                     <option value="Hủy">Hủy</option>
@@ -120,10 +121,11 @@
                         </div>
 
                         <div class="d-flex flex-wrap gap-3 mt-4">
+                  
                             <a href="{{ route('checkout.invoice', $order->id) }}" class="btn btn-primary btn-sm px-4 py-2">
                                 <i class="fas fa-file-invoice me-2"></i> Xem chi tiết
                             </a>
-                            @if ($order->status == 'Hoàn thành' && now()->diffInDays($order->completed_at) <= 7)
+                            @if ($order->status == 'Đã giao hàng thành công' && now()->diffInDays($order->completed_at) <= 7)
                                 @if ($order->return_request_status == '')
                                     <a href="{{ route('returns.create', $order->id) }}" class="btn btn-warning btn-sm px-4 py-2">
                                         <i class="fas fa-undo-alt me-2"></i> Yêu cầu hoàn hàng
@@ -132,6 +134,13 @@
                                     <span class="text-muted">Bạn đã yêu cầu hoàn hàng cho đơn này.</span>
                                 @endif
                             @endif
+
+                            @if ($order->status == 'Đã giao hàng thành công')
+                                <a href="{{ route('checkout.done', $order->id) }}" class="btn btn-success btn-sm px-4 py-2">
+                                    <i class="fas fa-credit-card me-2"></i> xác nhận đã nhận hàng
+                                </a>
+                            @endif
+
                             @if ($order->status == 'Chờ xác nhận' && $order->payment_status != 'Đã thanh toán')
                                 @if ($order->payment_method == 'cod')
                                     <form action="{{ route('order.cancel', $order->id) }}" method="POST" class="d-inline">
@@ -151,6 +160,7 @@
                                     <i class="fas fa-credit-card me-2"></i> Tiếp tục thanh toán
                                 </a>
                             @endif
+                         
                         </div>
                     </div>
                 </div>

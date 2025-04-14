@@ -279,3 +279,4 @@ Route::middleware(['auth'])->group(function () {
 
 Route::get('/bai-viet/{article}', [ArticleController::class, 'showUser'])->name('articles.showUser');
 Route::get('/bai-viet', [ArticleController::class, 'indexUser'])->name('article.index');
+Route::get('/checkout/done/{id}', [CheckoutController::class, 'confirmReceived'])->name('checkout.done');

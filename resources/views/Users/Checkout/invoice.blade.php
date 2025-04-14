@@ -59,6 +59,7 @@
                                         <div><strong>💳 Thời gian thanh toán:</strong>
                                             {{ $order->updated_at->format('d/m/Y H:i') }}</div>
                                         <div><strong>📦 Phương thức:</strong> {{ ucfirst($order->payment_method) }}</div>
+                                        <div><strong>🕒 Thời gian nhận hàng:</strong> {{ $order->complete_ship }}</div>
                                         <div><strong>📌 Trạng thái:</strong> {{ $order->payment_status }}</div>
 
                                         <!-- Hiển thị mã giảm giá -->
@@ -160,7 +161,11 @@
                     </div>
                 </div>
 
-                <!-- Navigation Buttons -->
+                <!-- Navigation Buttons -->              @if ($order->status == 'Đã giao hàng thành công')
+                                <a href="{{ route('checkout.done', $order->id) }}" class="btn btn-success btn-sm px-4 py-2">
+                                    <i class="fas fa-credit-card me-2"></i> xác nhận đã nhận hàng
+                                </a>
+                            @endif
                 <div class="mt-5 d-flex justify-content-between">
                     <a href="{{ route('home') }}" class="btn btn-outline-dark btn-lg px-4">
                         <i class="fas fa-arrow-left me-2"></i> Quay lại

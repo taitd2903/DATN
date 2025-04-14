@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\CartItem;
 use App\Models\Order;
@@ -18,6 +18,7 @@ class CheckoutController extends Controller
     //XỬ LÝ USER
     public function index(Request $request)
     {
+        
         // Lấy danh sách ID sản phẩm được chọn từ query string (ví dụ: ?items=1,2,3)
         $selectedItems = $request->query('items') ? explode(',', $request->query('items')) : [];
         $items = $request->query('items');
@@ -295,28 +296,67 @@ class CheckoutController extends Controller
     // Hiển thị sang trang invoice
     public function invoice($id)
     {
-        $order = Order::with(['orderItems.product', 'orderItems.variant', 'user', 'couponUsages.coupon'])->findOrFail($id);
+        $order = Order::findOrFail($id);
+    
+        // Nếu trạng thái là 'Đã giao hàng thành công'
+        if ($order->status === 'Đã giao hàng thành công') {
+            if ($order->complete_ship && Carbon::parse($order->complete_ship)->addDays(7)->lte(now())) {
+                $order->status = 'Hoàn thành';
+                $order->completed_at = now();
+                $order->completed_by = $order->completed_by ?? Auth::id();
+                $order->save();
+    
+                session()->flash('success', 'Đơn hàng đã tự động được xác nhận sau 7 ngày.');
+            }
+        }
+    
+        // Lấy lại order đầy đủ với quan hệ
+        $order = Order::with([
+            'orderItems.product',
+            'orderItems.variant',
+            'user',
+            'couponUsages.coupon'
+        ])->findOrFail($id);
+    
         $breadcrumbs = [
             ['name' => 'Trang chủ', 'url' => route('home')],
             ['name' => 'Đơn hàng', 'url' => null],
             ['name' => 'Đơn hàng ' . $order->id, 'url' => null],
         ];
-
+    
         return view('Users.Checkout.invoice', compact('breadcrumbs', 'order'));
     }
 
-    public function orderTracking()
+    public function orderTracking() 
     {
+        $userId = Auth::id();
+        $orders = Order::where('user_id', $userId)->get();
+    
+        foreach ($orders as $order) {
+            if (
+                $order->status === 'Đã giao hàng thành công' &&
+                $order->complete_ship &&
+                Carbon::parse($order->complete_ship)->addDays(7)->lte(now())
+            ) {
+                $order->status = 'Hoàn thành';
+                $order->completed_at = now();
+                $order->completed_by = $order->completed_by ?? $userId;
+                $order->save();
+            }
+        }
+    
+      
+        $orders = Order::where('user_id', $userId)
+            ->with('orderItems.product')
+            ->orderBy('created_at', 'desc')
+            ->get();
+    
         $breadcrumbs = [
             ['name' => 'Trang chủ', 'url' => route('home')],
             ['name' => 'Đơn hàng', 'url' => null],
             ['name' => 'Đơn hàng của tôi', 'url' => null],
         ];
-        $orders = Order::where('user_id', Auth::id())
-            ->with('orderItems.product')
-            ->orderBy('created_at', 'desc')
-            ->get();
-
+    
         return view('users.tracking.order_tracking', compact('breadcrumbs', 'orders'));
     }
 
@@ -380,6 +420,21 @@ class CheckoutController extends Controller
     // Hiển thị danh sách đơn hàng
     public function orderList(Request $request)
     {
+
+        $ordersToCheck = Order::where('status', 'Đã giao hàng thành công')->get();
+
+        foreach ($ordersToCheck as $order) {
+            if (
+                $order->complete_ship &&
+                Carbon::parse($order->complete_ship)->addDays(7)->lte(now())
+            ) {
+                $order->status = 'Hoàn thành';
+                $order->completed_at = now();
+                $order->completed_by = $order->completed_by ?? $order->user_id; // ✅ Ghi theo người đặt hàng
+                $order->save();
+            }
+        }
+        
         $query = Order::orderBy('created_at', 'desc');
 
         // Lọc theo tên khách hàng
@@ -410,7 +465,7 @@ class CheckoutController extends Controller
             $query->where('status', $request->order_status);
         }
         $orders = $query->paginate(10);
-        $statusOptions = ['Chờ xác nhận', 'Đang giao', 'Hoàn thành', 'Hủy'];
+        $statusOptions = ['Chờ xác nhận', 'Đang giao','Đã giao hàng thành công', 'Hoàn thành', 'Hủy'];
 
         return view('admin.orders.index', compact('orders', 'statusOptions'));
     }
@@ -420,7 +475,7 @@ class CheckoutController extends Controller
     public function updateStatus(Request $request, Order $order)
     {
         $request->validate([
-            'status' => 'required|in:Chờ xác nhận,Đang giao,Hoàn thành,Hủy',
+            'status' => 'required|in:Chờ xác nhận,Đang giao,Đã giao hàng thành công,Hoàn thành,Hủy',
         ]);
 
         $oldStatus = $order->status;
@@ -470,9 +525,10 @@ class CheckoutController extends Controller
             }
         }
 
-        // Nếu đơn hàng là ship COD và hoàn thành, cập nhật trạng thái thanh toán
-        if ($order->payment_method === 'cod' && $newStatus === 'Hoàn thành') {
+        // Nếu đơn hàng là ship COD và Đã giao hàng thành công, cập nhật trạng thái thanh toán
+        if ($order->payment_method === 'cod' && $newStatus === 'Đã giao hàng thành công') {
             $order->payment_status = 'Đã thanh toán';
+            $order->complete_ship = now();
         }
 
         // Cập nhật trạng thái mới
@@ -892,4 +948,29 @@ class CheckoutController extends Controller
         'coupons' => $availableCoupons,
     ]);
 }
+
+
+public function confirmReceived($id) 
+{
+    $order = Order::findOrFail($id);
+    if ($order->status === 'Đã giao hàng thành công') {
+        if (Carbon::parse($order->complete_ship)->addDays(7)->lte(now())) {
+            $order->status = 'Hoàn thành';
+            $order->completed_at = now();
+            $order->completed_by = $order->completed_by ?? Auth::id();
+            $order->save();
+
+            return redirect()->back()->with('success', 'Đơn hàng đã tự động được xác nhận sau 7 ngày.');
+        }
+        $order->status = 'Hoàn thành';
+        $order->completed_at = now();
+        $order->completed_by = Auth::id();
+        $order->save();
+
+        return redirect()->back()->with('success', 'Bạn đã xác nhận đã nhận hàng. Cảm ơn bạn!');
+    }
+
+    return redirect()->back()->with('error', 'Không thể xác nhận đơn hàng này.');
+}
+
 }
