@@ -82,7 +82,7 @@
                                         $price = $firstVariant ? $firstVariant->price : '0.00';
                                     @endphp
 
-                                    <h5>${{ number_format($price, 2) }}</h5>
+                                    <h5>{{ number_format($price, 2) }}VNĐ</h5>
 
                                     <div id="color-options" class="product__color__select">
                                         @foreach ($product->variants->unique('color') as $variant)
@@ -184,6 +184,53 @@
             </div>
         </div>
     </section>
+
+      <!-- Instagram Section Begin -->
+      <section class="instagram spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-md-8 col-sm-12">
+                    <div class="instagram__pic">
+                        <div class="row no-gutters">
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <img src="../assets/img/instagram/instagram-1.jpg" class="instagram__pic__item set-bg"
+                                    alt="">
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <img src="../assets/img/instagram/instagram-2.jpg" class="instagram__pic__item set-bg"
+                                    alt="">
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <img src="../assets/img/instagram/instagram-3.jpg" class="instagram__pic__item set-bg"
+                                    alt="">
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <img src="../assets/img/instagram/instagram-4.jpg" class="instagram__pic__item set-bg"
+                                    alt="">
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <img src="../assets/img/instagram/instagram-5.jpg" class="instagram__pic__item set-bg"
+                                    alt="">
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <img src="../assets/img/instagram/instagram-6.jpg" class="instagram__pic__item set-bg"
+                                    alt="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="instagram__text">
+                        <h2>🧢 Đồ thể thao – Thoải mái vận động, tự tin thể hiện!</h2>
+                        <p> Từ quần áo co giãn, thấm hút mồ hôi đến giày thể thao êm ái và phụ kiện tiện lợi – tất cả đều
+                            được thiết kế để giúp bạn thoải mái tối đa khi tập luyện và năng động mỗi ngày.</p>
+                        <h3>Trải nhiệm tốt nhất </h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Instagram Section End -->
 
     <!-- tin tuc -->
     <section class="latest spad">
@@ -326,6 +373,35 @@
 
     .banner-content .btn:hover {
         background-color: #ff7878;
+    }
+    .instagram__pic .row.no-gutters {
+        margin: 0;
+    }
+
+    .instagram__pic .col-lg-4 {
+        padding: 0;
+    }
+
+    .instagram__pic__item {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        display: block;
+    }
+
+    .instagram__text {
+        padding-left: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 100%;
+    }
+
+    @media (max-width: 767px) {
+        .instagram__text {
+            padding-left: 0;
+            padding-top: 20px;
+        }
     }
 </style>
 

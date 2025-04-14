@@ -141,17 +141,38 @@
         <button type="button" class="quantity-btn" id="increase" disabled>+</button>
     </div>
 </div>
+<br>
+{{--========================== Phần này của Đạt thông báo lỗi ============================--}}
+@if (session('error'))
+<small class="text-danger" id="error-message">{{ session('error') }}</small>
+<script>
+    setTimeout(function () {
+        document.getElementById('error-message').style.display = 'none';
+    }, 5000);
+</script>
+@endif
+@if (session('success'))
+<small class="text-success" id="success-message">{{ session('success') }}</small>
+<script>
+    setTimeout(function () {
+        document.getElementById('success-message').style.display = 'none';
+    }, 5000);
+</script>
+@endif
+{{--========================= Hết phần của Đạt ============================--}}
+    <br>
 
         <div class="mt-3 d-flex align-items-center">
     <!-- Nút thêm vào giỏ hàng -->
     <button type="submit" id="addToCartButton" disabled class="btn btn-outline-dark ms-2">
     {{ __('messages.add_to_cart') }}
     </button>
+    
 </div>
 
 <br>
-<a href="#" class="text-primary" onclick="openSizeGuide()">{{ __('messages.size_guide') }}</a> | 
-<a href="#" class="text-primary">{{ __('messages.product_info') }}</a>
+<a href="#" class="text-primary" onclick="openSizeGuide()">{{ __('messages.size_guide') }}</a> 
+
 
 <!-- Modal hiển thị bảng size -->
 <div id="sizeGuideModal" class="modal">
@@ -182,25 +203,7 @@
     </div>
 </div>
                 
-{{--========================== Phần này của Đạt thông báo lỗi ============================--}}
-                @if (session('error'))
-            <small class="text-danger" id="error-message">{{ session('error') }}</small>
-            <script>
-                setTimeout(function () {
-                    document.getElementById('error-message').style.display = 'none';
-                }, 5000);
-            </script>
-        @endif
-        @if (session('success'))
-            <small class="text-success" id="success-message">{{ session('success') }}</small>
-            <script>
-                setTimeout(function () {
-                    document.getElementById('success-message').style.display = 'none';
-                }, 5000);
-            </script>
-        @endif
-{{--========================= Hết phần của Đạt ============================--}}
-                <br>
+
               
 </div>
 
@@ -373,6 +376,65 @@
     </div>
     <hr>
 @endforeach
+<h2 class="text-center">Sản phẩm bán chạy</h2>
+            <div class="row product__filter">
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+                    @foreach ($topSellingProducts as $product)
+                        <div class="col-lg-3 col-md-6 col-sm-6 mix new-arrivals">
+                            <div class="product__item">
+                                <!-- Product Image -->
+                                <div class="product__item__pic set-bg">
+                                    @if ($product->image)
+                                        <img src="{{ asset('storage/' . $product->image) }}"
+                                            class="card-img-top product-img" alt="{{ $product->name }}"
+                                            style="width: 100%; aspect-ratio: 1 / 1; object-fit: cover;">
+                                    @else
+                                        <div class="p-3 text-center text-muted">Chưa có hình ảnh</div>
+                                    @endif
+                                    <span class="label">New</span>
+                                    <ul class="product__hover">
+                                        <li><a href="#"><i class="bi bi-eye"></i></a></li>
+                                        <li><a href="#"><i class="bi bi-eye-fill"></i></a></li>
+                                        <li><a href="#"><i class="bi bi-eye-slash"></i></a></li>
+                                    </ul>
+                                </div>
+
+                                <!-- Product Details -->
+                                <div class="product__item__text">
+                                    <h6>{{ $product->name }}</h6>
+                                    <a href="{{ route('products.show', $product->id) }}" class="add-cart"
+                                        style="text-decoration: none">Xem chi tiết</a>
+                                    <p>Đã bán: {{ $product->total_sold_quantity }}</p>
+
+                                    <!-- Rating (Placeholder) -->
+                                    <div class="rating">
+                                        <i class="fa fa-star-o"></i>
+                                        <i class="fa fa-star-o"></i>
+                                        <i class="fa fa-star-o"></i>
+                                        <i class="fa fa-star-o"></i>
+                                        <i class="fa fa-star-o"></i>
+                                    </div>
+
+                                    <!-- Price Range -->
+                                    <h5>{{ number_format($product->min_price) }} -
+                                        {{ number_format($product->max_price) }} VNĐ</h5>
+
+                                    <!-- Color Variants -->
+                                    @if ($product->variants && $product->variants->count() > 0)
+                                        <div id="color-options" class="product__color__select">
+                                            @foreach ($product->variants->unique('color') as $variant)
+                                                <button type="button" class="color-btn" data-color="{{ $variant->color }}"
+                                                    style="background-color: {{ $variant->color }}; width: 20px; height: 20px; border: 1px solid #ccc; border-radius: 50%; display: inline-block;">
+                                                </button>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
 
 
 
