@@ -211,7 +211,7 @@
 
 
 
-<h4 class="mt-4">{{ __('messages.product_review') }}</h4>
+{{-- <h4 class="mt-4">{{ __('messages.product_review') }}</h4>
 
 @if ($userCanReview)
     <form action="{{ route('product.review.store', ['id' => $product->id]) }}" method="POST" enctype="multipart/form-data">
@@ -227,23 +227,23 @@
         <textarea name="comment" class="form-control" placeholder="{{ __('messages.write_review') }}" required></textarea>
 
         {{-- Upload ảnh --}}
-        <label class="mt-2">{{ __('messages.upload_images') }}:</label>
+        {{-- <label class="mt-2">{{ __('messages.upload_images') }}:</label>
         <input type="file" name="images[]" class="form-control" multiple accept="image/*" onchange="previewImages(event)">
-        <div id="image-preview" class="mt-2"></div>
+        <div id="image-preview" class="mt-2"></div> --}}
 
         {{-- Upload video --}}
-        <label class="mt-2">{{ __('messages.upload_video') }}</label>
+        {{-- <label class="mt-2">{{ __('messages.upload_video') }}</label>
         <input type="file" name="video" class="form-control" accept="video/mp4" onchange="previewVideo(event)">
-        <div id="video-preview" class="mt-2"></div>
-
+        <div id="video-preview" class="mt-2"></div> --}}
+{{-- 
         <button type="submit" class="btn btn-primary mt-2">{{ __('messages.submit_review') }}</button>
     </form>
 @else
 <p><i>{{ __('messages.only_purchased') }}</i></p>
-@endif
+@endif --}}
 
 {{-- Script để xem trước ảnh và video trước khi upload --}}
-<script>
+{{-- <script>
     function previewImages(event) {
         let files = event.target.files;
         let preview = document.getElementById('image-preview');
@@ -296,10 +296,10 @@
                 @endif
             @endfor
         </span>
-        <p>{{ $review->comment }}</p>
+        <p>{{ $review->comment }}</p> --}}
 
         {{-- Hiển thị ảnh nếu có --}}
-        @if ($review->images)
+        {{-- @if ($review->images)
             @php
                 $images = json_decode($review->images, true);
             @endphp
@@ -308,20 +308,20 @@
                     <img src="{{ asset('storage/' . $image) }}" alt="Ảnh đánh giá" class="img-thumbnail" width="100">
                 @endforeach
             </div>
-        @endif
+        @endif --}}
 
         {{-- Hiển thị video nếu có --}}
-        @if ($review->video)
+        {{-- @if ($review->video)
             <div class="review-video mt-2">
                 <video width="200" controls>
                     <source src="{{ asset('storage/' . $review->video) }}" type="video/mp4">
                     Trình duyệt của bạn không hỗ trợ video.
                 </video>
             </div>
-        @endif
+        @endif --}}
 
         {{-- Hiển thị nút xóa nếu đây là đánh giá của user hiện tại --}}
-        @if (auth()->check() && auth()->id() == $review->user_id)
+        {{-- @if (auth()->check() && auth()->id() == $review->user_id)
             <form action="{{ route('reviews.destroy', ['id' => $review->id]) }}" method="POST" onsubmit="return confirm('Bạn có chắc muốn xóa đánh giá này không?');">
                 @csrf
                 @method('DELETE')
@@ -330,8 +330,158 @@
         @endif
     </div>
     <hr>
-@endforeach
+@endforeach --}}
 
+
+<h4 class="mt-4">{{ __('messages.product_review') }}</h4>
+
+<?php
+    // Kiểm tra xem người dùng có thể đánh giá hay không
+    $userCanReview = false;
+    $debugOrders = []; // Debug
+    if (auth()->check()) {
+        $userId = auth()->id();
+        // Lấy tất cả đơn hàng hoàn thành chứa sản phẩm chưa được đánh giá
+        $orders = \App\Models\Order::where('user_id', $userId)
+            ->where('status', 'Hoàn thành')
+            ->whereHas('orderItems', function ($query) use ($product) {
+                $query->where('product_id', $product->id)
+                      ->where('has_reviewed', 0);
+            })
+            ->pluck('id')
+            ->toArray();
+
+        $debugOrders = $orders; // Debug
+        $userCanReview = count($orders) > 0;
+    }
+?>
+
+
+
+@if ($userCanReview)
+    <form action="{{ route('product.review.store', ['id' => $product->id]) }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        <label>{{ __('messages.your_review') }}</label>
+        <select name="rating" required class="form-select mb-2">
+            <option value="5">⭐⭐⭐⭐⭐ 5 {{ __('messages.rating') }}</option>
+            <option value="4">⭐⭐⭐⭐ 4 {{ __('messages.rating') }}</option>
+            <option value="3">⭐⭐⭐ 3 {{ __('messages.rating') }}</option>
+            <option value="2">⭐⭐ 2 {{ __('messages.rating') }}</option>
+            <option value="1">⭐ 1 {{ __('messages.rating') }}</option>
+        </select>
+        <textarea name="comment" class="form-control mb-2" placeholder="{{ __('messages.write_review') }}" required></textarea>
+
+        {{-- Upload ảnh --}}
+        <label class="mt-2">{{ __('messages.upload_images') }}:</label>
+        <input type="file" name="images[]" class="form-control mb-2" multiple accept="image/*" onchange="previewImages(event)">
+        <div id="image-preview" class="mt-2 d-flex flex-wrap"></div>
+
+        {{-- Upload video --}}
+        <label class="mt-2">{{ __('messages.upload_video') }}</label>
+        <input type="file" name="video" class="form-control mb-2" accept="video/mp4" onchange="previewVideo(event)">
+        <div id="video-preview" class="mt-2"></div>
+
+        <button type="submit" class="btn btn-primary mt-2">{{ __('messages.submit_review') }}</button>
+    </form>
+@else
+    <p><i>{{ __('messages.only_purchased') }}</i></p>
+@endif
+
+{{-- Script để xem trước ảnh và video trước khi upload --}}
+<script>
+    function previewImages(event) {
+        let files = event.target.files;
+        let preview = document.getElementById('image-preview');
+        preview.innerHTML = "";
+        if (files.length > 5) {
+            alert("Chỉ được chọn tối đa 5 ảnh!");
+            event.target.value = "";
+            return;
+        }
+        for (let i = 0; i < files.length; i++) {
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                let img = document.createElement("img");
+                img.src = e.target.result;
+                img.classList.add("img-thumbnail", "me-2", "mb-2");
+                img.style.width = "100px";
+                preview.appendChild(img);
+            };
+            reader.readAsDataURL(files[i]);
+        }
+    }
+
+    function previewVideo(event) {
+        let file = event.target.files[0];
+        let preview = document.getElementById('video-preview');
+        preview.innerHTML = "";
+        if (file) {
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                let video = document.createElement("video");
+                video.src = e.target.result;
+                video.style.width = "200px";
+                video.controls = true;
+                preview.appendChild(video);
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+</script>
+
+{{-- Hiển thị danh sách đánh giá --}}
+@foreach ($reviews as $review)
+    <div class="review-item mb-3 p-3 border rounded">
+        <div class="d-flex justify-content-between">
+            <div>
+                <strong>{{ $review->user->name }}</strong> 
+                <span class="text-muted">({{ $review->created_at->format('d/m/Y H:i') }})</span>
+            </div>
+            <div>
+                @for ($i = 1; $i <= 5; $i++)
+                    <span class="{{ $i <= $review->rating ? 'text-warning' : 'text-muted' }}">★</span>
+                @endfor
+            </div>
+        </div>
+        <p class="mt-2">{{ $review->comment }}</p>
+
+        {{-- Hiển thị ảnh nếu có --}}
+        @if ($review->images)
+            @php
+                $images = json_decode($review->images, true);
+            @endphp
+            @if (is_array($images))
+                <div class="review-images mt-2 d-flex flex-wrap">
+                    @foreach ($images as $image)
+                        <img src="{{ asset('storage/' . $image) }}" alt="Ảnh đánh giá" 
+                             class="img-thumbnail me-2 mb-2" style="width: 100px;">
+                    @endforeach
+                </div>
+            @endif
+        @endif
+
+        {{-- Hiển thị video nếu có --}}
+        @if ($review->video)
+            <div class="review-video mt-2">
+                <video width="200" controls class="rounded">
+                    <source src="{{ asset('storage/' . $review->video) }}" type="video/mp4">
+                    Trình duyệt của bạn không hỗ trợ video.
+                </video>
+            </div>
+        @endif
+
+        {{-- Nút xóa đánh giá --}}
+        @if (auth()->check() && auth()->id() == $review->user_id)
+            <form action="{{ route('reviews.destroy', ['id' => $review->id]) }}" method="POST" 
+                  onsubmit="return confirm('Bạn có chắc muốn xóa đánh giá này không?');" class="mt-2">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+            </form>
+        @endif
+    </div>
+    <hr>
+@endforeach
 
 
 
