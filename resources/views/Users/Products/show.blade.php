@@ -49,12 +49,23 @@
     <h1>
     <h1 class="product-title">{{ $product->name }}</h1>
 
-    <p class="sku">
-    <strong>{{ __('messages.out_of_stock') }}</strong> {{ $product->variants->sum('stock_quantity') }} 
+    
 
-    <span class="rating">
-        ⭐⭐⭐⭐⭐ (0) <span class="reviews">0 {{ __('messages.reviews') }}</span>
-    </span>
+    <p class="sku">
+        <strong>{{ __('messages.out_of_stock') }}</strong> {{ $product->variants->sum('stock_quantity') }} 
+        <span class="rating">
+            @php
+                $averageRating = \App\Models\Review::where('product_id', $product->id)
+                    ->avg('rating') ?? 0;
+                $ratingCount = \App\Models\Review::where('product_id', $product->id)
+                    ->count();
+                $averageRating = round($averageRating, 1);
+            @endphp
+            @for ($i = 1; $i <= 5; $i++)
+                <span class="{{ $i <= $averageRating ? 'text-warning' : 'text-muted' }}">★</span>
+            @endfor
+            ({{ $averageRating }}) <span class="reviews">{{ $ratingCount }} {{ __('messages.reviews') }}</span>
+        </span>
     </p>
 
     <p class="price"> 
@@ -211,126 +222,6 @@
 
 
 
-{{-- <h4 class="mt-4">{{ __('messages.product_review') }}</h4>
-
-@if ($userCanReview)
-    <form action="{{ route('product.review.store', ['id' => $product->id]) }}" method="POST" enctype="multipart/form-data">
-        @csrf
-        <label>{{ __('messages.your_review') }}</label>
-        <select name="rating" required>
-            <option value="5">⭐⭐⭐⭐⭐{{ __('messages.rating') }}</option>
-            <option value="4">⭐⭐⭐⭐4 {{ __('messages.rating') }}</option>
-            <option value="3">⭐⭐⭐3 {{ __('messages.rating') }}</option>
-            <option value="2">⭐⭐2 {{ __('messages.rating') }}</option>
-            <option value="1">⭐1 {{ __('messages.rating') }}</option>
-        </select>
-        <textarea name="comment" class="form-control" placeholder="{{ __('messages.write_review') }}" required></textarea>
-
-        {{-- Upload ảnh --}}
-        {{-- <label class="mt-2">{{ __('messages.upload_images') }}:</label>
-        <input type="file" name="images[]" class="form-control" multiple accept="image/*" onchange="previewImages(event)">
-        <div id="image-preview" class="mt-2"></div> --}}
-
-        {{-- Upload video --}}
-        {{-- <label class="mt-2">{{ __('messages.upload_video') }}</label>
-        <input type="file" name="video" class="form-control" accept="video/mp4" onchange="previewVideo(event)">
-        <div id="video-preview" class="mt-2"></div> --}}
-{{-- 
-        <button type="submit" class="btn btn-primary mt-2">{{ __('messages.submit_review') }}</button>
-    </form>
-@else
-<p><i>{{ __('messages.only_purchased') }}</i></p>
-@endif --}}
-
-{{-- Script để xem trước ảnh và video trước khi upload --}}
-{{-- <script>
-    function previewImages(event) {
-        let files = event.target.files;
-        let preview = document.getElementById('image-preview');
-        preview.innerHTML = "";
-        if (files.length > 5) {
-            alert("Chỉ được chọn tối đa 5 ảnh!");
-            event.target.value = "";
-            return;
-        }
-        for (let i = 0; i < files.length; i++) {
-            let reader = new FileReader();
-            reader.onload = function(e) {
-                let img = document.createElement("img");
-                img.src = e.target.result;
-                img.classList.add("img-thumbnail", "mr-2");
-                img.width = 100;
-                preview.appendChild(img);
-            };
-            reader.readAsDataURL(files[i]);
-        }
-    }
-
-    function previewVideo(event) {
-        let file = event.target.files[0];
-        let preview = document.getElementById('video-preview');
-        preview.innerHTML = "";
-        if (file) {
-            let reader = new FileReader();
-            reader.onload = function(e) {
-                let video = document.createElement("video");
-                video.src = e.target.result;
-                video.width = 200;
-                video.controls = true;
-                preview.appendChild(video);
-            };
-            reader.readAsDataURL(file);
-        }
-    }
-</script>
-@foreach ($reviews as $review)
-    <div class="review-item mb-3">
-        <strong>{{ $review->user->name }}</strong> - <span>{{ $review->created_at->format('d/m/Y') }}</span>
-        <br>
-        <span>
-            @for ($i = 1; $i <= 5; $i++)
-                @if ($i <= $review->rating)
-                    ⭐
-                @else
-                    ☆
-                @endif
-            @endfor
-        </span>
-        <p>{{ $review->comment }}</p> --}}
-
-        {{-- Hiển thị ảnh nếu có --}}
-        {{-- @if ($review->images)
-            @php
-                $images = json_decode($review->images, true);
-            @endphp
-            <div class="review-images mt-2">
-                @foreach ($images as $image)
-                    <img src="{{ asset('storage/' . $image) }}" alt="Ảnh đánh giá" class="img-thumbnail" width="100">
-                @endforeach
-            </div>
-        @endif --}}
-
-        {{-- Hiển thị video nếu có --}}
-        {{-- @if ($review->video)
-            <div class="review-video mt-2">
-                <video width="200" controls>
-                    <source src="{{ asset('storage/' . $review->video) }}" type="video/mp4">
-                    Trình duyệt của bạn không hỗ trợ video.
-                </video>
-            </div>
-        @endif --}}
-
-        {{-- Hiển thị nút xóa nếu đây là đánh giá của user hiện tại --}}
-        {{-- @if (auth()->check() && auth()->id() == $review->user_id)
-            <form action="{{ route('reviews.destroy', ['id' => $review->id]) }}" method="POST" onsubmit="return confirm('Bạn có chắc muốn xóa đánh giá này không?');">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn btn-danger btn-sm mt-2">Xóa</button>
-            </form>
-        @endif
-    </div>
-    <hr>
-@endforeach --}}
 
 
 <h4 class="mt-4">{{ __('messages.product_review') }}</h4>
