@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Contact;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Carbon\Carbon;
 
 class ContactManageController extends Controller
 {
@@ -58,18 +59,18 @@ class ContactManageController extends Controller
 
     return redirect()->back()->with('success', 'Cập nhật trạng thái thành công!');
 }
-public function store(Request $request)
-{
-    $contact = new Contact();
-    $contact->name = $request->name;
-    $contact->email = $request->email;
-    $contact->message = $request->message;
-    $contact->status = 0; 
-    $contact->save();
+// public function store(Request $request)
+// {
+//     $contact = new Contact();
+//     $contact->name = $request->name;
+//     $contact->email = $request->email;
+//     $contact->message = $request->message;
+//     $contact->status = 0; 
+//     $contact->save();
 
     
-    Mail::to($contact->email)->send(new ContactConfirmation($contact));
+//     Mail::to($contact->email)->send(new ContactConfirmation($contact));
 
-    return redirect()->back()->with('success', 'Liên hệ của bạn đã được gửi. Vui lòng kiểm tra email xác nhận.');
-}
+//     return redirect()->back()->with('success', 'Liên hệ của bạn đã được gửi. Vui lòng kiểm tra email xác nhận.');
+// }
 }

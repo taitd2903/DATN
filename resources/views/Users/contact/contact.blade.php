@@ -62,13 +62,23 @@
                             @csrf
                             <div class="row">
                                 <div class="col-lg-6">
-                                    <input type="text" name="name" class="form-control" required placeholder="Tên">
+                                    <input type="text" name="name" class="form-control" value="{{ old('name') }}" placeholder="Tên">
+                                    @error('name')
+                                        <p class="text-red-500 text-sm">{{ $message }}</p>
+                                    @enderror
                                 </div>
                                 <div class="col-lg-6">
-                                    <input type="email" name="email" class="form-control" required placeholder="Email">
+                                    <input type="email" name="email" class="form-control" value="{{ old('email') }}" placeholder="Email">
+                                    @error('email')
+                                        <p class="text-red-500 text-sm">{{ $message }}</p>
+                                    @enderror
                                 </div>
                                 <div class="col-lg-12">
-                                    <textarea name="message" class="form-control" required placeholder="Nội dung"></textarea>
+                                    <textarea name="message" class="form-control" value="{{ old('message') }}"
+                                        placeholder="Nội dung"></textarea>
+                                    @error('message')
+                                        <p class="text-red-500 text-sm">{{ $message }}</p>
+                                    @enderror
                                     <button type="submit" class="btn btn-primary">Gửi liên hệ</button>
                                 </div>
                             </div>
@@ -90,4 +100,3 @@
         }
     }, 3000); // 3 giây
 </script>
-
