@@ -120,12 +120,12 @@
                                     <select name="status" class="form-control status-select mt-2"
                                         onchange="this.form.submit()">
                                         @foreach ($statusOptions as $status)
-                                        @if ($status !== 'Hoàn thành')
-        <option value="{{ $status }}"
-            {{ $order->status === $status ? 'selected' : '' }}>
-            {{ $status }}
-        </option>
-    @endif
+                                            @if ($status !== 'Hoàn thành')
+                                                <option value="{{ $status }}"
+                                                    {{ $order->status === $status ? 'selected' : '' }}>
+                                                    {{ $status }}
+                                                </option>
+                                            @endif
                                         @endforeach
                                     </select>
                                 </form>
@@ -141,68 +141,70 @@
 
     <!-- Script xử lý cập nhật trạng thái -->
     <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const allowedTransitions = {
-            'Chờ xác nhận': ['Đang giao', 'Hủy'],
-            'Đang giao': ['Đã giao hàng thành công'],
-        };
+        document.addEventListener('DOMContentLoaded', function() {
+            const allowedTransitions = {
+                'Chờ xác nhận': ['Đang giao', 'Hủy'],
+                'Đang giao': ['Đã giao hàng thành công'],
+            };
 
-        // Hiển thị form cập nhật khi click "Cập nhật"
-        document.querySelectorAll('.update-status-btn').forEach(button => {
-            button.addEventListener('click', function () {
-                const container = this.closest('.update-container');
-                const row = this.closest('tr');
-                const currentStatus = row.querySelector('.order_status').dataset.status;
+            // Hiển thị form cập nhật khi click "Cập nhật"
+            document.querySelectorAll('.update-status-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const container = this.closest('.update-container');
+                    const row = this.closest('tr');
+                    const currentStatus = row.querySelector('.order_status').dataset.status;
 
-                if (currentStatus === 'Đã giao hàng thành công') return;
-                if (currentStatus === 'Hủy') {
-                    alert('Không thể thay đổi trạng thái đơn hàng đã hủy.');
-                    return;
-                }
+                    if (currentStatus === 'Đã giao hàng thành công') return;
+                    if (currentStatus === 'Hủy') {
+                        alert('Không thể thay đổi trạng thái đơn hàng đã hủy.');
+                        return;
+                    }
 
-                this.style.display = 'none';
-                container.querySelector('.status-form').style.display = 'block';
+                    this.style.display = 'none';
+                    container.querySelector('.status-form').style.display = 'block';
+                });
             });
-        });
 
-        // Xử lý khi thay đổi select trạng thái
-        document.querySelectorAll('.status-select').forEach(select => {
-            select.addEventListener('change', function (e) {
-                const form = this.closest('form');
-                const row = this.closest('tr');
-                const currentStatus = row.querySelector('.order_status').dataset.status;
-                const selectedStatus = this.value;
+            // Xử lý khi thay đổi select trạng thái
+            document.querySelectorAll('.status-select').forEach(select => {
+                select.addEventListener('change', function(e) {
+                    const form = this.closest('form');
+                    const row = this.closest('tr');
+                    const currentStatus = row.querySelector('.order_status').dataset.status;
+                    const selectedStatus = this.value;
 
-                // Nếu không có trong danh sách cho phép
-                if (allowedTransitions[currentStatus] && !allowedTransitions[currentStatus].includes(selectedStatus)) {
-                    alert(`Không thể chuyển trạng thái từ "${currentStatus}" sang "${selectedStatus}".`);
-                    this.value = currentStatus;
-                    e.preventDefault();
-                    return;
-                }
-
-                // Xác nhận với những trạng thái nhạy cảm
-                if (selectedStatus === 'Đã giao hàng thành công') {
-                    if (!confirm('Bạn có chắc muốn đánh dấu là "Đã giao hàng thành công"?')) {
+                    // Nếu không có trong danh sách cho phép
+                    if (allowedTransitions[currentStatus] && !allowedTransitions[currentStatus]
+                        .includes(selectedStatus)) {
+                        alert(
+                            `Không thể chuyển trạng thái từ "${currentStatus}" sang "${selectedStatus}".`);
                         this.value = currentStatus;
                         e.preventDefault();
                         return;
                     }
-                }
 
-                if (selectedStatus === 'Hủy') {
-                    if (!confirm('Bạn có chắc muốn hủy đơn hàng này?')) {
-                        this.value = currentStatus;
-                        e.preventDefault();
-                        return;
+                    // Xác nhận với những trạng thái nhạy cảm
+                    if (selectedStatus === 'Đã giao hàng thành công') {
+                        if (!confirm('Bạn có chắc muốn đánh dấu là "Đã giao hàng thành công"?')) {
+                            this.value = currentStatus;
+                            e.preventDefault();
+                            return;
+                        }
                     }
-                }
 
-                form.submit();
+                    if (selectedStatus === 'Hủy') {
+                        if (!confirm('Bạn có chắc muốn hủy đơn hàng này?')) {
+                            this.value = currentStatus;
+                            e.preventDefault();
+                            return;
+                        }
+                    }
+
+                    form.submit();
+                });
             });
         });
-    });
-</script>
+    </script>
 
 
 
@@ -277,7 +279,8 @@
 
                     if (selectedStatus === 'Đã giao hàng thành công') {
                         if (!confirm(
-                                'Bạn có chắc chắn muốn đánh dấu đơn hàng này là Đã giao hàng thành công?')) {
+                                'Bạn có chắc chắn muốn đánh dấu đơn hàng này là Đã giao hàng thành công?'
+                                )) {
                             this.value = currentStatus;
                             e.preventDefault();
                             return;
