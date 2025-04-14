@@ -4,11 +4,32 @@ namespace App\Http\Controllers\Admin\Categories;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Category;
-
+use Illuminate\Support\Collection;
 class CategoryController extends Controller {
-    public function index() {
-        $categories = Category::whereNull('parent_id')->with('children')->get();
-        return view('Admin.Categories.index', compact('categories'));
+    public function index(Request $request)
+    {
+        $keyword = $request->input('keyword');
+        $allParents = Category::whereNull('parent_id')->with('children')->get();
+        if (!$keyword) {
+            return view('Admin.Categories.index', [
+                'categories' => $allParents
+            ]);
+        }
+        $filtered = $allParents->filter(function ($parent) use ($keyword) {
+            if (stripos($parent->name, $keyword) !== false) {
+                return true;
+            }
+            $matchingChildren = $parent->children->filter(function ($child) use ($keyword) {
+                return stripos($child->name, $keyword) !== false;
+            });
+            $parent->setRelation('children', $matchingChildren);
+    
+            return $matchingChildren->isNotEmpty();
+        });
+    
+        return view('Admin.Categories.index', [
+            'categories' => $filtered
+        ]);
     }
 
     public function create() {

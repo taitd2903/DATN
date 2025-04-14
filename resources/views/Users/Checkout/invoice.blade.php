@@ -53,14 +53,25 @@
                                 <div class="bg-white p-4 rounded-3 shadow-sm">
                                     <h5 class="text-primary fw-semibold mb-4">Thông Tin Thanh Toán</h5>
                                     <div class="d-flex flex-column gap-3">
+                                    @php
+    $color = $order->payment_status === 'Đã thanh toán' ? '#28a745' : '#dc3545';
+@endphp
 
+<div>
+    <strong>📌 Trạng thái:</strong>
+    <span style="font-weight: 700; font-size: 1.1rem; padding: 2px 6px; border-radius: 4px; color: {{ $color }};">
+        {{ $order->payment_status }}
+    </span>
+</div>
+<div>                                   
+                                        <strong>📦 Phương thức:</strong> {{ ucfirst($order->payment_method) }}</div>
                                         <div><strong>🕒 Thời gian đặt hàng:</strong>
                                             {{ $order->created_at->format('d/m/Y H:i') }}</div>
                                         <div><strong>💳 Thời gian thanh toán:</strong>
                                             {{ $order->updated_at->format('d/m/Y H:i') }}</div>
-                                        <div><strong>📦 Phương thức:</strong> {{ ucfirst($order->payment_method) }}</div>
+                                      
                                         <div><strong>🕒 Thời gian nhận hàng:</strong> {{ $order->complete_ship }}</div>
-                                        <div><strong>📌 Trạng thái:</strong> {{ $order->payment_status }}</div>
+                                      
 
                                         <!-- Hiển thị mã giảm giá -->
                                         @if ($order->couponUsages->isNotEmpty())
