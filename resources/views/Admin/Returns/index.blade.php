@@ -178,7 +178,7 @@
                                                 @csrf
                                                 @method('PATCH')
                                                 <select name="return_process_status" class="form-select d-inline w-auto" onchange="this.form.submit()">
-                                                   
+                                                    <option > Cập nhật trạng thái</option>
                                                     <option value="return_in_progress" {{ $return->return_process_status == 'return_in_progress' ? 'selected' : '' }}>Đang chờ hoàn hàng</option>
                                                     <option value="return_shipping" {{ $return->return_process_status == 'return_shipping' ? 'selected' : '' }}>Đang trên đường hoàn</option>
                                                     <option value="return_completed" {{ $return->return_process_status == 'return_completed' ? 'selected' : '' }}>Đã nhận được đơn hoàn</option>

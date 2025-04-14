@@ -104,7 +104,7 @@ class AdminReturnController extends Controller
         // Cập nhật trạng thái đơn hàng (tùy chọn, nếu cần)
         $order = Order::find($return->order_id);
         if ($order) {
-            $order->status = 'Hoàn thành';
+            $order->status = 'Đã hoàn hàng';
             $order->save();
         }
 
