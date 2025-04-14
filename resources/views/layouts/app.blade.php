@@ -168,6 +168,11 @@
                                     </a>
                                 </li>
                                 <li>
+                                    <a href="{{ route('returns.index') }}">
+                                        <i class="fas fa-user-shield"></i> Đơn hoàn
+                                    </a>
+                                </li>
+                                <li>
                                     <a href="{{ route('logout') }}"
                                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                         <i class="fas fa-sign-out-alt"></i>{{ __('messages.logout') }}

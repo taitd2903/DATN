@@ -143,4 +143,11 @@ return [
     'upload_video' => 'Tải lên video (tối đa 3 giây):',
     'submit_review' => 'Gửi đánh giá',
     'only_purchased' => 'Chỉ sản phẩm đã mua mới có thể đánh giá.',
+    'return_completed' => 'Trả hàng hoàn tất',
+    'approved' => 'Đã duyệt',
+    'pending' => 'Đang chờ duyệt',
+    'rejected' => 'Đã từ chối',
+    'return_request' => 'Yêu cầu trả hàng',
+    'return_in_progress' => 'Đang xử lý yêu cầu trả hàng',
+    'return_shipping'=> 'Đang vận chuyển hoàn hàng',
 ];

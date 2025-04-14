@@ -178,7 +178,7 @@
                                                 @csrf
                                                 @method('PATCH')
                                                 <select name="return_process_status" class="form-select d-inline w-auto" onchange="this.form.submit()">
-                                                    <option value="">-- Cập nhật trạng thái --</option>
+                                                   
                                                     <option value="return_in_progress" {{ $return->return_process_status == 'return_in_progress' ? 'selected' : '' }}>Đang chờ hoàn hàng</option>
                                                     <option value="return_shipping" {{ $return->return_process_status == 'return_shipping' ? 'selected' : '' }}>Đang trên đường hoàn</option>
                                                     <option value="return_completed" {{ $return->return_process_status == 'return_completed' ? 'selected' : '' }}>Đã nhận được đơn hoàn</option>
@@ -289,4 +289,30 @@
             </div>
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Chọn tất cả các select cập nhật trạng thái
+            document.querySelectorAll('select[name="return_process_status"]').forEach(function (select) {
+                const form = select.closest('form');
+                const returnRow = form.closest('tr');
+                
+                // Lấy trạng thái hiện tại từ select (option selected)
+                const currentStatus = returnRow.querySelector('select[name="return_process_status"] option[selected]')?.value || null;
+    
+                const steps = ['return_in_progress', 'return_shipping', 'return_completed'];
+                const currentIndex = currentStatus ? steps.indexOf(currentStatus) : -1;
+    
+                // Duyệt qua tất cả các option trong select để disable những option không hợp lệ
+                select.querySelectorAll('option').forEach(function (option) {
+                    const optionValue = option.value;
+                    const optionIndex = steps.indexOf(optionValue);
+    
+                    // Chỉ enable option nếu nó là bước kế tiếp (current + 1)
+                    if (optionValue && optionIndex !== currentIndex + 1) {
+                        option.disabled = true;
+                    }
+                });
+            });
+        });
+    </script>
 @endsection

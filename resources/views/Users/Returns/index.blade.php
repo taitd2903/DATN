@@ -26,10 +26,16 @@
                         <tr>
                             <td>{{ $return->order_id }}</td>
                             <td>{{ $return->created_at->format('d-m-Y') }}</td>
-                            <td>{{$return->status}}</td>
+                            
+                            <td>{{ __('messages.' . $return->status) }}</td>
+
                             
                             <td>
-                                {{($return->return_process_status) }}
+                                @if (!$return->return_process_status == '')
+                              
+                                 {{ __('messages.' .$return->return_process_status) }}   
+                                @endif
+                                
                             </td>
                             
                             
