@@ -6,7 +6,7 @@
      <div class="card shadow-sm mb-4">
          <div class="card-header d-flex justify-content-between align-items-center">
              <h5 class="mb-0">Yêu Cầu Hoàn Hàng #{{ $return->order_id }}</h5>
-             <span class="badge bg-warning text-dark">Hoàn thành</span>
+             <span class="badge bg-warning text-dark">Chi tiết</span>
          </div>
          <div class="card-body row">
              {{-- Thông tin khách hàng --}}
@@ -32,13 +32,13 @@
                      <span class="badge bg-info text-dark">{{__('messages.'.$return->status) }}</span>
                  </p>
                  <p><strong>Minh chứng hoàn:</strong> {{ $return->refund_note }}</p>
-                 @if($return->image)
+                 @if($return->refund_image)
                  <div class="col-12 text-center mt-4">
                      <strong>Hình ảnh minh chứng hoàn tiền:</strong><br>
                      <img src="{{ asset('storage/' . $return->refund_image) }}" alt="Hình ảnh minh chứng" class="img-thumbnail mt-2" style="max-width: 300px;">
                  </div>
                  @endif
- 
+                 
                  @if (!empty($return->return_process_status))
                      <p><strong>Trạng thái đơn hoàn:</strong> 
                          <span class="text-success">{{ __('messages.' .$return->return_process_status) }}</span>

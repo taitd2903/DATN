@@ -58,6 +58,21 @@ class AdminReturnController extends Controller
         return redirect()->route('admin.returns.index')->with('success', 'Yêu cầu hoàn hàng đã bị từ chối.');
     }
 
+    // public function updateReturnProcess(Request $request, $id)
+    // {
+    //     $return = OrderReturn::findOrFail($id);
+
+    //     if ($return->status !== 'approved') {
+    //         return redirect()->back()->with('error', 'Chỉ có thể cập nhật trạng thái khi đơn hoàn đã được duyệt.');
+    //     }
+
+    //     $return->return_process_status = $request->return_process_status;
+    //     $return->save();
+
+    //     return redirect()->back()->with('success', 'Cập nhật trạng thái hoàn hàng thành công.');
+    // }
+
+
     public function updateReturnProcess(Request $request, $id)
     {
         $return = OrderReturn::findOrFail($id);
@@ -66,12 +81,31 @@ class AdminReturnController extends Controller
             return redirect()->back()->with('error', 'Chỉ có thể cập nhật trạng thái khi đơn hoàn đã được duyệt.');
         }
 
-        $return->return_process_status = $request->return_process_status;
+        // Lấy trạng thái đơn hoàn mới
+        $newReturnProcessStatus = $request->return_process_status;
+
+        // Định nghĩa mapping giữa trạng thái đơn hoàn và trạng thái đơn hàng
+        $statusMapping = [
+            'return_in_progress' => 'Đang chờ hoàn hàng',
+            'return_shipping' => 'Đang trên đường hoàn',
+            'return_completed' => 'Đã nhận được đơn hoàn',
+        ];
+
+        // Cập nhật trạng thái đơn hoàn
+        $return->return_process_status = $newReturnProcessStatus;
         $return->save();
+
+        // Cập nhật trạng thái đơn hàng
+        $order = Order::find($return->order_id);
+        if ($order && isset($statusMapping[$newReturnProcessStatus])) {
+            $order->status = $statusMapping[$newReturnProcessStatus];
+            $order->save();
+        } else {
+            return redirect()->back()->with('error', 'Không thể cập nhật trạng thái đơn hàng do đơn hàng không tồn tại hoặc trạng thái không hợp lệ.');
+        }
 
         return redirect()->back()->with('success', 'Cập nhật trạng thái hoàn hàng thành công.');
     }
-
     public function refunded(Request $request, $id)
     {
         $return = OrderReturn::findOrFail($id);
