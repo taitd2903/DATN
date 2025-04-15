@@ -72,11 +72,13 @@
             <tbody>
                 @foreach($products as $product)
                 <tr class="product-row"
-                    data-name="{{ $product->name }}"
-                    data-category="{{ $product->category_id }}"
-                    data-gender="{{ $product->gender }}"
-                    data-price="{{ $product->base_price }}"
-                    data-sold="{{ $product->variants->sum('sold_quantity') }}">
+    data-name="{{ $product->name }}"
+    data-category="{{ $product->category_id }}"
+    data-gender="{{ $product->gender }}"
+    data-price="{{ $product->base_price }}"
+    data-sold="{{ $product->variants->sum('sold_quantity') }}"
+    data-stock="{{ $product->variants->sum('stock_quantity') }}">
+
 
                     <td>{{ $product->id }}</td>
                     <td>
@@ -125,7 +127,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const categoryFilter = document.getElementById("filter-category").value;
         const genderFilter = document.getElementById("filter-gender").value;
         const soldFilter = document.getElementById("filter-sold").value;
-
+        const stockFilter = document.getElementById("filter-stock").value;
         const rows = Array.from(document.querySelectorAll(".product-row"));
 
         rows.forEach(row => {
@@ -141,6 +143,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
             row.style.display = matches ? "" : "none";
         });
+        if (stockFilter) {
+    rows.sort((a, b) => {
+        let aStock = parseInt(a.getAttribute("data-stock"));
+        let bStock = parseInt(b.getAttribute("data-stock"));
+        return stockFilter === "asc" ? aStock - bStock : bStock - aStock;
+    });
+
+    const tbody = document.querySelector("#product-table tbody");
+    rows.forEach(row => tbody.appendChild(row));
+}
 
         if (soldFilter) {
             rows.sort((a, b) => {
@@ -159,6 +171,8 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("filter-gender").value = "";
     document.getElementById("filter-sold").value = "";
     document.getElementById("filter-stock").value = "";
+    document.getElementById("filter-stock").addEventListener("change", applyFilters);
+
     applyFilters();
 });
 
