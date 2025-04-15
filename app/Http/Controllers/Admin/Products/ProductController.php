@@ -54,6 +54,7 @@ class ProductController extends Controller {
             'name' => $request->name,
             'image' => $imagePath, 
             'description' => $request->description,
+            'long_description' => $request->long_description,
             'category_id' => $request->category_id ?? null,
             'gender' => $request->gender
         ]);
@@ -149,6 +150,7 @@ class ProductController extends Controller {
         $product->update([
             'name' => $request->name,
             'description' => $request->description,
+            'long_description' => $request->long_description,
             'category_id' => $request->has('category_id') ? $request->category_id : $product->category_id,
             'gender' => $request->gender,
         ]);

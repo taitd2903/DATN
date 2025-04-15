@@ -32,7 +32,11 @@
 
             <div class="mb-3">
                 <label for="description" class="form-label">Mô tả:</label>
-                <textarea class="form-control" name="description" id="description" placeholder="Nhập mô tả sản phẩm" required></textarea>
+                <textarea class="form-control" name="description" id="description"style="height: 150px; width: 100%; resize: vertical;" placeholder="Nhập mô tả sản phẩm" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="long_description" class="form-label">Mô tả dài:</label>
+                <textarea class="form-control" name="long_description" id="long_description" style="height: 250px; width: 100%; resize: vertical;" placeholder="Nhập mô tả sản phẩm" required></textarea>
             </div>
 
             <div class="mb-3">

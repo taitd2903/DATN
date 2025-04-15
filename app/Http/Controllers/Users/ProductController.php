@@ -135,26 +135,11 @@ class ProductController extends Controller {
             ['name' => 'Chi tiết sản phẩm', 'url' => null],
             ['name' => $product->name, 'url' => null],
         ];
-        $topSellingProducts = Product::with('category', 'variants')
-            ->where('is_delete', false)
-            ->get()
-            ->sortByDesc(function ($product) {
-                return $product->variants->sum('sold_quantity');
-            })
-            ->take(4); // Lấy 5 sản phẩm bán chạy nhất
-
-        // Tính toán số lượng tồn kho, đã bán, giá min/max cho sản phẩm bán chạy
-        foreach ($topSellingProducts as $product) {
-            $product->total_stock_quantity = $product->variants->sum('stock_quantity');
-            $product->total_sold_quantity = $product->variants->sum('sold_quantity');
-            $prices = $product->variants->pluck('price');
-            $product->min_price = $prices->min() ?? 0;
-            $product->max_price = $prices->max() ?? 0;
-        }
+       
 
         
 
-        return view('users.products.show', compact('breadcrumbs','product', 'reviews', 'userCanReview','minPrice' ,'maxPrice','topSellingProducts'));
+        return view('users.products.show', compact('breadcrumbs','product', 'reviews', 'userCanReview','minPrice' ,'maxPrice'));
     }
 
 
