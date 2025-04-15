@@ -30,7 +30,7 @@
             <div class="row">
                 <div class="col-lg-12">
                     <ul class="filter__controls">
-                        <li class="active" data-filter="*">Sản phẩm hot</li>
+                        <li class="active" data-filter="*">Sản phẩm </li>
 
                         <li data-filter=".hot-sales">Bán chạy</li>
                     </ul>
@@ -38,38 +38,45 @@
             </div>
 
             <div class="row product__filter">
-
                 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
                     @foreach ($products as $product)
                         <div class="col-lg-3 col-md-6 col-sm-6 mix new-arrivals">
                             <div class="product__item">
-
                                 <div class="product__item__pic set-bg">
                                     @if ($product->image)
                                         <img src="{{ asset('storage/' . $product->image) }}"
-                                            class="card-img-top product-img" alt="{{ $product->name }}"
-                                            style="width: 100%; aspect-ratio: 1 / 1; object-fit: cover;">
+                                             class="card-img-top product-img" alt="{{ $product->name }}"
+                                             style="width: 100%; aspect-ratio: 1 / 1; object-fit: cover;">
                                     @else
                                         <div class="p-3 text-center text-muted">Chưa có hình ảnh</div>
                                     @endif
-
+            
                                     <span class="label">New</span>
-
+            
                                     <ul class="product__hover">
                                         <li><a href="#"><i class="bi bi-eye"></i></a></li>
                                         <li><a href="#"><i class="bi bi-eye-fill"></i></a></li>
                                         <li><a href="#"><i class="bi bi-eye-slash"></i></a></li>
                                     </ul>
+            
+                                    {{-- Kiểm tra stock_quantity của tất cả variants --}}
+                                    @php
+                                        $outOfStock = $product->variants->sum('stock_quantity') == 0;
+                                    @endphp
+            
+                                    @if ($outOfStock)
+                                        <div class="overlay-out-of-stock">
+                                            <span>Sản phẩm tạm hết hàng</span>
+                                        </div>
+                                    @endif
                                 </div>
-
-
+            
                                 <div class="product__item__text">
                                     <h6>{{ $product->name }}</h6>
                                     <p>Đã bán: {{ $product->total_sold_quantity }}</p>
                                     <a href="{{ route('products.show', $product->id) }}" class="add-cart"
-                                        style="text-decoration: none">Xem chi tiết</a>
-
-
+                                       style="text-decoration: none">Xem chi tiết</a>
+            
                                     <div class="rating">
                                         <i class="fa fa-star-o"></i>
                                         <i class="fa fa-star-o"></i>
@@ -77,18 +84,18 @@
                                         <i class="fa fa-star-o"></i>
                                         <i class="fa fa-star-o"></i>
                                     </div>
-
+            
                                     @php
                                         $firstVariant = $product->variants->first();
                                         $price = $firstVariant ? $firstVariant->price : '0.00';
                                     @endphp
-
-                                    <h5>{{ number_format($price, 2) }}VNĐ</h5>
-
+            
+                                    <h4>{{ number_format($price, 2) }}VNĐ</h4>
+            
                                     <div id="color-options" class="product__color__select">
                                         @foreach ($product->variants->unique('color') as $variant)
                                             <button type="button" class="color-btn" data-color="{{ $variant->color }}"
-                                                style="background-color: {{ $variant->color }}; width: 20px; height: 20px; border: 1px solid #ccc; border-radius: 50%; display: inline-block;">
+                                                    style="background-color: {{ $variant->color }}; width: 20px; height: 20px; border: 1px solid #ccc; border-radius: 50%; display: inline-block;">
                                             </button>
                                         @endforeach
                                     </div>
@@ -97,8 +104,6 @@
                         </div>
                     @endforeach
                 </div>
-
-
             </div>
 
             <h2 class="text-center">Sản phẩm bán chạy</h2>
@@ -111,8 +116,8 @@
                                 <div class="product__item__pic set-bg">
                                     @if ($product->image)
                                         <img src="{{ asset('storage/' . $product->image) }}"
-                                            class="card-img-top product-img" alt="{{ $product->name }}"
-                                            style="width: 100%; aspect-ratio: 1 / 1; object-fit: cover;">
+                                             class="card-img-top product-img" alt="{{ $product->name }}"
+                                             style="width: 100%; aspect-ratio: 1 / 1; object-fit: cover;">
                                     @else
                                         <div class="p-3 text-center text-muted">Chưa có hình ảnh</div>
                                     @endif
@@ -122,15 +127,26 @@
                                         <li><a href="#"><i class="bi bi-eye-fill"></i></a></li>
                                         <li><a href="#"><i class="bi bi-eye-slash"></i></a></li>
                                     </ul>
+            
+                                    <!-- Kiểm tra stock_quantity của tất cả variants -->
+                                    @php
+                                        $outOfStock = $product->variants && $product->variants->count() > 0 ? $product->variants->sum('stock_quantity') == 0 : true;
+                                    @endphp
+            
+                                    @if ($outOfStock)
+                                        <div class="overlay-out-of-stock">
+                                            <span>Sản phẩm tạm hết hàng</span>
+                                        </div>
+                                    @endif
                                 </div>
-
+            
                                 <!-- Product Details -->
                                 <div class="product__item__text">
                                     <h6>{{ $product->name }}</h6>
                                     <a href="{{ route('products.show', $product->id) }}" class="add-cart"
-                                        style="text-decoration: none">Xem chi tiết</a>
+                                       style="text-decoration: none">Xem chi tiết</a>
                                     <p>Đã bán: {{ $product->total_sold_quantity }}</p>
-
+            
                                     <!-- Rating (Placeholder) -->
                                     <div class="rating">
                                         <i class="fa fa-star-o"></i>
@@ -139,17 +155,17 @@
                                         <i class="fa fa-star-o"></i>
                                         <i class="fa fa-star-o"></i>
                                     </div>
-
+            
                                     <!-- Price Range -->
-                                    <h5>{{ number_format($product->min_price) }} -
-                                        {{ number_format($product->max_price) }} VNĐ</h5>
-
+                                    <h4>{{ number_format($product->min_price) }} -
+                                        {{ number_format($product->max_price) }} VNĐ</h4>
+            
                                     <!-- Color Variants -->
                                     @if ($product->variants && $product->variants->count() > 0)
                                         <div id="color-options" class="product__color__select">
                                             @foreach ($product->variants->unique('color') as $variant)
                                                 <button type="button" class="color-btn" data-color="{{ $variant->color }}"
-                                                    style="background-color: {{ $variant->color }}; width: 20px; height: 20px; border: 1px solid #ccc; border-radius: 50%; display: inline-block;">
+                                                        style="background-color: {{ $variant->color }}; width: 20px; height: 20px; border: 1px solid #ccc; border-radius: 50%; display: inline-block;">
                                                 </button>
                                             @endforeach
                                         </div>

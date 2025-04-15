@@ -37,6 +37,7 @@ class ProductController extends Controller {
         foreach ($products as $product) {
             $product->total_stock_quantity = $product->variants->sum('stock_quantity');
             $product->total_sold_quantity = $product->variants->sum('sold_quantity');
+            
 
             // Lấy giá thấp nhất và cao nhất từ các biến thể
             $prices = $product->variants->pluck('price');

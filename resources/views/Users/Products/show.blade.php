@@ -32,6 +32,18 @@
                         <div class="zoom-box">
                             <img id="variant-image" src="{{ asset('storage/' . $product->image) }}"
                                 alt="{{ $product->name }}" class="img-fluid zoom-image">
+                            @php
+                                $outOfStock =
+                                    $product->variants && $product->variants->count() > 0
+                                        ? $product->variants->sum('stock_quantity') == 0
+                                        : true;
+                            @endphp
+
+                            @if ($outOfStock)
+                                <div class="overlay-out-of-stock">
+                                    <span>Sản phẩm tạm hết hàng</span>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -45,11 +57,8 @@
             <br>
             <h1>
                 <h1 class="product-title">{{ $product->name }}</h1>
-
-
-
                 <p class="sku">
-                    <strong>{{ __('messages.out_of_stock') }}</strong> {{ $product->variants->sum('stock_quantity') }}
+                    {{-- <strong>{{ __('messages.out_of_stock') }}</strong> {{ $product->variants->sum('stock_quantity') }} --}}
                     <span class="rating">
                         @php
                             $averageRating = \App\Models\Review::where('product_id', $product->id)->avg('rating') ?? 0;
@@ -68,22 +77,22 @@
                     @if ($product->base_price !== null && $product->base_price !== '')
                         <span id="base-price">{{ number_format($product->base_price, 0, ',', '.') }} VNĐ</span>
                     @endif
-                    <span id="variant-price" style="font-weight: bold; margin-left: 10px; color: red;">
+                    <span id="variant-price" style="font-weight: bold; e color: red;">
                         {{ number_format($minPrice, 0, ',', '.') }} - {{ number_format($maxPrice, 0, ',', '.') }} VNĐ
                     </span>
                 </p>
-
                 <p> Mo ta: {{ $product->description }}</p>
-                <p> Mo ta: {{ $product->long_description }}</p>
+                <p> {{ $product->long_description }}</p>
+
                 <p><strong>{{ __('messages.stock') }} </strong> <span
                         id="stock-info">{{ $product->variants->sum('stock_quantity') }}</span></p>
                 <hr>
 
                 <!--
-        <div>
-            <img id="product-image" src="{{ $product->image }}" alt="{{ $product->name }}"
-                style="max-width: 300px; display: block;">
-        </div> -->
+                    <div>
+                        <img id="product-image" src="{{ $product->image }}" alt="{{ $product->name }}"
+                            style="max-width: 300px; display: block;">
+                    </div> -->
 
 
                 <form action="{{ route('cart.add') }}" method="POST" id="addToCartForm">
@@ -126,10 +135,10 @@
                         <!-- <label for="quantity" class="quantity-label">{{ __('messages.quantity') }}</label> -->
 
                         <!-- <div class="quantity-controls">
-            <button type="button" class="quantity-btn" id="decrease">−</button>
-            <input type="text" id="quantity" name="quantity" value="1" min="1" class="quantity-input" readonly>
-            <button type="button" class="quantity-btn" id="increase">+</button>
-        </div> -->
+                        <button type="button" class="quantity-btn" id="decrease">−</button>
+                        <input type="text" id="quantity" name="quantity" value="1" min="1" class="quantity-input" readonly>
+                        <button type="button" class="quantity-btn" id="increase">+</button>
+                    </div> -->
 
                         <div class="quantity-wrapper">
                             <label for="quantity" class="quantity-label">Số lượng:</label>
@@ -161,13 +170,24 @@
                         {{-- ========================= Hết phần của Đạt ============================ --}}
                         <br>
 
+
                         <div class="mt-3 d-flex align-items-center">
+                            
+                    
                             <!-- Nút thêm vào giỏ hàng -->
-                            <button type="submit" id="addToCartButton" disabled class="btn btn-outline-dark ms-2">
-                                {{ __('messages.add_to_cart') }}
-                            </button>
+                            @if (!$product->is_delete == '1')
+                                <p class="stock-info" id="stock-info"></p>
+                                <button type="submit" id="addToCartButton" disabled class="btn btn-outline-dark ms-2">
+                                    {{ __('messages.add_to_cart') }}
+                                </button>
+                            @else
+                                <div class="alert alert-warning text-center fw-bold" role="alert">
+                                    <h4 class="mb-0 text-danger">Sản phẩm đang tạm dừng bán</h4>
+                                </div>
+                            @endif
 
                         </div>
+
 
                         <br>
                         <a href="#" class="text-primary"
@@ -381,7 +401,7 @@
         </div>
         <hr>
     @endforeach
-    
+
 
 
 
