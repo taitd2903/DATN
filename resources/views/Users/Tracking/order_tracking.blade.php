@@ -79,6 +79,8 @@
                                         class="badge bg-info px-2 py-1">{{ $order->completed_at }}</span></p>
                                 <p class="mb-2"><i class="fas fa-wallet me-2"></i> Thanh toán: <span
                                         class="badge bg-info px-2 py-1">{{ $order->payment_method }}</span></p>
+                                        <p class="mb-2"><i class="fas fa-wallet me-2"></i> Thời gian hoàn thành công: <span
+                                            class="badge bg-info px-2 py-1">{{ $order->updated_at }}</span></p>
                             </div>
                             <div class="col-md-6">
                                 <ul class="list-group list-group-flush">

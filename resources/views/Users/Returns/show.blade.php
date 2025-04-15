@@ -31,7 +31,10 @@
                  <p><strong>Trạng thái yêu cầu:</strong> 
                      <span class="badge bg-info text-dark">{{__('messages.'.$return->status) }}</span>
                  </p>
-                 <p><strong>Minh chứng hoàn:</strong> {{ $return->refund_note }}</p>
+                 @if (!empty($return->$return->refund_note))
+                     <p><strong class="text-danger">Minh chứng hoàn:</strong> {{ $return->refund_note }}</p>
+                 @endif
+                 
                  @if($return->refund_image)
                  <div class="col-12 text-center mt-4">
                      <strong>Hình ảnh minh chứng hoàn tiền:</strong><br>

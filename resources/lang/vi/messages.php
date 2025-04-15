@@ -143,7 +143,7 @@ return [
     'upload_video' => 'Tải lên video (tối đa 3 giây):',
     'submit_review' => 'Gửi đánh giá',
     'only_purchased' => 'Chỉ sản phẩm đã mua mới có thể đánh giá.',
-    'return_completed' => 'Trả hàng hoàn tất',
+    'return_completed' => 'Đã nhận được đơn hoàn',
     'approved' => 'Đã duyệt',
     'pending' => 'Đang chờ duyệt',
     'rejected' => 'Đã từ chối',
