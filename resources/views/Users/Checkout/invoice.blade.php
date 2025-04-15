@@ -71,7 +71,8 @@
                                             {{ $order->updated_at->format('d/m/Y H:i') }}</div>
                                       
                                         <div><strong>🕒 Thời gian nhận hàng:</strong> {{ $order->complete_ship }}</div>
-                                      
+                                        <div><strong>🕒 Thời gian hoàn hàng:</strong> {{ $order->complete_ship }}</div>
+
 
                                         <!-- Hiển thị mã giảm giá -->
                                         @if ($order->couponUsages->isNotEmpty())
