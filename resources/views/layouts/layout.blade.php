@@ -94,7 +94,7 @@
                     <li class="{{ request()->routeIs('admin.coupons.*') ? 'active' : '' }}">
 
                         <a class="nav-link" href="{{ route('admin.coupons.index') }}">
-                            <i class="nc-icon nc-atom"></i>
+                        <i class="nc-icon nc-tag-content"></i> 
                             <p>Mã giảm giá</p>
                         </a>
                     </li>
@@ -115,7 +115,7 @@
                     <li class="{{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}">
 
                         <a class="nav-link" href="{{ route('admin.returns.index') }}">
-                            <i class="nc-icon nc-atom"></i>
+                        <i class="nc-icon nc-refresh-02"></i>
                             <p>quản lý đơn hoàn</p>
                         </a>
                     </li>
@@ -139,7 +139,7 @@
                     <li class="{{ request()->routeIs('admin.articles.*') ? 'active' : '' }}">
 
                         <a class="nav-link" href="{{ route('admin.articles.index') }}">
-                            <i class="nc-icon nc-cart-simple"></i> <!-- Đổi icon thành giỏ hàng -->
+                        <i class="nc-icon nc-single-copy-04"></i> <!-- Đổi icon thành giỏ hàng -->
                             <p>Quản lý bài viết </p>
                         </a>
                     </li>
@@ -153,7 +153,7 @@
                     <li class="{{ request()->routeIs('admin.trash.*') ? 'active' : '' }}">
 
                         <a class="nav-link" href="{{ route('admin.trash.index') }}">
-                            <i class="nc-icon nc-pin-3"></i>
+                        <i class="nc-icon nc-simple-remove"></i>
                             <p>Thùng rác</p>
                         </a>
                     </li>

@@ -65,6 +65,7 @@
 
                                 <div class="product__item__text">
                                     <h6>{{ $product->name }}</h6>
+                                    <p>Đã bán: {{ $product->total_sold_quantity }}</p>
                                     <a href="{{ route('products.show', $product->id) }}" class="add-cart"
                                         style="text-decoration: none">Xem chi tiết</a>
 
