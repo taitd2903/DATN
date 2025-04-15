@@ -67,7 +67,7 @@
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Màu:</label>
-                        <input type="color" name="variants[{{ $index }}][color]" class="form-control" value="{{ old('variants.' . $index . '.color', $variant->color) }}" required oninput="validateSizeFields()">
+                        <input type="color"  style="width: 150px; height: 40px;" name="variants[{{ $index }}][color]" class="form-control" value="{{ old('variants.' . $index . '.color', $variant->color) }}" required oninput="validateSizeFields()">
 
                     </div>
                     <div class="col-md-4">

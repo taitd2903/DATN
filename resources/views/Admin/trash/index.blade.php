@@ -7,10 +7,7 @@
     <!-- Tabs Navigation -->
     <ul class="nav nav-tabs" id="statsTabs" role="tablist">
         <li class="nav-item">
-            <a class="nav-link active" id="category-tab" data-toggle="tab" href="#category" role="tab">Danh mục</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="product-tab" data-toggle="tab" href="#product" role="tab">Sản phẩm</a>
+            <a class="nav-link active" id="product-tab" data-toggle="tab" href="#product" role="tab">Sản phẩm</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" id="coupon-tab" data-toggle="tab" href="#coupon" role="tab">Mã giảm giá</a>
@@ -18,29 +15,10 @@
     </ul>
 
     <div class="tab-content mt-3" id="statsTabsContent">
-        <!-- Danh mục -->
-        <div class="tab-pane fade show active" id="category" role="tabpanel">
-            <h2 class="h4 mt-4">Danh mục</h2>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Tên danh mục</th>
-                        <th>Số lượng sản phẩm</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($categories as $category)
-                        <tr>
-                            <td>{{ $category->name }}</td>
-                            <td>{{ $category->products->count() }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+     
 
         <!-- Sản phẩm -->
-        <div class="tab-pane fade" id="product" role="tabpanel">
+        <div class="tab-pane fade show active" id="product" role="tabpanel">
             <h2 class="h4 mt-4">Sản phẩm</h2>
             <table class="table table-bordered">
                 <thead>
