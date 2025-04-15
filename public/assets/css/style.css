@@ -5000,7 +5000,7 @@ h1::after {
 
 .ms-2 {
     font-size: 12px;
-    color: #777;
+    
 }
 
 /* ttin chi tiet*/
@@ -5164,7 +5164,7 @@ h1::after {
 
 /* Tổng thể */
 .shopping-cart {
-    padding: 40px 0;
+    padding: 200px 0;
     background: #f8f9fa;
 }
 

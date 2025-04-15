@@ -68,107 +68,105 @@
                                 {{ $order->status }}
                             </span>
                         </div>
-                        <div class="row g-3 text-muted">
-                            <div class="col-md-6">
+                        <div class="row g-3">
+                            <!-- Left Column: Order Information -->
+                            <div class="col-md-6 text-muted">
+                                <h6 class="text-secondary fw-semibold mb-3">Thông tin đơn hàng</h6>
                                 <p class="mb-2"><i class="fas fa-calendar-alt me-2"></i> Ngày đặt hàng:
                                     <strong>{{ $order->created_at->format('d/m/Y H:i') }}</strong>
                                 </p>
-                                <p class="mb-2"><i class="fas fa-shipping-fast me-2"></i> Giao hàng: <span
-                                        class="badge bg-info px-2 py-1">{{ $order->delivering_at }}</span></p>
-                                <p class="mb-2"><i class="fas fa-check-circle me-2"></i> Hoàn thành: <span
-                                        class="badge bg-info px-2 py-1">{{ $order->completed_at }}</span></p>
-                                <p class="mb-2"><i class="fas fa-wallet me-2"></i> Thanh toán: <span
-                                        class="badge bg-info px-2 py-1">{{ $order->payment_method }}</span></p>
-                                        <p class="mb-2"><i class="fas fa-wallet me-2"></i> Thời gian hoàn thành công: <span
-                                            class="badge bg-info px-2 py-1">{{ $order->updated_at }}</span></p>
-                            </div>
-                            <div class="col-md-6">
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item py-2 d-flex align-items-center">
-                                        <strong><i class="fas fa-money-check-alt me-2"></i> Trạng thái:</strong>
-                                        <span
-                                            class="badge {{ $order->payment_status == 'Đã thanh toán' ? 'bg-success' : 'bg-warning' }} px-2 py-1">
-                                            {{ $order->payment_status }}
-                                        </span>
-                                    </li>
-                                    <li class="list-group-item py-2 d-flex align-items-center">
-                                        <strong>Mã giảm giá:</strong>
+                                <p class="mb-2"><i class="fas fa-shipping-fast me-2"></i> Giao hàng: 
+                                    <span class="badge bg-info px-2 py-1">{{ $order->delivering_at ?? 'Chưa có' }}</span>
+                                </p>
+                                <p class="mb-2"><i class="fas fa-check-circle me-2"></i> Hoàn thành: 
+                                    <span class="badge bg-info px-2 py-1">{{ $order->completed_at ?? 'Chưa hoàn thành' }}</span>
+                                </p>
+                                <p class="mb-2"><i class="fas fa-wallet me-2"></i> Thanh toán: 
+                                    <span class="badge bg-info px-2 py-1">{{ $order->payment_method }}</span>
+                                </p>
+                                <p class="mb-2"><i class="fas fa-clock me-2"></i> Cập nhật: 
+                                    <span class="badge bg-info px-2 py-1">{{ $order->updated_at->format('d/m/Y H:i') }}</span>
+                                </p>
+                                <p class="mb-2"><i class="fas fa-check-circle me-2"></i> Trạng thái : 
+                                    <span class="badge {{ $order->payment_status == 'Đã thanh toán' ? 'bg-success' : 'bg-warning' }} px-2 py-1">
+                                        {{ $order->payment_status }}</span>
+                                </p>
+                                <p class="mb-2"><i class="fas fa-ticket-alt me-2"></i> Mã giảm giá: 
+                                    <span class="badge bg-info px-2 py-1">
                                         <span>{{ $order->coupon_code ?? 'Không có mã nào áp dụng' }}</span>
-                                    </li>
+                                    </span>
+                                    
                                     @if ($order->coupon_code && $order->discount_amount > 0)
                                         <li class="list-group-item py-2 d-flex align-items-center">
                                             <strong>Số tiền giảm:</strong>
                                             <span>{{ number_format($order->discount_amount, 0, ',', '.') }} VNĐ</span>
                                         </li>
                                     @endif
-                                </ul>
+                                </p>
                             </div>
-
-                            <h6 class="mt-4 text-secondary fw-semibold">Sản phẩm trong đơn hàng:</h6>
-                            <div class="order-items mt-3">
-                                @foreach ($order->orderItems as $item)
-                                    <div class="card mb-2 border-0 shadow-sm">
-                                        <div class="card-body d-flex align-items-center p-3">
-                                            <img src="{{ asset('storage/' . $item->variant->image) }}"
+                            <!-- Right Column: Product Details -->
+                            <div class="col-md-6">
+                                <h6 class="text-secondary fw-semibold mb-3">Sản phẩm trong đơn hàng</h6>
+                                <div class="order-items">
+                                    @foreach ($order->orderItems as $item)
+                                        <div class="card mb-2 border-0 shadow-sm">
+                                            <div class="card-body d-flex align-items-center p-3">
+                                                <img src="{{ asset('storage/' . $item->variant->image) }}"
                                                 alt="{{ $item->product->name }}" class="rounded me-3"
-                                                style="width: 70px; height: 70px; object-fit: cover;">
-                                            <div class="flex-grow-1">
-                                                <strong>{{ $item->product->name }}</strong> (x{{ $item->quantity }})<br>
-                                                <span class="badge bg-secondary mt-1 px-2 py-1">{{ $item->size }} -
-                                                    {{ $item->color }}</span>
+                                                style="width: 150px; height: 100px; object-fit: cover;">
+                                           
+                                                <div class="flex-grow-1">
+                                                    <strong>Tên sản phẩm: {{ $item->product->name }}</strong> (x{{ $item->quantity }})<br>
+                                                    <span class="badge bg-secondary mt-1 px-2 py-1">{{ $item->size }} - {{ $item->color }}</span>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                @endforeach
+                                    @endforeach
+                                </div>
                             </div>
-
-                            <div class="d-flex flex-wrap gap-3 mt-4">
-
-                                <a href="{{ route('checkout.invoice', $order->id) }}"
-                                    class="btn btn-primary btn-sm px-4 py-2">
-                                    <i class="fas fa-file-invoice me-2"></i> Xem chi tiết
-                                </a>
-                                @if ($order->status == 'Đã giao hàng thành công' && now()->diffInDays($order->completed_at) <= 7)
-                                    @if ($order->return_request_status == '')
-                                        <a href="{{ route('returns.create', $order->id) }}"
-                                            class="btn btn-warning btn-sm px-4 py-2">
-                                            <i class="fas fa-undo-alt me-2"></i> Yêu cầu hoàn hàng
-                                        </a>
-                                    @else
-                                        <span class="text-muted">Bạn đã yêu cầu hoàn hàng cho đơn này.</span>
-                                    @endif
-                                @endif
-
-                                @if ($order->status == 'Đã giao hàng thành công')
-                                    <a href="{{ route('checkout.done', $order->id) }}"
-                                        class="btn btn-success btn-sm px-4 py-2">
-                                        <i class="fas fa-credit-card me-2"></i> xác nhận đã nhận hàng
+                        </div>
+                        <!-- Action Buttons -->
+                        <div class="d-flex flex-wrap gap-3 mt-4">
+                            <a href="{{ route('checkout.invoice', $order->id) }}"
+                                class="btn btn-primary btn-sm px-4 py-2">
+                                <i class="fas fa-file-invoice me-2"></i> Xem chi tiết
+                            </a>
+                            @if ($order->status == 'Đã giao hàng thành công' && now()->diffInDays($order->completed_at) <= 7)
+                                @if ($order->return_request_status == '')
+                                    <a href="{{ route('returns.create', $order->id) }}"
+                                        class="btn btn-warning btn-sm px-4 py-2">
+                                        <i class="fas fa-undo-alt me-2"></i> Yêu cầu hoàn hàng
                                     </a>
+                                @else
+                                    <span class="text-muted">Bạn đã yêu cầu hoàn hàng cho đơn này.</span>
                                 @endif
-
-                                @if ($order->status == 'Chờ xác nhận' && $order->payment_status != 'Đã thanh toán')
-                                    @if ($order->payment_method == 'cod')
-                                        <form action="{{ route('order.cancel', $order->id) }}" method="POST"
-                                            class="d-inline">
-                                            @csrf
-                                            <button type="submit" class="btn btn-danger btn-sm px-4 py-2">
-                                                <i class="fas fa-times me-2"></i> Hủy đơn
-                                            </button>
-                                        </form>
-                                    @else
-                                        <span class="text-muted small">Không thể hủy</span>
-                                    @endif
+                            @endif
+                            @if ($order->status == 'Đã giao hàng thành công')
+                                <a href="{{ route('checkout.done', $order->id) }}"
+                                    class="btn btn-success btn-sm px-4 py-2">
+                                    <i class="fas fa-credit-card me-2"></i> Xác nhận đã nhận hàng
+                                </a>
+                            @endif
+                            @if ($order->status == 'Chờ xác nhận' && $order->payment_status != 'Đã thanh toán')
+                                @if ($order->payment_method == 'cod')
+                                    <form action="{{ route('order.cancel', $order->id) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        <button type="submit" class="btn btn-danger btn-sm px-4 py-2">
+                                            <i class="fas fa-times me-2"></i> Hủy đơn
+                                        </button>
+                                    </form>
                                 @else
                                     <span class="text-muted small">Không thể hủy</span>
                                 @endif
-                                @if ($order->payment_status == 'Chưa thanh toán' && $order->payment_method != 'cod')
-                                    <a href="{{ route('checkout.continue', $order->id) }}"
-                                        class="btn btn-success btn-sm px-4 py-2">
-                                        <i class="fas fa-credit-card me-2"></i> Tiếp tục thanh toán
-                                    </a>
-                                @endif
-
-                            </div>
+                            @else
+                                <span class="text-muted small">Không thể hủy</span>
+                            @endif
+                            @if ($order->payment_status == 'Chưa thanh toán' && $order->payment_method != 'cod')
+                                <a href="{{ route('checkout.continue', $order->id) }}"
+                                    class="btn btn-success btn-sm px-4 py-2">
+                                    <i class="fas fa-credit-card me-2"></i> Tiếp tục thanh toán
+                                </a>
+                            @endif
                         </div>
                     </div>
                 </div>

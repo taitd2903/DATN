@@ -2,8 +2,11 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container">
-        <h2>Danh sách yêu cầu hoàn hàng</h2>
+    <div class="container" style="margin-bottom: 30%">
+        
+        <h2 class="mb-5 text-primary text-center fw-bold mt-4" style="font-size: 2.5rem; letter-spacing: 1px;">
+            Danh sách yêu cầu hoàn hàng
+        </h2>
 
         @if(session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
@@ -11,55 +14,57 @@
 
         <!-- Form bộ lọc -->
         <form method="GET" action="{{ route('returns.index') }}" class="mb-4 filter-form">
-            <div class="row g-3 align-items-end">
-                <!-- Lọc theo mã đơn hàng -->
-                <div class="col-md-2">
-                    <label for="order_id" class="form-label">Mã đơn hàng</label>
-                    <input type="text" name="order_id" id="order_id" class="form-control" value="{{ request('order_id') }}" placeholder="Nhập mã đơn hàng">
-                </div>
-
-                <!-- Lọc theo trạng thái -->
-                <div class="col-md-2">
-                    <label for="status" class="form-label">Trạng thái</label>
-                    <select name="status" id="status" class="form-select">
-                        <option value="">Tất cả</option>
-                        @foreach(['pending', 'approved', 'rejected', 'completed'] as $status)
-                            <option value="{{ $status }}" {{ request('status') == $status ? 'selected' : '' }}>
-                                {{ __('messages.' . $status) }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <!-- Lọc theo trạng thái chi tiết -->
-                <div class="col-md-2">
-                    <label for="return_process_status" class="form-label">Trạng thái chi tiết</label>
-                    <select name="return_process_status" id="return_process_status" class="form-select">
-                        <option value="">Tất cả</option>
-                        @foreach(['waiting_for_confirmation', 'processing', 'shipped', 'returned', 'cancelled'] as $processStatus)
-                            <option value="{{ $processStatus }}" {{ request('return_process_status') == $processStatus ? 'selected' : '' }}>
-                                {{ __('messages.' . $processStatus) }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <!-- Lọc theo ngày từ -->
-                <div class="col-md-2">
-                    <label for="date_from" class="form-label">Từ ngày</label>
-                    <input type="date" name="date_from" id="date_from" class="form-control" value="{{ request('date_from') }}">
-                </div>
-
-                <!-- Lọc theo ngày đến -->
-                <div class="col-md-2">
-                    <label for="date_to" class="form-label">Đến ngày</label>
-                    <input type="date" name="date_to" id="date_to" class="form-control" value="{{ request('date_to') }}">
-                </div>
-
-                <!-- Nút hành động -->
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary w-100 mb-0">Tìm kiếm</button>
-                    <a href="{{ route('returns.index') }}" class="btn btn-secondary w-100 mt-2">Xóa bộ lọc</a>
+            <div class="filter-section mb-4 p-4 border rounded-3 bg-white shadow-sm" style="max-width: 1200px; margin: auto;">
+                <div class="row g-3 align-items-end">
+                    <!-- Lọc theo mã đơn hàng -->
+                    <div class="col-md-2">
+                        <label for="order_id" class="form-label">Mã đơn hàng</label>
+                        <input type="text" name="order_id" id="order_id" class="form-control" value="{{ request('order_id') }}" placeholder="Nhập mã đơn hàng">
+                    </div>
+    
+                    <!-- Lọc theo trạng thái -->
+                    <div class="col-md-2">
+                        <label for="status" class="form-label">Trạng thái</label>
+                        <select name="status" id="status" class="form-select">
+                            <option value="">Tất cả</option>
+                            @foreach(['pending', 'approved', 'rejected', 'completed'] as $status)
+                                <option value="{{ $status }}" {{ request('status') == $status ? 'selected' : '' }}>
+                                    {{ __('messages.' . $status) }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+    
+                    <!-- Lọc theo trạng thái chi tiết -->
+                    <div class="col-md-2">
+                        <label for="return_process_status" class="form-label">Trạng thái chi tiết</label>
+                        <select name="return_process_status" id="return_process_status" class="form-select">
+                            <option value="">Tất cả</option>
+                            @foreach(['waiting_for_confirmation', 'processing', 'shipped', 'returned', 'cancelled'] as $processStatus)
+                                <option value="{{ $processStatus }}" {{ request('return_process_status') == $processStatus ? 'selected' : '' }}>
+                                    {{ __('messages.' . $processStatus) }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+    
+                    <!-- Lọc theo ngày từ -->
+                    <div class="col-md-2">
+                        <label for="date_from" class="form-label">Từ ngày</label>
+                        <input type="date" name="date_from" id="date_from" class="form-control" value="{{ request('date_from') }}">
+                    </div>
+    
+                    <!-- Lọc theo ngày đến -->
+                    <div class="col-md-2">
+                        <label for="date_to" class="form-label">Đến ngày</label>
+                        <input type="date" name="date_to" id="date_to" class="form-control" value="{{ request('date_to') }}">
+                    </div>
+    
+                    <!-- Nút hành động -->
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100 mb-0">Tìm kiếm</button>
+                        <a href="{{ route('returns.index') }}" class="btn btn-secondary w-100 mt-2">Xóa bộ lọc</a>
+                    </div>
                 </div>
             </div>
         </form>

@@ -85,7 +85,13 @@
                 @enderror
             </div>
             
-            <a href="{{ route('password.form') }}">đổi mật khẩu</a>
+            <a href="{{ route('password.form') }}" class="text-primary text-decoration-underline fw-semibold">
+                Đổi mật khẩu
+            </a>
+            
+            
+            
+            
             <button type="submit" class="btn">Cập nhật</button>
         </form>
 

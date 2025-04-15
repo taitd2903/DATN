@@ -13,7 +13,7 @@
 
         @if ($product->image)
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-6 mt-5">
                     <div class="d-flex align-items-start">
                         <!-- Cột trái: Ảnh nhỏ -->
                         <div class="me-3">
@@ -21,7 +21,7 @@
                                 @foreach ($product->variants->take(3) as $variant)
                                     <img src="{{ asset('storage/' . $variant->image) }}"
                                         alt="{{ $variant->color }} - {{ $variant->size }}"
-                                        class="img-thumbnail variant-thumbnail" width="80" height="80"
+                                        class="img-thumbnail variant-thumbnail" width="150" height="150"
                                         data-variant-id="{{ $variant->id }}" data-size="{{ $variant->size }}"
                                         data-color="{{ $variant->color }}">
                                 @endforeach
@@ -81,18 +81,17 @@
                         {{ number_format($minPrice, 0, ',', '.') }} - {{ number_format($maxPrice, 0, ',', '.') }} VNĐ
                     </span>
                 </p>
-                <p> Mo ta: {{ $product->description }}</p>
-                <p> {{ $product->long_description }}</p>
 
-                <p><strong>{{ __('messages.stock') }} </strong> <span
-                        id="stock-info">{{ $product->variants->sum('stock_quantity') }}</span></p>
+                <p style="display: none"><strong style="display: block">{{ __('messages.stock') }} </strong>
+                    <span style="display: block" id="stock-info">{{ $product->variants->sum('stock_quantity') }}</span>
+                </p>
                 <hr>
 
                 <!--
-                    <div>
-                        <img id="product-image" src="{{ $product->image }}" alt="{{ $product->name }}"
-                            style="max-width: 300px; display: block;">
-                    </div> -->
+                                        <div>
+                                            <img id="product-image" src="{{ $product->image }}" alt="{{ $product->name }}"
+                                                style="max-width: 300px; display: block;">
+                                        </div> -->
 
 
                 <form action="{{ route('cart.add') }}" method="POST" id="addToCartForm">
@@ -130,15 +129,15 @@
                         <br>
                         <!-- </div><p><strong>{{ __('messages.selected_variant') }} </strong> <span id="selected-variant-info">{{ __('messages.not_selected') }}</span></p> -->
 
-                        <br>
+
 
                         <!-- <label for="quantity" class="quantity-label">{{ __('messages.quantity') }}</label> -->
 
                         <!-- <div class="quantity-controls">
-                        <button type="button" class="quantity-btn" id="decrease">−</button>
-                        <input type="text" id="quantity" name="quantity" value="1" min="1" class="quantity-input" readonly>
-                        <button type="button" class="quantity-btn" id="increase">+</button>
-                    </div> -->
+                                            <button type="button" class="quantity-btn" id="decrease">−</button>
+                                            <input type="text" id="quantity" name="quantity" value="1" min="1" class="quantity-input" readonly>
+                                            <button type="button" class="quantity-btn" id="increase">+</button>
+                                        </div> -->
 
                         <div class="quantity-wrapper">
                             <label for="quantity" class="quantity-label">Số lượng:</label>
@@ -149,7 +148,7 @@
                                 <button type="button" class="quantity-btn" id="increase" disabled>+</button>
                             </div>
                         </div>
-                        <br>
+
                         {{-- ========================== Phần này của Đạt thông báo lỗi ============================ --}}
                         @if (session('error'))
                             <small class="text-danger" id="error-message">{{ session('error') }}</small>
@@ -168,16 +167,14 @@
                             </script>
                         @endif
                         {{-- ========================= Hết phần của Đạt ============================ --}}
-                        <br>
+
 
 
                         <div class="mt-3 d-flex align-items-center">
-                            
-                    
-                            <!-- Nút thêm vào giỏ hàng -->
                             @if (!$product->is_delete == '1')
                                 <p class="stock-info" id="stock-info"></p>
-                                <button type="submit" id="addToCartButton" disabled class="btn btn-outline-dark ms-2">
+                                <button type="submit" id="addToCartButton" disabled
+                                    class="btn btn-outline-dark  custom-add-to-cart">
                                     {{ __('messages.add_to_cart') }}
                                 </button>
                             @else
@@ -185,7 +182,6 @@
                                     <h4 class="mb-0 text-danger">Sản phẩm đang tạm dừng bán</h4>
                                 </div>
                             @endif
-
                         </div>
 
 
@@ -201,6 +197,12 @@
                                 <img src="../assets/img/bangsize.jpg" alt="Bảng size áo nữ">
                             </div>
                         </div>
+                        <hr>
+                        <span>
+                            <strong>Mô tả:</strong> {{ $product->description }}
+                        </span>
+
+                        <p> {{ $product->long_description }}</p>
                         <br>
                         <div class="info-banner">
                             <div class="info-box">
@@ -274,39 +276,156 @@
 
 
 
-    @if ($userCanReview)
-        <form action="{{ route('product.review.store', ['id' => $product->id]) }}" method="POST"
-            enctype="multipart/form-data">
-            @csrf
-            <label>{{ __('messages.your_review') }}</label>
-            <select name="rating" required class="form-select mb-2">
-                <option value="5">⭐⭐⭐⭐⭐ 5 {{ __('messages.rating') }}</option>
-                <option value="4">⭐⭐⭐⭐ 4 {{ __('messages.rating') }}</option>
-                <option value="3">⭐⭐⭐ 3 {{ __('messages.rating') }}</option>
-                <option value="2">⭐⭐ 2 {{ __('messages.rating') }}</option>
-                <option value="1">⭐ 1 {{ __('messages.rating') }}</option>
-            </select>
-            <textarea name="comment" class="form-control mb-2" placeholder="{{ __('messages.write_review') }}" required></textarea>
+    <div class="review-container d-flex">
+        <!-- Danh sách đánh giá (Bên trái) -->
+        <div class="review-list flex-fill me-3">
+            <div id="review-list">
+                @foreach ($reviews->take(2) as $review)
+                    <div class="review-item mb-3 p-3">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <strong>{{ $review->user->name }}</strong>
+                                <span class="text-muted">({{ $review->created_at->format('d/m/Y H:i') }})</span>
+                            </div>
+                        </div>
+                        <div class="star-rating mt-1">
+                            @for ($i = 1; $i <= 5; $i++)
+                                <span class="{{ $i <= $review->rating ? 'text-warning' : 'text-muted' }}">★</span>
+                            @endfor
+                        </div>
+                        <p class="mt-2">{{ $review->comment }}</p>
 
-            {{-- Upload ảnh --}}
-            <label class="mt-2">{{ __('messages.upload_images') }}:</label>
-            <input type="file" name="images[]" class="form-control mb-2" multiple accept="image/*"
-                onchange="previewImages(event)">
-            <div id="image-preview" class="mt-2 d-flex flex-wrap"></div>
+                        @if ($review->images)
+                            @php
+                                $images = json_decode($review->images, true);
+                            @endphp
+                            @if (is_array($images))
+                                <div class="review-images mt-2 d-flex flex-wrap">
+                                    @foreach ($images as $image)
+                                        <img src="{{ asset('storage/' . $image) }}" alt="Ảnh đánh giá"
+                                            class="img-thumbnail me-2 mb-2" style="width: 100px;">
+                                    @endforeach
+                                </div>
+                            @endif
+                        @endif
 
-            {{-- Upload video --}}
-            <label class="mt-2">{{ __('messages.upload_video') }}</label>
-            <input type="file" name="video" class="form-control mb-2" accept="video/mp4"
-                onchange="previewVideo(event)">
-            <div id="video-preview" class="mt-2"></div>
+                        @if ($review->video)
+                            <div class="review-video mt-2">
+                                <video width="200" controls class="rounded">
+                                    <source src="{{ asset('storage/' . $review->video) }}" type="video/mp4">
+                                    Trình duyệt của bạn không hỗ trợ video.
+                                </video>
+                            </div>
+                        @endif
 
-            <button type="submit" class="btn btn-primary mt-2">{{ __('messages.submit_review') }}</button>
-        </form>
-    @else
-        <p><i>{{ __('messages.only_purchased') }}</i></p>
-    @endif
+                        @if (auth()->check() && auth()->id() == $review->user_id)
+                            <form action="{{ route('reviews.destroy', ['id' => $review->id]) }}" method="POST"
+                                onsubmit="return confirm('Bạn có chắc muốn xóa đánh giá này không?');" class="mt-2">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+                            </form>
+                        @endif
+                    </div>
+                    <hr>
+                @endforeach
 
-    {{-- Script để xem trước ảnh và video trước khi upload --}}
+                <!-- Đánh giá ẩn (Ban đầu bị thu gọn) -->
+                @if ($reviews->count() > 2)
+                    <div id="hidden-reviews" style="display: none;">
+                        @foreach ($reviews->slice(2) as $review)
+                            <div class="review-item mb-3 p-3">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <strong>{{ $review->user->name }}</strong>
+                                        <span class="text-muted">({{ $review->created_at->format('d/m/Y H:i') }})</span>
+                                    </div>
+                                </div>
+                                <div class="star-rating mt-1">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        <span class="{{ $i <= $review->rating ? 'text-warning' : 'text-muted' }}">★</span>
+                                    @endfor
+                                </div>
+                                <p class="mt-2">{{ $review->comment }}</p>
+
+                                @if ($review->images)
+                                    @php
+                                        $images = json_decode($review->images, true);
+                                    @endphp
+                                    @if (is_array($images))
+                                        <div class="review-images mt-2 d-flex flex-wrap">
+                                            @foreach ($images as $image)
+                                                <img src="{{ asset('storage/' . $image) }}" alt="Ảnh đánh giá"
+                                                    class="img-thumbnail me-2 mb-2" style="width: 100px;">
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                @endif
+
+                                @if ($review->video)
+                                    <div class="review-video mt-2">
+                                        <video width="200" controls class="rounded">
+                                            <source src="{{ asset('storage/' . $review->video) }}" type="video/mp4">
+                                            Trình duyệt của bạn không hỗ trợ video.
+                                        </video>
+                                    </div>
+                                @endif
+
+                                @if (auth()->check() && auth()->id() == $review->user_id)
+                                    <form action="{{ route('reviews.destroy', ['id' => $review->id]) }}" method="POST"
+                                        onsubmit="return confirm('Bạn có chắc muốn xóa đánh giá này không?');"
+                                        class="mt-2">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+                                    </form>
+                                @endif
+                            </div>
+                            <hr>
+                        @endforeach
+                    </div>
+                    <button id="toggle-reviews" class="btn btn-link mb-3">
+                        <i class="bi bi-chevron-down"></i>
+                    </button>
+                @endif
+            </div>
+        </div>
+
+        <!-- Form đánh giá (Bên phải) -->
+        <div class="review-form" style="min-width: 300px;">
+            @if ($userCanReview)
+                <form action="{{ route('product.review.store', ['id' => $product->id]) }}" method="POST"
+                    enctype="multipart/form-data">
+                    @csrf
+                    <label>Đánh giá của bạn</label>
+                    <select name="rating" required class="form-select mb-2">
+                        <option value="5">⭐⭐⭐⭐⭐ 5 sao</option>
+                        <option value="4">⭐⭐⭐⭐ 4 sao</option>
+                        <option value="3">⭐⭐⭐ 3 sao</option>
+                        <option value="2">⭐⭐ 2 sao</option>
+                        <option value="1">⭐ 1 sao</option>
+                    </select>
+                    <textarea name="comment" class="form-control mb-2" placeholder="Viết đánh giá của bạn" required></textarea>
+
+                    <label class="mt-2">Tải ảnh lên:</label>
+                    <input type="file" name="images[]" class="form-control mb-2" multiple accept="image/*"
+                        onchange="previewImages(event)">
+                    <div id="image-preview" class="mt-2 d-flex flex-wrap"></div>
+
+                    <label class="mt-2">Tải video lên:</label>
+                    <input type="file" name="video" class="form-control mb-2" accept="video/mp4"
+                        onchange="previewVideo(event)">
+                    <div id="video-preview" class="mt-2"></div>
+
+                    <button type="submit" class="btn btn-primary mt-2">Gửi đánh giá</button>
+                </form>
+            @else
+                <p><i>Chỉ những người đã mua hàng mới có thể đánh giá</i></p>
+            @endif
+        </div>
+    </div>
+
+    <!-- JavaScript cho xem trước ảnh và video -->
     <script>
         function previewImages(event) {
             let files = event.target.files;
@@ -343,64 +462,75 @@
                     video.controls = true;
                     preview.appendChild(video);
                 };
-                reader.readAsDataURL(file);
+                read
+                er.readAsDataURL(file);
             }
         }
+
+        // JavaScript để thu gọn/mở rộng đánh giá
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleButton = document.getElementById('toggle-reviews');
+            const hiddenReviews = document.getElementById('hidden-reviews');
+
+            if (toggleButton && hiddenReviews) {
+                const icon = toggleButton.querySelector('i');
+                toggleButton.addEventListener('click', function() {
+                    if (hiddenReviews.style.display === 'none') {
+                        hiddenReviews.style.display = 'block';
+                        icon.classList.remove('bi-chevron-down');
+                        icon.classList.add('bi-chevron-up');
+                    } else {
+                        hiddenReviews.style.display = 'none';
+                        icon.classList.remove('bi-chevron-up');
+                        icon.classList.add('bi-chevron-down');
+                    }
+                });
+            }
+        });
     </script>
 
-    {{-- Hiển thị danh sách đánh giá --}}
-    @foreach ($reviews as $review)
-        <div class="review-item mb-3 p-3 border rounded">
-            <div class="d-flex justify-content-between">
-                <div>
-                    <strong>{{ $review->user->name }}</strong>
-                    <span class="text-muted">({{ $review->created_at->format('d/m/Y H:i') }})</span>
-                </div>
-                <div>
-                    @for ($i = 1; $i <= 5; $i++)
-                        <span class="{{ $i <= $review->rating ? 'text-warning' : 'text-muted' }}">★</span>
-                    @endfor
-                </div>
-            </div>
-            <p class="mt-2">{{ $review->comment }}</p>
+    <!-- CSS cập nhật -->
+    <style>
+        .review-container {
+            display: flex;
+            gap: 20px;
+        }
 
-            {{-- Hiển thị ảnh nếu có --}}
-            @if ($review->images)
-                @php
-                    $images = json_decode($review->images, true);
-                @endphp
-                @if (is_array($images))
-                    <div class="review-images mt-2 d-flex flex-wrap">
-                        @foreach ($images as $image)
-                            <img src="{{ asset('storage/' . $image) }}" alt="Ảnh đánh giá"
-                                class="img-thumbnail me-2 mb-2" style="width: 100px;">
-                        @endforeach
-                    </div>
-                @endif
-            @endif
+        .review-list {
+            flex: 2;
+        }
 
-            {{-- Hiển thị video nếu có --}}
-            @if ($review->video)
-                <div class="review-video mt-2">
-                    <video width="200" controls class="rounded">
-                        <source src="{{ asset('storage/' . $review->video) }}" type="video/mp4">
-                        Trình duyệt của bạn không hỗ trợ video.
-                    </video>
-                </div>
-            @endif
+        .review-form {
+            flex: 1;
+            position: sticky;
+            top: 20px;
+        }
 
-            {{-- Nút xóa đánh giá --}}
-            @if (auth()->check() && auth()->id() == $review->user_id)
-                <form action="{{ route('reviews.destroy', ['id' => $review->id]) }}" method="POST"
-                    onsubmit="return confirm('Bạn có chắc muốn xóa đánh giá này không?');" class="mt-2">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
-                </form>
-            @endif
-        </div>
-        <hr>
-    @endforeach
+        .review-item {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .star-rating {
+            display: block;
+        }
+
+        #toggle-reviews {
+            text-decoration: none;
+            font-size: 1.2rem;
+            /* Kích thước icon */
+        }
+
+        @media (max-width: 768px) {
+            .review-container {
+                flex-direction: column;
+            }
+
+            .review-form {
+                position: static;
+            }
+        }
+    </style>
 
 
 
@@ -625,6 +755,7 @@
 
 
 
+
     @include('Users.chat')
 @endsection
 <style>
@@ -640,5 +771,44 @@
         box-shadow: 0 0 0px #000000;
         transform: scale(1.3);
         /* Phóng to nhẹ cho nổi bật */
+    }
+
+    .custom-add-to-cart {
+
+        padding: 10px 20px;
+
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        width: 60%;
+
+    }
+
+    .custom-add-to-cart:hover {
+        background: #ff0000;
+        /* Red background on hover */
+        color: #fff;
+        /* White text on hover */
+        border-color: #ff0000;
+        /* Match border to background */
+    }
+
+    .custom-add-to-cart::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg,
+                transparent,
+                rgba(255, 255, 255, 0.4),
+                transparent);
+        transition: 0.6s ease;
+    }
+
+    .custom-add-to-cart:hover::before {
+        left: 100%;
+        /* Chasing animation on hover */
     }
 </style>
