@@ -526,7 +526,16 @@
     <div class="return-statistics">
         <h4 class="text-center">Tổng quan</h4>
         <div class="row mb-4">
-            <div class="col-md-4">
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h6>Tổng số đơn hàng</h6>
+                        <p>{{ $totalAllOrders ?? 0 }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
                 <div class="card text-center">
                     <div class="card-body">
                         <h6>Tổng số yêu cầu hoàn hàng</h6>
@@ -534,7 +543,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="card text-center">
                     <div class="card-body">
                         <h6>Tỷ lệ hoàn hàng</h6>
@@ -542,7 +551,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="card text-center">
                     <div class="card-body">
                         <h6>Phân bố trạng thái</h6>
@@ -554,10 +563,15 @@
                     </div>
                 </div>
             </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h6>Tổng số tiền đã hoàn</h6>
+                        <p>{{ number_format($returnStats['total_refunded_amount'] ?? 0, 0, ',', '.') }} VNĐ</p>
+                    </div>
+                </div>
+            </div>
         </div>
-        <h4 class="text-center">Xu hướng yêu cầu hoàn hàng theo thời gian</h4>
-        
-        <canvas id="returnChart" class="canvasprohuyhang"></canvas>
     </div>
 </div>
 

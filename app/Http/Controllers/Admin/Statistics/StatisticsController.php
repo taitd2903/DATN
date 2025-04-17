@@ -382,6 +382,8 @@ $returnChartData = $this->getReturnStatisticsByTime($request);
     }
 
 
+
+
     public function returnStatistics(Request $request)
 {
     $from = $request->input('from_date');
@@ -390,7 +392,6 @@ $returnChartData = $this->getReturnStatisticsByTime($request);
     $categoryId = $request->input('category_id');
     $gender = $request->input('gender');
 
-    // Query for all orders
     $allOrdersQuery = Order::query()->with('orderItems.product');
     $returnOrdersQuery = OrderReturn::query()->with('order.orderItems.product');
 
@@ -403,7 +404,6 @@ $returnChartData = $this->getReturnStatisticsByTime($request);
         $returnOrdersQuery->whereDate('created_at', '<=', $to);
     }
 
-    // Apply product filters
     $applyProductFilter = function ($query) use ($productName, $gender, $categoryId) {
         $query->whereHas('product', function ($productQuery) use ($productName, $gender, $categoryId) {
             if ($productName) {
@@ -426,19 +426,25 @@ $returnChartData = $this->getReturnStatisticsByTime($request);
     $totalReturnOrders = $returnOrdersQuery->count();
     $returnOrderRate = $totalAllOrders > 0 ? ($totalReturnOrders / $totalAllOrders) * 100 : 0;
 
-    // Additional return stats by status
-    $returnByStatus = $returnOrdersQuery->select('status', DB::raw('count(*) as count'))
-        ->groupBy('status')
-        ->pluck('count', 'status')
+    $returnByStatus = $returnOrdersQuery->select('order_returns.status', DB::raw('count(*) as count'))
+        ->groupBy('order_returns.status')
+        ->pluck('count', 'order_returns.status')
         ->toArray();
+
+    // Tính tổng số tiền đã hoàn, không dùng GROUP BY
+    $totalRefundedAmount = $returnOrdersQuery
+        ->where('order_returns.status', 'approved')
+        ->join('orders', 'order_returns.order_id', '=', 'orders.id')
+        ->sum('orders.total_price');
 
     return [
         'total_return_orders' => $totalReturnOrders,
         'return_order_rate' => $returnOrderRate,
         'return_by_status' => $returnByStatus,
+        'total_all_orders' => $totalAllOrders,
+        'total_refunded_amount' => $totalRefundedAmount,
     ];
 }
-
 
 private function getReturnStatisticsByTime(Request $request)
 {
