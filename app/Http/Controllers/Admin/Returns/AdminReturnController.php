@@ -47,16 +47,37 @@ class AdminReturnController extends Controller
         return redirect()->route('admin.returns.index')->with('success', 'Yêu cầu hoàn hàng đã được duyệt.');
     }
 
+    // public function reject(Request $request, $id)
+    // {
+    //     $return = OrderReturn::findOrFail($id);
+
+    //     $return->status = 'rejected';
+    //     $return->rejection_reason = $request->input('rejection_reason');
+    //     $return->save();
+
+    //     return redirect()->route('admin.returns.index')->with('success', 'Yêu cầu hoàn hàng đã bị từ chối.');
+    // }
+
     public function reject(Request $request, $id)
-    {
-        $return = OrderReturn::findOrFail($id);
+{
+    $return = OrderReturn::findOrFail($id);
 
-        $return->status = 'rejected';
-        $return->rejection_reason = $request->input('rejection_reason');
-        $return->save();
+    // Cập nhật trạng thái yêu cầu hoàn hàng
+    $return->status = 'rejected';
+    $return->rejection_reason = $request->input('rejection_reason');
+    $return->save();
 
-        return redirect()->route('admin.returns.index')->with('success', 'Yêu cầu hoàn hàng đã bị từ chối.');
+    // Cập nhật trạng thái đơn hàng
+    $order = Order::find($return->order_id);
+    if ($order) {
+        $order->status = 'Từ chối hoàn hàng';
+        $order->save();
+    } else {
+        return redirect()->route('admin.returns.index')->with('error', 'Đơn hàng không tồn tại.');
     }
+
+    return redirect()->route('admin.returns.index')->with('success', 'Yêu cầu hoàn hàng đã bị từ chối.');
+}
 
     
 

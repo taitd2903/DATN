@@ -27,7 +27,7 @@
                         <label for="status" class="form-label">Trạng thái</label>
                         <select name="status" id="status" class="form-select">
                             <option value="">Tất cả</option>
-                            @foreach(['pending', 'approved', 'rejected', 'completed'] as $status)
+                            @foreach(['pending', 'approved', 'rejected'] as $status)
                                 <option value="{{ $status }}" {{ request('status') == $status ? 'selected' : '' }}>
                                     {{ __('messages.' . $status) }}
                                 </option>
@@ -40,7 +40,7 @@
                         <label for="return_process_status" class="form-label">Trạng thái chi tiết</label>
                         <select name="return_process_status" id="return_process_status" class="form-select">
                             <option value="">Tất cả</option>
-                            @foreach(['waiting_for_confirmation', 'processing', 'shipped', 'returned', 'cancelled'] as $processStatus)
+                            @foreach(['return_in_progress', 'return_shipping', 'return_completed'] as $processStatus)
                                 <option value="{{ $processStatus }}" {{ request('return_process_status') == $processStatus ? 'selected' : '' }}>
                                     {{ __('messages.' . $processStatus) }}
                                 </option>

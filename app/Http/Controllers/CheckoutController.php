@@ -953,7 +953,7 @@ class CheckoutController extends Controller
 public function confirmReceived($id) 
 {
     $order = Order::findOrFail($id);
-    if ($order->status === 'Đã giao hàng thành công') {
+    if (in_array($order->status ,[ 'Đã giao hàng thành công','Từ chối hoàn hàng'])) {
         if (Carbon::parse($order->complete_ship)->addDays(7)->lte(now())) {
             $order->status = 'Hoàn thành';
             $order->completed_at = now();

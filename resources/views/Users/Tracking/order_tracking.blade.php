@@ -64,7 +64,7 @@
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h5 class="text-primary fw-bold mb-0">Đơn hàng #{{ $order->id }}</h5>
                             <span
-                                class="badge bg-{{ $order->status == 'Hoàn thành' ? 'success' : ($order->status == 'Đang giao' ? 'info' : ($order->status == 'Hủy' ? 'danger' : 'primary')) }} fs-6 px-3 py-2">
+                                class="badge bg-{{ $order->status == 'Hoàn thành' ? 'success' : ($order->status == 'Đang giao' ? 'info' : ($order->status=='Từ chối hoàn hàng' ? 'danger': ($order->status == 'Hủy' ? 'danger' : 'primary'))) }} fs-6 px-3 py-2">
                                 {{ $order->status }}
                             </span>
                         </div>
@@ -141,12 +141,13 @@
                                     <span class="text-muted">Bạn đã yêu cầu hoàn hàng cho đơn này.</span>
                                 @endif
                             @endif
-                            @if ($order->status == 'Đã giao hàng thành công')
-                                <a href="{{ route('checkout.done', $order->id) }}"
-                                    class="btn btn-success btn-sm px-4 py-2">
-                                    <i class="fas fa-credit-card me-2"></i> Xác nhận đã nhận hàng
-                                </a>
-                            @endif
+                            
+                            @if (in_array($order->status, ['Đã giao hàng thành công', 'Từ chối hoàn hàng']))
+                            <a href="{{ route('checkout.done', $order->id) }}"
+                                class="btn btn-success btn-sm px-4 py-2">
+                                <i class="fas fa-credit-card me-2"></i> Xác nhận đã nhận hàng
+                            </a>
+                        @endif
                             @if ($order->status == 'Chờ xác nhận' && $order->payment_status != 'Đã thanh toán')
                                 @if ($order->payment_method == 'cod')
                                     <form action="{{ route('order.cancel', $order->id) }}" method="POST" class="d-inline">
