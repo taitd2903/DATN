@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Coupon;
 use App\Models\CouponUsage;
+use App\Models\OrderReturn;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -263,6 +264,9 @@ $totalCancelledOrders = $cancelledOrdersQuery->count();
 $cancelledOrderRate = $totalAllOrders > 0 ? ($totalCancelledOrders / $totalAllOrders) * 100 : 0;
 
 
+// Thống kê hoàn hàng
+$returnStats = $this->returnStatistics($request);
+$returnChartData = $this->getReturnStatisticsByTime($request);
         return view('Admin.statistics.profit', compact(
             'productProfits',
             'orderProfits',
@@ -273,7 +277,7 @@ $cancelledOrderRate = $totalAllOrders > 0 ? ($totalCancelledOrders / $totalAllOr
             'totalUsages', 'shippingUsages', 'orderUsages', 'totalDiscount', 'uniqueUsers',
             'topUsedCoupons', 'leastUsedCoupons', 'totalOrders', 'couponOrders', 'couponOrderRate', 'totalRevenue',
             'affectedRevenue', 'originalRevenue', 'pieChartData', 'columnChartData',
-            'totalAllOrders', 'totalCancelledOrders', 'cancelledOrderRate'
+            'totalAllOrders', 'totalCancelledOrders', 'cancelledOrderRate','returnStats', 'returnChartData'
         ));
     }
     private function getCouponUsageByTime(Request $request)
@@ -376,4 +380,111 @@ $cancelledOrderRate = $totalAllOrders > 0 ? ($totalCancelledOrders / $totalAllOr
 
         return response()->json(array_values($monthlyProfits));
     }
+
+
+    public function returnStatistics(Request $request)
+{
+    $from = $request->input('from_date');
+    $to = $request->input('to_date');
+    $productName = $request->input('product_name');
+    $categoryId = $request->input('category_id');
+    $gender = $request->input('gender');
+
+    // Query for all orders
+    $allOrdersQuery = Order::query()->with('orderItems.product');
+    $returnOrdersQuery = OrderReturn::query()->with('order.orderItems.product');
+
+    if ($from) {
+        $allOrdersQuery->whereDate('created_at', '>=', $from);
+        $returnOrdersQuery->whereDate('created_at', '>=', $from);
+    }
+    if ($to) {
+        $allOrdersQuery->whereDate('created_at', '<=', $to);
+        $returnOrdersQuery->whereDate('created_at', '<=', $to);
+    }
+
+    // Apply product filters
+    $applyProductFilter = function ($query) use ($productName, $gender, $categoryId) {
+        $query->whereHas('product', function ($productQuery) use ($productName, $gender, $categoryId) {
+            if ($productName) {
+                $productQuery->where('name', 'like', '%' . $productName . '%');
+            }
+            if ($gender) {
+                $productQuery->where('gender', $gender);
+            }
+            if ($categoryId) {
+                $categoryIds = Category::getDescendantsAndSelfIds($categoryId);
+                $productQuery->whereIn('category_id', $categoryIds);
+            }
+        });
+    };
+
+    $allOrdersQuery->whereHas('orderItems', $applyProductFilter);
+    $returnOrdersQuery->whereHas('order.orderItems', $applyProductFilter);
+
+    $totalAllOrders = $allOrdersQuery->count();
+    $totalReturnOrders = $returnOrdersQuery->count();
+    $returnOrderRate = $totalAllOrders > 0 ? ($totalReturnOrders / $totalAllOrders) * 100 : 0;
+
+    // Additional return stats by status
+    $returnByStatus = $returnOrdersQuery->select('status', DB::raw('count(*) as count'))
+        ->groupBy('status')
+        ->pluck('count', 'status')
+        ->toArray();
+
+    return [
+        'total_return_orders' => $totalReturnOrders,
+        'return_order_rate' => $returnOrderRate,
+        'return_by_status' => $returnByStatus,
+    ];
+}
+
+
+private function getReturnStatisticsByTime(Request $request)
+{
+    $from = $request->input('from_date');
+    $to = $request->input('to_date');
+    $productName = $request->input('product_name');
+    $categoryId = $request->input('category_id');
+    $gender = $request->input('gender');
+
+    $returnQuery = OrderReturn::with('order.orderItems.product');
+    if ($from) $returnQuery->whereDate('created_at', '>=', $from);
+    if ($to) $returnQuery->whereDate('created_at', '<=', $to);
+
+    // Apply product filters
+    $applyProductFilter = function ($query) use ($productName, $gender, $categoryId) {
+        $query->whereHas('product', function ($productQuery) use ($productName, $gender, $categoryId) {
+            if ($productName) {
+                $productQuery->where('name', 'like', '%' . $productName . '%');
+            }
+            if ($gender) {
+                $productQuery->where('gender', $gender);
+            }
+            if ($categoryId) {
+                $categoryIds = Category::getDescendantsAndSelfIds($categoryId);
+                $productQuery->whereIn('category_id', $categoryIds);
+            }
+        });
+    };
+
+    $returnQuery->whereHas('order.orderItems', $applyProductFilter);
+
+    $returns = $returnQuery->get();
+    $timeData = [];
+    $start = $from ? Carbon::parse($from) : null;
+    $end = $to ? Carbon::parse($to) : null;
+    $groupBy = ($start && $end && $end->diffInDays($start) <= 31) ? 'day' : 'month';
+
+    foreach ($returns as $return) {
+        $key = $groupBy === 'day' ? $return->created_at->format('Y-m-d') : $return->created_at->format('Y-m');
+        if (!isset($timeData[$key])) {
+            $timeData[$key] = ['pending' => 0, 'approved' => 0, 'rejected' => 0];
+        }
+        $timeData[$key][$return->status]++;
+    }
+
+    ksort($timeData);
+    return ['data' => $timeData, 'group_by' => $groupBy];
+}
 }

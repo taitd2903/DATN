@@ -125,6 +125,13 @@
                    Thống kê mã giảm giá
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request('tab') == 'return-stats' ? 'show active' : '' }}"
+                   href="?tab=return-stats&from_date={{ request('from_date') }}&to_date={{ request('to_date') }}&product_name={{ request('product_name') }}&category_id={{ request('category_id') }}&order_id={{ request('order_id') }}&gender={{ request('gender') }}">
+                   Thống kê hoàn hàng
+                </a>
+            </li>
+            
         </ul>
 
         <div class="tab-content mt-3">
@@ -512,6 +519,52 @@
                 }
             });
         </script>
+<!-- Thống kê hoàn hàng -->
+<div class="tab-pane fade {{ request('tab') == 'return-stats' ? 'show active' : '' }}" id="return-stats">
+    <h2 class="text-center">Thống kê hoàn hàng</h2>
+    <br>
+    <div class="return-statistics">
+        <h4 class="text-center">Tổng quan</h4>
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h6>Tổng số yêu cầu hoàn hàng</h6>
+                        <p>{{ $returnStats['total_return_orders'] ?? 0 }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h6>Tỷ lệ hoàn hàng</h6>
+                        <p>{{ number_format($returnStats['return_order_rate'] ?? 0, 2) }}%</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h6>Phân bố trạng thái</h6>
+                        <ul class="list-unstyled">
+                            <li>Đang chờ: {{ $returnStats['return_by_status']['pending'] ?? 0 }}</li>
+                            <li>Đã duyệt: {{ $returnStats['return_by_status']['approved'] ?? 0 }}</li>
+                            <li>Từ chối: {{ $returnStats['return_by_status']['rejected'] ?? 0 }}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <h4 class="text-center">Xu hướng yêu cầu hoàn hàng theo thời gian</h4>
+        
+        <canvas id="returnChart" class="canvasprohuyhang"></canvas>
+    </div>
+</div>
+
+
+
+
+
 
 
 
@@ -597,6 +650,8 @@
         }
     });
 </script>
+
+
 @endsection
 
 <style>
