@@ -48,6 +48,7 @@
                             <th>Ngân hàng</th>
                             <th>Tên chủ tài khoản</th>
                             <th>Tên người dùng</th>
+                            <th>Số tiền cần hoàn</th>
                             <th>Trạng Thái</th>
                             <th>Cập nhật trạng thái</th>
                             <th>Hành Động</th>
@@ -73,6 +74,7 @@
                                                 <td>{{ $return->bank_name }}</td>
                                                 <td>{{ $return->account_holder }}</td>
                                                 <td>{{ $return->order->user->name ?? 'Không có người dùng' }}</td>
+                                                <td>{{ $return->order ? number_format($return->order->total_price, 0, ',', '.') : '0' }} VND</td>
                                                 <td>
                                                     <span class="badge 
                                                         @if($return->status == 'pending') badge-warning 
@@ -212,6 +214,7 @@ nd_image" class="form-control" accept="image/*" required>
                                                                             <p><strong>Ngân hàng:</strong> {{ $return->bank_name }}</p>
                                                                             <p><strong>Tên chủ tài khoản:</strong> {{ $return->account_holder }}</p>
                                                                             <p><strong>Người yêu cầu:</strong> {{ $return->order->user->name ?? 'Không có người dùng' }}</p>
+                                                                            <p><strong>Số tiền cần hoàn:</strong> {{ $return->order ? number_format($return->order->total_price, 0, ',', '.') : '0' }} VND</p>
                                                                             <p><strong>Trạng thái:</strong> {{ ucfirst($return->status) }}</p>
                                                                             <p><strong>Ngày tạo:</strong> {{ $return->created_at->format('d/m/Y H:i') }}</p>
                                                                         </div>

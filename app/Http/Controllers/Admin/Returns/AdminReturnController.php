@@ -12,7 +12,7 @@ class AdminReturnController extends Controller
 {
     public function index()
     {
-        $returns = OrderReturn::with('order.user')->get();
+        $returns = OrderReturn::with('order.user','order.orderItems')->get();
         return view('admin.returns.index', compact('returns'));
     }
 
@@ -58,20 +58,7 @@ class AdminReturnController extends Controller
         return redirect()->route('admin.returns.index')->with('success', 'Yêu cầu hoàn hàng đã bị từ chối.');
     }
 
-    // public function updateReturnProcess(Request $request, $id)
-    // {
-    //     $return = OrderReturn::findOrFail($id);
-
-    //     if ($return->status !== 'approved') {
-    //         return redirect()->back()->with('error', 'Chỉ có thể cập nhật trạng thái khi đơn hoàn đã được duyệt.');
-    //     }
-
-    //     $return->return_process_status = $request->return_process_status;
-    //     $return->save();
-
-    //     return redirect()->back()->with('success', 'Cập nhật trạng thái hoàn hàng thành công.');
-    // }
-
+    
 
     public function updateReturnProcess(Request $request, $id)
     {
