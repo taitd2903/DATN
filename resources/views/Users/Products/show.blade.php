@@ -58,7 +58,7 @@
             <h1>
                 <h1 class="product-title">{{ $product->name }}</h1>
                 <p class="sku">
-                    {{-- <strong>{{ __('messages.out_of_stock') }}</strong> {{ $product->variants->sum('stock_quantity') }} --}}
+                    
                     <span class="rating">
                         @php
                             $averageRating = \App\Models\Review::where('product_id', $product->id)->avg('rating') ?? 0;
@@ -81,6 +81,7 @@
                         {{ number_format($minPrice, 0, ',', '.') }} - {{ number_format($maxPrice, 0, ',', '.') }} VNĐ
                     </span>
                 </p>
+                <strong>{{ __('messages.out_of_stock') }}</strong> {{ $product->variants->sum('stock_quantity') }} 
 
                 <p style="display: none"><strong style="display: block">{{ __('messages.stock') }} </strong>
                     <span style="display: block" id="stock-info">{{ $product->variants->sum('stock_quantity') }}</span>
