@@ -305,11 +305,40 @@ class CheckoutController extends Controller
                 $order->completed_at = now();
                 $order->completed_by = $order->completed_by ?? Auth::id();
                 $order->save();
-    
+
                 session()->flash('success', 'Đơn hàng đã tự động được xác nhận sau 7 ngày.');
             }
+            //ngon
         }
-    
+        if (
+            $order->payment_method === 'vnpay'
+            && $order->payment_status === 'Chưa thanh toán'
+            && $order->status !== 'Hủy' // ✅ Tránh xử lý lại
+            && Carbon::parse($order->created_at)->addMinutes(30)->lte(now())
+        ) {
+            foreach ($order->orderItems as $item) {
+                $variant = $item->variant;
+                if ($variant) {
+                    $variant->stock_quantity += $item->quantity;
+                    $variant->sold_quantity -= $item->quantity;
+                    $variant->save();
+                } else {
+                    $product = $item->product;
+                    if ($product) {
+                        $product->stock_quantity += $item->quantity;
+                        $product->sold_quantity -= $item->quantity;
+                        $product->save();
+                    }
+                }
+            }
+        
+            $order->status = 'Hủy'; // ✅ Đảm bảo 'Hủy' nằm trong ENUM
+        
+            $order->save();
+        
+            session()->flash('info', 'Đơn hàng vnpay đã bị hủy do quá thời gian thanh toán.');
+        }
+        
         // Lấy lại order đầy đủ với quan hệ
         $order = Order::with([
             'orderItems.product',
@@ -317,21 +346,21 @@ class CheckoutController extends Controller
             'user',
             'couponUsages.coupon'
         ])->findOrFail($id);
-    
+
         $breadcrumbs = [
             ['name' => 'Trang chủ', 'url' => route('home')],
             ['name' => 'Đơn hàng', 'url' => null],
             ['name' => 'Đơn hàng ' . $order->id, 'url' => null],
         ];
-    
+
         return view('Users.Checkout.invoice', compact('breadcrumbs', 'order'));
     }
 
-    public function orderTracking() 
+    public function orderTracking()
     {
         $userId = Auth::id();
         $orders = Order::where('user_id', $userId)->get();
-    
+
         foreach ($orders as $order) {
             if (
                 $order->status === 'Đã giao hàng thành công' &&
@@ -343,20 +372,51 @@ class CheckoutController extends Controller
                 $order->completed_by = $order->completed_by ?? $userId;
                 $order->save();
             }
+
+            if (
+                $order->payment_method === 'vnpay'
+                && $order->payment_status === 'Chưa thanh toán'
+                && $order->status !== 'Hủy' 
+                && Carbon::parse($order->created_at)->addMinutes(30)->lte(now())
+            ) {
+                foreach ($order->orderItems as $item) {
+                    $variant = $item->variant;
+                    if ($variant) {
+                        $variant->stock_quantity += $item->quantity;
+                        $variant->sold_quantity -= $item->quantity;
+                        $variant->save();
+                    } else {
+                        $product = $item->product;
+                        if ($product) {
+                            $product->stock_quantity += $item->quantity;
+                            $product->sold_quantity -= $item->quantity;
+                            $product->save();
+                        }
+                    }
+                }
+            
+                $order->status = 'Hủy'; // ✅ Đảm bảo 'Hủy' nằm trong ENUM
+            
+                $order->save();
+            
+                session()->flash('info', 'Đơn hàng vnpay đã bị hủy do quá thời gian thanh toán.');
+            }
+
+
         }
-    
-      
+
+
         $orders = Order::where('user_id', $userId)
             ->with('orderItems.product')
             ->orderBy('created_at', 'desc')
             ->get();
-    
+
         $breadcrumbs = [
             ['name' => 'Trang chủ', 'url' => route('home')],
             ['name' => 'Đơn hàng', 'url' => null],
             ['name' => 'Đơn hàng của tôi', 'url' => null],
         ];
-    
+
         return view('users.tracking.order_tracking', compact('breadcrumbs', 'orders'));
     }
 
@@ -433,8 +493,10 @@ class CheckoutController extends Controller
                 $order->completed_by = $order->completed_by ?? $order->user_id; // ✅ Ghi theo người đặt hàng
                 $order->save();
             }
+
+          
         }
-        
+
         $query = Order::orderBy('created_at', 'desc');
 
         // Lọc theo tên khách hàng
@@ -466,6 +528,38 @@ class CheckoutController extends Controller
         }
         $orders = $query->paginate(10);
         $statusOptions = ['Chờ xác nhận', 'Đang giao','Đã giao hàng thành công', 'Hoàn thành', 'Hủy'];
+        $ordersvnpay= Order::get();
+        foreach ($ordersvnpay as $order) {
+        if (
+            $order->payment_method === 'vnpay'
+            && $order->payment_status === 'Chưa thanh toán'
+            && $order->status !== 'Hủy' 
+            && Carbon::parse($order->created_at)->addMinutes(30)->lte(now())
+        ) {
+            foreach ($order->orderItems as $item) {
+                $variant = $item->variant;
+                if ($variant) {
+                    $variant->stock_quantity += $item->quantity;
+                    $variant->sold_quantity -= $item->quantity;
+                    $variant->save();
+                } else {
+                    $product = $item->product;
+                    if ($product) {
+                        $product->stock_quantity += $item->quantity;
+                        $product->sold_quantity -= $item->quantity;
+                        $product->save();
+                    }
+                }
+            }
+        
+            $order->status = 'Hủy'; // ✅ Đảm bảo 'Hủy' nằm trong ENUM
+        
+            $order->save();
+        
+            session()->flash('info', 'Đơn hàng vnpay đã bị hủy do quá thời gian thanh toán.');
+        }
+    }
+
 
         return view('admin.orders.index', compact('orders', 'statusOptions'));
     }
@@ -962,6 +1056,35 @@ public function confirmReceived($id)
 
             return redirect()->back()->with('success', 'Đơn hàng đã tự động được xác nhận sau 7 ngày.');
         }
+        if (
+            $order->payment_method === 'vnpay'
+            && $order->payment_status === 'Chưa thanh toán'
+            && $order->status !== 'Hủy' // ✅ Tránh xử lý lại
+            && Carbon::parse($order->created_at)->addMinutes(30)->lte(now())
+        ) {
+            foreach ($order->orderItems as $item) {
+                $variant = $item->variant;
+                if ($variant) {
+                    $variant->stock_quantity += $item->quantity;
+                    $variant->sold_quantity -= $item->quantity;
+                    $variant->save();
+                } else {
+                    $product = $item->product;
+                    if ($product) {
+                        $product->stock_quantity += $item->quantity;
+                        $product->sold_quantity -= $item->quantity;
+                        $product->save();
+                    }
+                }
+            }
+        
+            $order->status = 'Hủy'; // ✅ Đảm bảo 'Hủy' nằm trong ENUM
+        
+            $order->save();
+        
+            session()->flash('info', 'Đơn hàng vnpay đã bị hủy do quá thời gian thanh toán.');
+        }
+        
         $order->status = 'Hoàn thành';
         $order->completed_at = now();
         $order->completed_by = Auth::id();
