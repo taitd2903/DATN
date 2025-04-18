@@ -259,176 +259,6 @@ class VnPayController extends Controller
     //             'payment_url' => $paymentUrl
     //         ]);
     //     }
-    //     private function calculateDiscount(Coupon $coupon, $totalPrice)
-    //     {
-    //         $discountAmount = 0;
-    //         if ($coupon->discount_type == 1) { // Giảm theo phần trăm
-    //             $discountAmount = ($totalPrice * $coupon->discount_value) / 100;
-    //             if ($coupon->max_discount_amount && $discountAmount > $coupon->max_discount_amount) {
-    //                 $discountAmount = $coupon->max_discount_amount;
-    //             }
-    //         } else { // Giảm cố định
-    //             $discountAmount = $coupon->discount_value;
-    //         }
-
-    //         return min($discountAmount, $totalPrice);
-    //     }
-
-    //     public function response(Request $request)
-    //     {
-    //         $vnp_HashSecret = config('vnpay.vnp_HashSecret');
-    //         $inputData = $request->except(['vnp_SecureHash']);
-    //         ksort($inputData);
-
-    //         // Tạo hashdata từ response để kiểm tra chữ ký
-    //         $hashdata = '';
-    //         $i = 0;
-    //         foreach ($inputData as $key => $value) {
-    //             if ($i == 1) {
-    //                 $hashdata .= '&' . urlencode($key) . "=" . urlencode($value);
-    //             } else {
-    //                 $hashdata .= urlencode($key) . "=" . urlencode($value);
-    //                 $i = 1;
-    //             }
-    //         }
-
-    //         // Kiểm tra chữ ký
-    //         $secureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);
-    //         $isValidSignature = ($secureHash === $request->query('vnp_SecureHash'));
-
-
-
-    //         return view('vnpay.response', [
-    //             'data' => $request->all(),
-    //             'isValidSignature' => $isValidSignature
-    //         ]);
-    //     }
-
-    //     public function paymentReturn(Request $request)
-    // {
-    //     $vnp_HashSecret = config('vnpay.vnp_HashSecret');
-    //     $inputData = $request->except(['vnp_SecureHash']);
-    //     ksort($inputData);
-
-    //     $hashdata = urldecode(http_build_query($inputData));
-    //     $secureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);
-    //     $isValidSignature = ($secureHash === $request->query('vnp_SecureHash'));
-
-    //     $txnRef = $request->query('vnp_TxnRef');
-    //     $order = Order::where('vnp_txn_ref', $txnRef)
-    //         ->with('orderItems.product', 'orderItems.variant')
-    //         ->first();
-
-    //     if (!$order) {
-    //         return redirect()->route('home')->with('error', 'Không tìm thấy đơn hàng.');
-    //     }
-
-    //     DB::transaction(function () use ($request, $order) {
-    //         if ($request->query('vnp_ResponseCode') == '00') {
-    //             // Thanh toán thành công
-    //             $order->update(['payment_status' => 'Đã thanh toán', 'status' => 'Chờ xác nhận']);
-
-    //             // Xóa các đơn hàng "Chưa thanh toán" khác của user
-    //             Order::where('user_id', $order->user_id)
-    //                 ->where('payment_status', 'Chưa thanh toán')
-    //                 ->where('id', '<>', $order->id)
-    //                 ->delete();
-
-    //             // Ghi lại việc sử dụng mã giảm giá
-    //             $appliedCoupons = $request->session()->get('applied_coupons_for_vnpay', []);
-    //             if ($order->coupon_code && $appliedCoupons) {
-    //                 $couponCodes = explode(',', $order->coupon_code);
-    //                 foreach ($couponCodes as $index => $code) {
-    //                     $code = trim($code);
-    //                     if (!empty($code)) {
-    //                         $coupon = Coupon::where('code', $code)->first();
-    //                         if ($coupon) {
-    //                             $coupon->used_count += 1;
-    //                             $coupon->save();
-    //                             CouponUsage::create([
-    //                                 'user_id' => $order->user_id,
-    //                                 'coupon_id' => $coupon->id,
-    //                                 'order_id' => $order->id,
-    //                                 'used_at' => now(),
-    //                                 'applied_discount' => $appliedCoupons[$index]['discount_amount'] ?? 0,
-    //                                 'created_at' => now(),
-    //                                 'updated_at' => now(),
-    //                             ]);
-    //                         }
-    //                     }
-    //                 }
-    //             }
-    //         } else {
-    //             // Thanh toán thất bại
-    //             $order->update(['payment_status' => 'Thất bại', 'status' => 'Hủy']);
-
-    //             // Hoàn lại kho sản phẩm
-    //             foreach ($order->orderItems as $item) {
-    //                 if ($item->variant) {
-    //                     $item->variant->increment('stock_quantity', $item->quantity);
-    //                     $item->variant->decrement('sold_quantity', $item->quantity);
-    //                     $item->variant->save();
-    //                 } else {
-    //                     $item->product->increment('stock_quantity', $item->quantity);
-    //                     $item->product->decrement('sold_quantity', $item->quantity);
-    //                     $item->product->save();
-    //                 }
-    //             }
-
-    //             // Hoàn lại mã giảm giá
-    //             if ($order->coupon_code) {
-    //                 $couponCodes = explode(',', $order->coupon_code);
-    //                 foreach ($couponCodes as $code) {
-    //                     $code = trim($code);
-    //                     if (!empty($code)) {
-    //                         $coupon = Coupon::where('code', $code)->first();
-    //                         if ($coupon) {
-    //                             $couponUsage = CouponUsage::where('order_id', $order->id)
-    //                                 ->where('user_id', $order->user_id)
-    //                                 ->where('coupon_id', $coupon->id)
-    //                                 ->first();
-    //                             if ($couponUsage) {
-    //                                 $couponUsage->delete();
-    //                                 $coupon->used_count = max(0, $coupon->used_count - 1);
-    //                                 $coupon->save();
-    //                             }
-    //                         }
-    //                     }
-    //                 }
-    //             }
-
-    //             // Trả sản phẩm về giỏ hàng
-    //             foreach ($order->orderItems as $item) {
-    //                 $existingCartItem = CartItem::where('user_id', $order->user_id)
-    //                     ->where('product_id', $item->product_id)
-    //                     ->where('variant_id', $item->variant_id)
-    //                     ->first();
-
-    //                 if ($existingCartItem) {
-    //                     $existingCartItem->increment('quantity', $item->quantity);
-    //                 } else {
-    //                     CartItem::create([
-    //                         'user_id' => $order->user_id,
-    //                         'product_id' => $item->product_id,
-    //                         'variant_id' => $item->variant_id,
-    //                         'quantity' => $item->quantity,
-    //                         'price' => $item->price,
-    //                     ]);
-    //                 }
-    //             }
-    //         }
-    //     });
-
-    //     // Xóa session
-    //     $request->session()->forget(['applied_coupons', 'applied_coupons_for_vnpay', 'discount', 'total_price']);
-    //     $appliedCoupons = $request->session()->get('applied_coupons_for_vnpay', []);
-
-    //     return view('Users.Checkout.invoice', [
-    //         'order' => $order,
-    //         'status' => $request->query('vnp_ResponseCode') == '00' ? 'Thành công' : 'Thất bại',
-    //         'appliedCoupons' => $appliedCoupons,
-    //     ]);
-    // }
     public function createPayment(Request $request)
     {
         $request->validate([
@@ -658,6 +488,177 @@ class VnPayController extends Controller
         return response()->json([
             'success' => true,
             'payment_url' => $paymentUrl
+        ]);
+    }
+
+    private function calculateDiscount(Coupon $coupon, $totalPrice)
+    {
+        $discountAmount = 0;
+        if ($coupon->discount_type == 1) { // Giảm theo phần trăm
+            $discountAmount = ($totalPrice * $coupon->discount_value) / 100;
+            if ($coupon->max_discount_amount && $discountAmount > $coupon->max_discount_amount) {
+                $discountAmount = $coupon->max_discount_amount;
+            }
+        } else { // Giảm cố định
+            $discountAmount = $coupon->discount_value;
+        }
+
+        return min($discountAmount, $totalPrice);
+    }
+
+    public function response(Request $request)
+    {
+        $vnp_HashSecret = config('vnpay.vnp_HashSecret');
+        $inputData = $request->except(['vnp_SecureHash']);
+        ksort($inputData);
+
+        // Tạo hashdata từ response để kiểm tra chữ ký
+        $hashdata = '';
+        $i = 0;
+        foreach ($inputData as $key => $value) {
+            if ($i == 1) {
+                $hashdata .= '&' . urlencode($key) . "=" . urlencode($value);
+            } else {
+                $hashdata .= urlencode($key) . "=" . urlencode($value);
+                $i = 1;
+            }
+        }
+
+        // Kiểm tra chữ ký
+        $secureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);
+        $isValidSignature = ($secureHash === $request->query('vnp_SecureHash'));
+
+
+
+        return view('vnpay.response', [
+            'data' => $request->all(),
+            'isValidSignature' => $isValidSignature
+        ]);
+    }
+
+    public function paymentReturn(Request $request)
+    {
+        $vnp_HashSecret = config('vnpay.vnp_HashSecret');
+        $inputData = $request->except(['vnp_SecureHash']);
+        ksort($inputData);
+
+        $hashdata = urldecode(http_build_query($inputData));
+        $secureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);
+        $isValidSignature = ($secureHash === $request->query('vnp_SecureHash'));
+
+        $txnRef = $request->query('vnp_TxnRef');
+        $order = Order::where('vnp_txn_ref', $txnRef)
+            ->with('orderItems.product', 'orderItems.variant')
+            ->first();
+
+        if (!$order) {
+            return redirect()->route('home')->with('error', 'Không tìm thấy đơn hàng.');
+        }
+
+        DB::transaction(function () use ($request, $order) {
+            if ($request->query('vnp_ResponseCode') == '00') {
+                // Thanh toán thành công
+                $order->update(['payment_status' => 'Đã thanh toán', 'status' => 'Chờ xác nhận']);
+
+                // Xóa các đơn hàng "Chưa thanh toán" khác của user
+                Order::where('user_id', $order->user_id)
+                    ->where('payment_status', 'Chưa thanh toán')
+                    ->where('id', '<>', $order->id)
+                    ->delete();
+
+                // Ghi lại việc sử dụng mã giảm giá
+                $appliedCoupons = $request->session()->get('applied_coupons_for_vnpay', []);
+                if ($order->coupon_code && $appliedCoupons) {
+                    $couponCodes = explode(',', $order->coupon_code);
+                    foreach ($couponCodes as $index => $code) {
+                        $code = trim($code);
+                        if (!empty($code)) {
+                            $coupon = Coupon::where('code', $code)->first();
+                            if ($coupon) {
+                                $coupon->used_count += 1;
+                                $coupon->save();
+                                CouponUsage::create([
+                                    'user_id' => $order->user_id,
+                                    'coupon_id' => $coupon->id,
+                                    'order_id' => $order->id,
+                                    'used_at' => now(),
+                                    'applied_discount' => $appliedCoupons[$index]['discount_amount'] ?? 0,
+                                    'created_at' => now(),
+                                    'updated_at' => now(),
+                                ]);
+                            }
+                        }
+                    }
+                }
+            } else {
+                // Thanh toán thất bại
+                $order->update(['payment_status' => 'Thất bại', 'status' => 'Hủy']);
+
+                // Hoàn lại kho sản phẩm
+                foreach ($order->orderItems as $item) {
+                    if ($item->variant) {
+                        $item->variant->increment('stock_quantity', $item->quantity);
+                        $item->variant->decrement('sold_quantity', $item->quantity);
+                        $item->variant->save();
+                    } else {
+                        $item->product->increment('stock_quantity', $item->quantity);
+                        $item->product->decrement('sold_quantity', $item->quantity);
+                        $item->product->save();
+                    }
+                }
+
+                // Hoàn lại mã giảm giá
+                if ($order->coupon_code) {
+                    $couponCodes = explode(',', $order->coupon_code);
+                    foreach ($couponCodes as $code) {
+                        $code = trim($code);
+                        if (!empty($code)) {
+                            $coupon = Coupon::where('code', $code)->first();
+                            if ($coupon) {
+                                $couponUsage = CouponUsage::where('order_id', $order->id)
+                                    ->where('user_id', $order->user_id)
+                                    ->where('coupon_id', $coupon->id)
+                                    ->first();
+                                if ($couponUsage) {
+                                    $couponUsage->delete();
+                                    $coupon->used_count = max(0, $coupon->used_count - 1);
+                                    $coupon->save();
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Trả sản phẩm về giỏ hàng
+                foreach ($order->orderItems as $item) {
+                    $existingCartItem = CartItem::where('user_id', $order->user_id)
+                        ->where('product_id', $item->product_id)
+                        ->where('variant_id', $item->variant_id)
+                        ->first();
+
+                    if ($existingCartItem) {
+                        $existingCartItem->increment('quantity', $item->quantity);
+                    } else {
+                        CartItem::create([
+                            'user_id' => $order->user_id,
+                            'product_id' => $item->product_id,
+                            'variant_id' => $item->variant_id,
+                            'quantity' => $item->quantity,
+                            'price' => $item->price,
+                        ]);
+                    }
+                }
+            }
+        });
+
+        // Xóa session
+        $request->session()->forget(['applied_coupons', 'applied_coupons_for_vnpay', 'discount', 'total_price']);
+        $appliedCoupons = $request->session()->get('applied_coupons_for_vnpay', []);
+
+        return view('Users.Checkout.invoice', [
+            'order' => $order,
+            'status' => $request->query('vnp_ResponseCode') == '00' ? 'Thành công' : 'Thất bại',
+            'appliedCoupons' => $appliedCoupons,
         ]);
     }
 
