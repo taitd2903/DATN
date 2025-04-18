@@ -30,7 +30,7 @@ class ProductController extends Controller {
 
     public function store(Request $request) {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:products,name',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'category_id' => 'nullable|exists:categories,id',
             'gender' => 'required|in:male,female,unisex',
@@ -125,7 +125,8 @@ class ProductController extends Controller {
 
     public function update(Request $request, Product $product) {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:products,name,' . $product->id,
+
             'variants.*.size' => 'nullable|string|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'category_id' => 'nullable|exists:categories,id',

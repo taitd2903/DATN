@@ -2,6 +2,16 @@
 
 @section('content')
 <h1>Sửa sản phẩm</h1>
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <strong>Đã có lỗi xảy ra:</strong>
+        <ul class="mb-0">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 
 <form action="{{ route('admin.products.update', $product->id) }}" method="POST" enctype="multipart/form-data" class="container mt-4 p-4 border rounded shadow">
     @csrf
@@ -14,9 +24,12 @@
 
     <div class="mb-3">
         <label class="form-label">Mô tả:</label>
-        <textarea name="description" class="form-control" required>{{ old('description', $product->description) }}</textarea>
+        <textarea style="height: 80px; width: 100%; resize: vertical;" name="description" class="form-control" required>{{ old('description', $product->description) }}</textarea>
     </div>
-
+    <div class="mb-3">
+        <label class="form-label">Mô tả dài:</label>
+        <textarea style="height: 150px; width: 100%; resize: vertical;" name="long_description" class="form-control" required>{{ old('long_description', $product->long_description) }}</textarea>
+    </div>
     <div class="mb-3">
         <label class="form-label">Ảnh hiện tại:</label>
         @if($product->image)
@@ -72,14 +85,14 @@
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Giá gốc:</label>
-                        <input type="number" step="0.01" name="variants[{{ $index }}][original_price]" class="form-control" value="{{ old('variants.' . $index . '.original_price', $variant->original_price) }}" required max="100000000000">
+                        <input type="number" step="0.01" name="variants[{{ $index }}][original_price]" class="form-control" value="{{ old('variants.' . $index . '.original_price', $variant->original_price) }}" required min=1 max="100000000000">
                     </div>
                 </div>
 
                 <div class="row g-3 mt-2">
                     <div class="col-md-4">
                         <label class="form-label">Giá bán:</label>
-                        <input type="number" step="0.01" name="variants[{{ $index }}][price]" class="form-control" value="{{ old('variants.' . $index . '.price', $variant->price) }}" required max="100000000000">
+                        <input type="number" step="0.01" name="variants[{{ $index }}][price]" class="form-control" value="{{ old('variants.' . $index . '.price', $variant->price) }}" required min=1 max="100000000000">
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Tồn kho:</label>

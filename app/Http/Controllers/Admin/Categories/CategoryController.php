@@ -41,8 +41,18 @@ class CategoryController extends Controller {
    
     public function store(Request $request) {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name'      => 'required|string|max:255|unique:categories,name',
             'parent_id' => 'nullable|exists:categories,id',
+        ],
+        // custom messages
+        [
+            'name.required' => 'Tên danh mục là bắt buộc.',
+            'name.unique'   => 'Tên danh mục đã tồn tại, vui lòng chọn tên khác.',
+            'parent_id.exists' => 'Danh mục cha không hợp lệ.',
+        ],
+        // custom attribute names
+        [
+            'name' => 'Tên danh mục',
         ]);
 
         Category::create([
@@ -73,7 +83,8 @@ class CategoryController extends Controller {
         return redirect()->route('admin.categories.index')->with('success', 'Danh mục đã được xóa thành công!');
     }
     
-    public function edit($id) {
+    public function edit($id, ) {
+  
         $category = Category::findOrFail($id);
     
         if ($category->children->count() > 0) {
@@ -91,6 +102,16 @@ class CategoryController extends Controller {
     
     
     public function update(Request $request, $id) {
+        $request->validate([
+            'name'      => 'required|string|max:255|unique:categories,name,'.$id,
+            'parent_id' => 'nullable|exists:categories,id',
+        ], [
+            'name.required' => 'Tên danh mục là bắt buộc.',
+            'name.unique'   => 'Tên danh mục đã tồn tại, vui lòng chọn tên khác.',
+        ], [
+            'name' => 'Tên danh mục',
+        ]);
+            
         $category = Category::findOrFail($id);
     
         $request->validate([
