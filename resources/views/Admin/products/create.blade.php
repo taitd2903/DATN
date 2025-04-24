@@ -41,18 +41,21 @@
 
             <div class="mb-3">
                 <label for="category_id" class="form-label">Danh mục:</label>
-                <select class="form-select" name="category_id" id="category_id" >
+                <select class="form-select" name="category_id" id="category_id">
                     <option value="">Không chọn danh mục</option>
                     @foreach($categories as $category)
-                        <option value="{{ $category->id }}">{{ $category->name }}</option>
-                        @if($category->children->count())
-                            @foreach($category->children as $child)
-                                <option value="{{ $child->id }}">-- {{ $child->name }}</option>
+                        @if($category->parent_id == null)
+                            <option value="{{ $category->id }}">{{ $category->name }}</option>
+                            @foreach($categories as $child)
+                                @if($child->parent_id == $category->id)
+                                    <option value="{{ $child->id }}">-- {{ $child->name }}</option>
+                                @endif
                             @endforeach
                         @endif
                     @endforeach
                 </select>
             </div>
+            
 
             <div class="mb-3">
                 <label for="gender" class="form-label">Giới tính:</label>

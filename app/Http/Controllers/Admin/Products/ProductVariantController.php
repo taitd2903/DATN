@@ -28,7 +28,7 @@ class ProductVariantController extends Controller
             'original_price' => 'required|numeric|min:0',
             'price' => 'required|numeric|min:0',
             'stock_quantity' => 'required|integer|min:0',
-            'image' => 'required|image|max:2048'
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
         $product = Product::findOrFail($productId);

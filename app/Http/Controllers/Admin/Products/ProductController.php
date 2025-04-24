@@ -31,7 +31,7 @@ class ProductController extends Controller {
     public function store(Request $request) {
         $request->validate([
             'name' => 'required|string|max:255|unique:products,name',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'category_id' => 'nullable|exists:categories,id',
             'gender' => 'required|in:male,female,unisex',
             'variants.*.size' => 'nullable|string|max:255',
@@ -40,7 +40,7 @@ class ProductController extends Controller {
             'variants.*.price' => 'required|numeric', 
             'variants.*.stock_quantity' => 'required|integer|min:0',
             'variants.*.sold_quantity' => 'required|integer|min:0',
-            'variants.*.image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'variants.*.image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:2048',
         ]);
 
         // Upload ảnh sản phẩm nếu có
@@ -128,7 +128,8 @@ class ProductController extends Controller {
             'name' => 'required|string|max:255|unique:products,name,' . $product->id,
 
             'variants.*.size' => 'nullable|string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+
             'category_id' => 'nullable|exists:categories,id',
             'gender' => 'required|in:male,female,unisex',
             'variants.*.color' => 'required|string|max:255',
@@ -136,7 +137,7 @@ class ProductController extends Controller {
             'variants.*.price' => 'required|numeric',
             'variants.*.stock_quantity' => 'required|integer|min:0',
             'variants.*.sold_quantity' => 'required|integer|min:0',
-            'variants.*.image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'variants.*.image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:2048',
         ]);
 
         // Nếu có ảnh mới, xóa ảnh cũ và cập nhật ảnh mới
