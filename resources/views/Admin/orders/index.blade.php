@@ -109,10 +109,15 @@
                             <button class="btn btn-success btn-sm" disabled>Đã giao hàng thành công</button>
                         @elseif ($order->status === 'Hủy')
                             <button class="btn btn-secondary btn-sm" disabled>Đã hủy</button>
+                            @elseif($order->status === 'Đã hoàn hàng')
+                            <button class="btn btn-success btn-sm" disabled>Đã hoàn hàng</button>
+                            
                         @else
                         @if($order->status === 'Hoàn thành')
                         <button class="btn btn-success btn-sm" disabled>Đơn hàng đã hoàn thành</button>
                             @else
+
+                          
                             <div class="update-container">
                                 <button class="btn btn-warning btn-sm update-status-btn">Cập nhật</button>
                                 <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST"

@@ -414,7 +414,7 @@ class VnPayController extends Controller
                         'price' => $item->price,
                         'size' => $variant->size ?? null,
                         'color' => $variant->color ?? null,
-                        'original_price' => $item->original_price ?? null,
+                        'original_price' => $variant->original_price ?? null,
                     ]);
 
                     // Trừ kho sản phẩm

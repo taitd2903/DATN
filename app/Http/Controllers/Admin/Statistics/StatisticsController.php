@@ -396,13 +396,12 @@ $returnChartData = $this->getReturnStatisticsByTime($request);
     $returnOrdersQuery = OrderReturn::query()->with('order.orderItems.product');
 
     if ($from) {
-        $allOrdersQuery->whereDate('created_at', '>=', $from);
-        $returnOrdersQuery->whereDate('created_at', '>=', $from);
+        $returnOrdersQuery->whereDate('order_returns.created_at', '>=', $from);
     }
     if ($to) {
-        $allOrdersQuery->whereDate('created_at', '<=', $to);
-        $returnOrdersQuery->whereDate('created_at', '<=', $to);
+        $returnOrdersQuery->whereDate('order_returns.created_at', '<=', $to);
     }
+    
 
     $applyProductFilter = function ($query) use ($productName, $gender, $categoryId) {
         $query->whereHas('product', function ($productQuery) use ($productName, $gender, $categoryId) {
@@ -431,12 +430,13 @@ $returnChartData = $this->getReturnStatisticsByTime($request);
         ->pluck('count', 'order_returns.status')
         ->toArray();
 
-    // Tính tổng số tiền đã hoàn, không dùng GROUP BY
-    $totalRefundedAmount = $returnOrdersQuery
-        ->where('order_returns.status', 'approved')
-        ->join('orders', 'order_returns.order_id', '=', 'orders.id')
-        ->sum('orders.total_price');
+        $refundedQuery = clone $returnOrdersQuery;
 
+        $totalRefundedAmount = $refundedQuery
+            ->join('orders', 'order_returns.order_id', '=', 'orders.id')
+            ->where('order_returns.status', 'approved')
+            ->sum('orders.total_price');
+        
     return [
         'total_return_orders' => $totalReturnOrders,
         'return_order_rate' => $returnOrderRate,
