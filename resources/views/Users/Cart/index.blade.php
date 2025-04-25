@@ -127,7 +127,7 @@
                     </ul>
                     <div class="terms-checkbox" style="margin-bottom: 15px;">
                         <input type="checkbox" id="terms-agree">
-                        <label for="terms-agree" style="font-size: 0.9em;">
+                        <label for="terms-agree" style="font-size: 0.9em;display: inline;">
                             Tôi đồng ý với điều khoản dịch vụ: Chỉ được hoàn hàng khi sản phẩm bị lỗi hoặc hỏng do nhà sản xuất.
                         </label>
                     </div>
