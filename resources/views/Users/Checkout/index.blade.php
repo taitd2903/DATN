@@ -238,7 +238,15 @@
                         <input type="hidden" name="final_price" id="hidden_final_price" value="{{ $totalPrice + 30000 }}">
                         <input type="hidden" name="items" id="selectitem" value="{{ $items }}">
 
-                        <button id="paymentButton" type="submit" class="btn btn-success w-100 mt-4">Thanh toán</button>
+                                                    
+                            @if(Auth::check() && Auth::user()->role == 'user')
+                            <button id="paymentButton" type="submit" class="btn btn-success w-100 mt-4">Thanh toán</button>
+                            @else
+                            
+                            <button type="button" class="btn btn-secondary w-100 mt-4" onclick="alert('Chỉ tài khoản người dùng mới được phép thanh toán!')">
+                                Không thể thanh toán
+                            </button>
+                            @endif
                     </div>
                 </div>
             </div>

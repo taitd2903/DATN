@@ -93,7 +93,7 @@ class UserController extends Controller
      }
 
 
-    //  Cập nhật dữ liệu user
+  
      public function update(Request $request, $id)
 {
     if (auth()->id() == $id) {
