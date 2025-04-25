@@ -93,29 +93,29 @@ class UserController extends Controller
      }
 
 
-     // Cập nhật dữ liệu user
-//      public function update(Request $request, $id)
-// {
-//     if (auth()->id() == $id) {
-//         return redirect()->back()->with('error', 'Bạn không thể thay đổi quyền của chính mình.');
-//     }
-//     $request->validate([
+    //  Cập nhật dữ liệu user
+     public function update(Request $request, $id)
+{
+    if (auth()->id() == $id) {
+        return redirect()->back()->with('error', 'Bạn không thể thay đổi quyền của chính mình.');
+    }
+    $request->validate([
 
-//         'role' => 'required|in:user,admin,staff',
-//     ]);
+        'role' => 'required|in:user,admin,staff',
+    ]);
 
-//     $user = User::findOrFail($id);
+    $user = User::findOrFail($id);
 
-//     // Cập nhật dữ liệu người dùng
+    // Cập nhật dữ liệu người dùng
 
-//     $user->role = $request->role;
+    $user->role = $request->role;
 
 
 
-//     $user->save(); // Lưu dữ liệu
+    $user->save(); // Lưu dữ liệu
 
-//     return redirect()->route('admin.users.index')->with('success', 'cập nhật thành công');
-// }
+    return redirect()->route('admin.users.index')->with('success', 'cập nhật thành công');
+}
 
 
      // Xóa user
