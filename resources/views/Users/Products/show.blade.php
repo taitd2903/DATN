@@ -202,8 +202,16 @@
                         <span>
                             <strong>Mô tả:</strong> {{ $product->description }}
                         </span>
-
-                        <p> {{ $product->long_description }}</p>
+                        <br>
+                        <span id="long-description" style="display: none;">
+                            <strong>Mô tả dài:</strong> {{ $product->long_description }}
+                        </span>
+                        <br>
+                        <button type="button" id="toggle-description" class="btn btn-link p-0" style="color: black; margin-bottom:10px;    margin-left: 43%; cursor: pointer;text-aligh:center">
+                            Xem thêm ▼
+                        </button>
+                        
+                        
                         <br>
                         <div class="info-banner">
                             <div class="info-box">
@@ -425,6 +433,16 @@
             @endif
         </div>
     </div>
+{{-- Js nút trỏ xuống xem thêm của mô tả dài --}}
+    <script>
+        document.getElementById('toggle-description').addEventListener('click', function() {
+            const longDescription = document.getElementById('long-description');
+            const isHidden = longDescription.style.display === 'none';
+            
+            longDescription.style.display = isHidden ? 'block' : 'none';
+            this.textContent = isHidden ? 'Thu gọn ▲' : 'Xem thêm ▼';
+        });
+        </script>
 
     <!-- JavaScript cho xem trước ảnh và video -->
     <script>
@@ -532,6 +550,7 @@
             }
         }
     </style>
+
 
 
 
