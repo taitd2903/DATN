@@ -125,7 +125,14 @@
                         <li>{{ __('messages.subtotal') }} <span class="total-amount">{{ number_format($total, 0, ',', '.') }} đ</span></li>
                         <!-- <li>{{ __('messages.total') }} <span class="total-amount">{{ number_format($total, 0, ',', '.') }} đ</span></li> -->
                     </ul>
-                    <a href="{{ route('checkout') }}" class="primary-btn" id="checkout-btn">{{ __('messages.checkout') }}</a>
+                    <div class="terms-checkbox" style="margin-bottom: 15px;">
+                        <input type="checkbox" id="terms-agree">
+                        <label for="terms-agree" style="font-size: 0.9em;">
+                            Tôi đồng ý với điều khoản dịch vụ: Chỉ được hoàn hàng khi sản phẩm bị lỗi hoặc hỏng do nhà sản xuất.
+                        </label>
+                    </div>
+                    <a href="{{ route('checkout') }}" class="primary-btn" id="checkout-btn" disabled style="opacity: 0.6; cursor: not-allowed;">{{ __('messages.checkout') }}</a>
+                    {{-- <a href="{{ route('checkout') }}" class="primary-btn" id="checkout-btn">{{ __('messages.checkout') }}</a> --}}
                 </div>
             </div>
         </div>
@@ -309,9 +316,28 @@
             }
             checkStock();
             // setInterval(checkStock, 3000);
+
+            // Handle terms checkbox
+                const termsCheckbox = document.getElementById('terms-agree');
+                const checkoutBtn = document.getElementById('checkout-btn');
+
+                termsCheckbox.addEventListener('change', function() {
+                    checkoutBtn.disabled = !this.checked;
+                    if (this.checked) {
+                        checkoutBtn.style.opacity = '1';
+                        checkoutBtn.style.cursor = 'pointer';
+                    } else {
+                        checkoutBtn.style.opacity = '0.6';
+                        checkoutBtn.style.cursor = 'not-allowed';
+                    }
+                });
             document.getElementById('checkout-btn').addEventListener('click', function(e) {
                 e.preventDefault();
-                fetch("{{ route('cart.checkStock') }}", {
+                if (!termsCheckbox.checked) {
+                alert('Vui lòng đồng ý với điều khoản dịch vụ trước khi thanh toán!');
+                return;
+            }
+                        fetch("{{ route('cart.checkStock') }}", {
                         method: 'GET',
                         headers: {
                             'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -478,6 +504,8 @@
                 });
             });
             updateTotals();
+
+        
         });
     </script>
 @include('Users.chat')
