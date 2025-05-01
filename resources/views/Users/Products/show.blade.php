@@ -213,52 +213,52 @@
                                 <img src="../assets/img/bangsize.jpg" alt="Bảng size áo nữ">
                             </div>
                         </div>
-                        <hr>
-                        <span>
-                            <strong>Mô tả:</strong> {{ $product->description }}
-                        </span>
-                        <br>
-                        <span id="long-description" style="display: none;">
-                            <strong>Mô tả dài:</strong> {{ $product->long_description }}
-                        </span>
-                        <br>
-                        <button type="button" id="toggle-description" class="btn btn-link p-0" style="color: black; margin-bottom:10px;    margin-left: 43%; cursor: pointer;text-aligh:center">
-                            Xem thêm ▼
-                        </button>
-                        
-                        
-                        <br>
-                        <div class="info-banner">
-                            <div class="info-box">
-                                <img src="https://img.icons8.com/ios-filled/40/000000/phone.png" alt="Call icon">
-                                <div>
-                                    <p>Mua hàng: <span class="highlight">0912.743.443</span> từ 8h00 -<br>21h30 mỗi ngày
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="info-box">
-                                <img src="https://img.icons8.com/ios-filled/40/000000/delivery.png"
-                                    alt="Free Shipping icon">
-                                <div>
-                                    <p>Giao hàng nhanh<br><span class="highlight">3-5 ngày</span></p>
-                                </div>
-                            </div>
-                            <div class="info-box">
-                                <img src="https://img.icons8.com/ios-filled/40/000000/return-purchase.png"
-                                    alt="Return icon">
-                                <div>
-                                    <p>Tiết kiệm lên tới<br><span class="highlight">20%</span></p>
-                                </div>
-                            </div>
-                        </div>
-
-
-
+    
                     </div>
 
 
 
 
+        </div>
+
+        <div>
+            <h3>Mô tả sản phẩm</h3>
+            <hr style="border: 2px solid black;">
+            <span>
+                <strong></strong> {{ $product->description }}
+            </span>
+            <br>
+            <span id="long-description" style="display: none;">
+                <strong>Mô tả dài:</strong> {{ $product->long_description }}
+            </span>
+            <br>
+            <button type="button" id="toggle-description" class="btn btn-link p-0" style="color: black; margin-bottom:10px;    margin-left: 43%; cursor: pointer;text-aligh:center">
+                Xem thêm ▼
+            </button>
+            <br>
+            <div class="info-banner">
+                <div class="info-box">
+                    <img src="https://img.icons8.com/ios-filled/40/000000/phone.png" alt="Call icon">
+                    <div>
+                        <p>Mua hàng: <span class="highlight">0912.743.443</span> từ 8h00 -<br>21h30 mỗi ngày
+                        </p>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <img src="https://img.icons8.com/ios-filled/40/000000/delivery.png"
+                        alt="Free Shipping icon">
+                    <div>
+                        <p>Giao hàng nhanh<br><span class="highlight">3-5 ngày</span></p>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <img src="https://img.icons8.com/ios-filled/40/000000/return-purchase.png"
+                        alt="Return icon">
+                    <div>
+                        <p>Tiết kiệm lên tới<br><span class="highlight">20%</span></p>
+                    </div>
+                </div>
+            </div>
         </div>
 
         </form>

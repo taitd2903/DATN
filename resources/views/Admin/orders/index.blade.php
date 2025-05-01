@@ -1,66 +1,60 @@
 @extends('layouts.layout')
 
 @section('content')
-    <h1>Quản lý đơn hàng</h1>
+    <h1 class="text-center">Quản lý đơn hàng</h1>
 
     <!-- Form lọc -->
-    <form id="filterForm" action="{{ route('admin.orders.index') }}" method="GET" class="filter-container mb-3 w-75 mx-auto">
-        <!-- Hàng 1 -->
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <input type="text" id="nameFilter" name="name" class="form-control" placeholder="Tên khách hàng"
-                    value="{{ request('name') }}">
+    <form id="filterForm" action="{{ route('admin.orders.index') }}" method="GET" class="filter-container mb-2 w-100 mx-auto bg-white shadow-sm rounded sticky-top p-2">
+        <!-- Row for input fields -->
+        <div class="row align-items-end g-2">
+            <!-- Tên khách hàng -->
+            <div class="col-md-2 col-6">
+                <label for="nameFilter" class="form-label small">Tên khách hàng</label>
+                <input type="text" id="nameFilter" name="name" class="form-control form-control-sm" placeholder="Tên khách hàng" value="{{ request('name') }}">
             </div>
-            <div class="col-md-6">
-                <input type="text" id="phoneFilter" name="phone" class="form-control" placeholder="Số điện thoại"
-                    value="{{ request('phone') }}">
+            <!-- Số điện thoại -->
+            <div class="col-md-2 col-6">
+                <label for="phoneFilter" class="form-label small">Số điện thoại</label>
+                <input type="text" id="phoneFilter" name="phone" class="form-control form-control-sm" placeholder="Số điện thoại" value="{{ request('phone') }}">
             </div>
-        </div>
-
-        <!-- Hàng 2 -->
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <label for="startDateFilter">Từ ngày</label>
-                <input type="date" id="startDateFilter" name="start_date" class="form-control"
-                    value="{{ request('start_date') }}">
+            <!-- Từ ngày -->
+            <div class="col-md-2 col-6">
+                <label for="startDateFilter" class="form-label small">Từ ngày</label>
+                <input type="date" id="startDateFilter" name="start_date" class="form-control form-control-sm" value="{{ request('start_date') }}">
             </div>
-            <div class="col-md-6">
-                <label for="endDateFilter">Đến ngày</label>
-                <input type="date" id="endDateFilter" name="end_date" class="form-control"
-                    value="{{ request('end_date') }}">
+            <!-- Đến ngày -->
+            <div class="col-md-2 col-6">
+                <label for="endDateFilter" class="form-label small">Đến ngày</label>
+                <input type="date" id="endDateFilter" name="end_date" class="form-control form-control-sm" value="{{ request('end_date') }}">
             </div>
-        </div>
-        <!-- Hàng 3 -->
-        <!-- Hàng 3: Trạng thái thanh toán và trạng thái đơn hàng trên cùng một hàng -->
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <select id="paymentStatusFilter" name="payment_status" class="form-control">
-                    <option value="">Tất cả trạng thái thanh toán</option>
-                    <option value="Chưa thanh toán" {{ request('payment_status') === 'Chưa thanh toán' ? 'selected' : '' }}>
-                        Chưa thanh toán</option>
-                    <option value="Đã thanh toán" {{ request('payment_status') === 'Đã thanh toán' ? 'selected' : '' }}>
-                        Đã thanh toán</option>
-                    <option value="Thất bại" {{ request('payment_status') === 'Thất bại' ? 'selected' : '' }}>
-                        Thất bại</option>
+            <!-- Trạng thái thanh toán -->
+            <div class="col-md-2 col-6">
+                <label for="paymentStatusFilter" class="form-label small">Trạng thái thanh toán</label>
+                <select id="paymentStatusFilter" name="payment_status" class="form-control form-control-sm">
+                    <option value="">Tất cả</option>
+                    <option value="Chưa thanh toán" {{ request('payment_status') === 'Chưa thanh toán' ? 'selected' : '' }}>Chưa thanh toán</option>
+                    <option value="Đã thanh toán" {{ request('payment_status') === 'Đã thanh toán' ? 'selected' : '' }}>Đã thanh toán</option>
+                    <option value="Thất bại" {{ request('payment_status') === 'Thất bại' ? 'selected' : '' }}>Thất bại</option>
                 </select>
             </div>
-            <div class="col-md-6">
-                <select id="orderStatusFilter" name="order_status" class="form-control">
-                    <option value="">Tất cả trạng thái đơn hàng</option>
+            <!-- Trạng thái đơn hàng -->
+            <div class="col-md-2 col-6">
+                <label for="orderStatusFilter" class="form-label small">Trạng thái đơn hàng</label>
+                <select id="orderStatusFilter" name="order_status" class="form-control form-control-sm">
+                    <option value="">Tất cả</option>
                     @foreach ($statusOptions as $status)
-                        <option value="{{ $status }}" {{ request('order_status') === $status ? 'selected' : '' }}>
-                            {{ $status }}
-                        </option>
+                        <option value="{{ $status }}" {{ request('order_status') === $status ? 'selected' : '' }}>{{ $status }}</option>
                     @endforeach
                 </select>
             </div>
         </div>
-
-        <!-- Hàng 4: Nút lọc và trở lại -->
-        <div class="row mb-2">
-            <div class="col-md-12 text-end">
-                <button type="submit" class="btn btn-primary btn-sm">Lọc</button>
-                <a href="{{ route('admin.orders.index') }}" class="btn btn-secondary btn-sm">Trở lại</a>
+        <!-- Row for buttons -->
+        <div class="row mt-2">
+            <div class="col-12 d-flex justify-content-end">
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary btn-sm px-3">Lọc</button>
+                    <a href="{{ route('admin.orders.index') }}" class="btn btn-secondary btn-sm px-3">Trở lại</a>
+                </div>
             </div>
         </div>
     </form>
@@ -148,7 +142,6 @@
     </table>
 
     {{ $orders->appends(request()->query())->links() }}
-
     <!-- Script xử lý cập nhật trạng thái -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
