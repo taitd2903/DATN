@@ -21,7 +21,7 @@
 
     <div class="container">
         @if (Auth::user()->role === 'admin')
-            <h2>Quản lý tài khoản</h2>
+            <h2 class="text-center">Quản lý tài khoản</h2>
 
 
             
@@ -50,9 +50,10 @@
                 <button type="submit" class="btn btn-primary">Lọc</button>
             </form>
 
+       
             <table class="table table-bordered">
                 <thead>
-                    <tr>
+                    <tr class="textprotr">
                         <th>ID</th>
                         <th>Name</th>
                         <th>Email</th>

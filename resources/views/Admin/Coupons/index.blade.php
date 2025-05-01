@@ -95,10 +95,22 @@
             </div>
         </form>
     </div>
+    
+    <style>
+        .textprotr th{
+color: #1B1B1B !important;
+font-size: 16px !important;
+font-weight: 600 !important;
+        }
+        .procoupon{
+            color: #457DC9 !important;
+            font-weight: 600 !important;
+        }
+    </style>
     <div class="table-responsive">
         <table class="table table-bordered table-hover">
-            <thead class="table-dark text-center">
-                <tr>
+            <thead class="text-center">
+                <tr class="textprotr">
                     <th>ID</th>
                     <th>Mã Giảm Giá</th>
                     <th>Mô Tả</th>
@@ -120,7 +132,7 @@
                     @foreach ($coupons as $coupon)
                         <tr>
                             <td>{{ $coupon->id }}</td>
-                            <td class="fw-bold">{{ $coupon->code }}</td>
+                            <td class="procoupon">{{ $coupon->code }}</td>
                             <td>{{ $coupon->description ?? 'Không có mô tả' }}</td>
                             <td>{{ $coupon->discount_type == 1 ? 'Phần trăm' : 'Giá trị cố định' }}</td>
                             <td>{{ number_format($coupon->discount_value) }}</td>

@@ -88,7 +88,7 @@ class ProductController extends Controller {
         ->sortByDesc(function ($product) {
             return $product->variants->sum('sold_quantity');
         })
-        ->take(4); // Lấy 5 sản phẩm bán chạy nhất
+        ->take(8); // Lấy 8 sản phẩm bán chạy nhất
 
     // Tính toán số lượng tồn kho, đã bán, giá min/max cho sản phẩm bán chạy
     foreach ($topSellingProducts as $product) {

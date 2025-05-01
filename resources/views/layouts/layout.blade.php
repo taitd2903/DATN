@@ -328,6 +328,14 @@
  </div>
   -->
 </body>
+
+<style>
+    .textprotr th{
+color: #1B1B1B !important;
+font-size: 16px !important;
+font-weight: 600 !important;
+    }
+</style>
 <!--   Core JS Files   -->
 <script>
     function closeNotification() {

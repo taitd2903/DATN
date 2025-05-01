@@ -81,8 +81,23 @@
                         {{ number_format($minPrice, 0, ',', '.') }} - {{ number_format($maxPrice, 0, ',', '.') }} VNĐ
                     </span>
                 </p>
-                <strong>{{ __('messages.out_of_stock') }}</strong> {{ $product->variants->sum('stock_quantity') }} 
-
+                @php
+                $totalStock = $product->variants->sum('stock_quantity');
+            @endphp
+            
+            <div id="overall-stock-status">
+                <strong>
+                    @if ($totalStock == 0)
+                        {{ __('messages.out_of_stock') }}
+                    @elseif ($totalStock < 20)
+                        Sắp hết hàng
+                    @else
+                        Còn hàng
+                    @endif
+                </strong>
+            </div>
+                           
+                <p id="stock-info"></p>
                 <p style="display: none"><strong style="display: block">{{ __('messages.stock') }} </strong>
                     <span style="display: block" id="stock-info">{{ $product->variants->sum('stock_quantity') }}</span>
                 </p>
@@ -591,7 +606,20 @@
             function updateVariant(variant) {
                 if (variant) {
                     document.getElementById("variant_id").value = variant.id;
-                    document.getElementById("stock-info").textContent = variant.stock_quantity + " sản phẩm có sẵn";
+                    const stockInfoElement = document.getElementById("stock-info");
+                    document.getElementById("overall-stock-status").style.display = "none";
+                    const quantity = variant.stock_quantity;
+if (variant.stock_quantity === 0) {
+    stockInfoElement.textContent = `Sản phẩm hết hàng (0 sản phẩm)`;
+    stockInfoElement.style.color = "gray";
+} else if (variant.stock_quantity < 20) {
+    stockInfoElement.textContent = `Sắp hết hàng (${quantity} sản phẩm)`;
+    stockInfoElement.style.color = "orange";
+} else {
+    stockInfoElement.textContent = `Còn hàng (${quantity} sản phẩm)`;
+    stockInfoElement.style.color = "green";
+}
+
                     document.getElementById("variant-price").textContent =
                         new Intl.NumberFormat('vi-VN').format(variant.price) + " VNĐ";
                     document.getElementById("addToCartButton").disabled = false;
@@ -618,6 +646,7 @@
                     });
                 } else {
                     // Reset nếu không có biến thể
+                    document.getElementById("overall-stock-status").style.display = "block";
                     document.getElementById("variant_id").value = "";
                     document.getElementById("stock-info").textContent = "";
                     document.getElementById("variant-price").textContent = "";

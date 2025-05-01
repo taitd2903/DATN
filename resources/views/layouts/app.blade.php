@@ -169,7 +169,7 @@
                                 </li>
                                 <li>
                                     <a href="{{ route('returns.index') }}">
-                                        <i class="fas fa-user-shield"></i> Đơn hoàn
+                                        <i class="fas fa-user-shield"></i> Yêu cầu hoàn hàng
                                     </a>
                                 </li>
                                 <li>

@@ -3,80 +3,70 @@
 @section('content')
     <div class="container mt-4">
 
-        <h1 class="mb-4 text-center">📊 Thống kê</h1>
+        <h1 class="mb-4 text-center">Thống kê</h1>
         <div class="mb-3">
             <!-- <a href="{{ route('admin.statistics.index') }}" class="btn btn-secondary">
                  sang trang sơ đồ thống kê 
             </a> -->
         </div>
-        <form method="GET" action="{{ route('admin.statistics.profit') }}" class="mb-4">
-        <input type="hidden" name="tab" id="currentTab" value="{{ request('tab', 'bieudo-profit') }}">
-
-            <div class="row">
-                <div class="col-md-3">
-                    <label>Từ ngày:</label>
-                    <input type="date" name="from_date" class="form-control" value="{{ request('from_date') }}">
-                </div>
-                <div class="col-md-3">
-                    <label>Đến ngày:</label>
-                    <input type="date" name="to_date" class="form-control" value="{{ request('to_date') }}">
-                </div>
-                <div class="col-md-3">
-                    <label>Tên sản phẩm:</label>
-                    <input type="text" name="product_name" class="form-control" placeholder="Nhập tên sản phẩm" value="{{ request('product_name') }}">
-                </div>
-                <div class="col-md-3">
-                    <label>Danh mục:</label>
-                    <select name="category_id" class="form-control">
-                        <option value="">Tất cả danh mục</option>
-                        @foreach ($categories as $category)
-                            <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
-                                {{ $category->name }}
-                            </option>
-                
-                            @if ($category->children)
-                                @foreach ($category->children as $child)
-                                    <option value="{{ $child->id }}" {{ request('category_id') == $child->id ? 'selected' : '' }}>
-                                        &nbsp;&nbsp;&nbsp;&nbsp;|__ {{ $child->name }}
-                                    </option>
-                
-                                    @if ($child->children)
-                                        @foreach ($child->children as $grandchild)
-                                            <option value="{{ $grandchild->id }}" {{ request('category_id') == $grandchild->id ? 'selected' : '' }}>
-                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|____ {{ $grandchild->name }}
-                                            </option>
-                                        @endforeach
-                                    @endif
-                                @endforeach
-                            @endif
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="row mt-3">
-    <div class="col-md-3">
-        <label>ID đơn hàng:</label>
-        <input type="text" name="order_id" class="form-control" placeholder="Nhập ID đơn hàng" value="{{ request('order_id') }}">
-    </div>
-    <div class="col-md-3">
-        <label>Giới tính:</label>
-        <select name="gender" class="form-control">
-            <option value="">Tất cả</option>
-            <option value="male" {{ request('gender') == 'male' ? 'selected' : '' }}>Nam</option>
-            <option value="female" {{ request('gender') == 'female' ? 'selected' : '' }}>Nữ</option>
-            <option value="unisex" {{ request('gender') == 'unisex' ? 'selected' : '' }}>Unisex</option>
-        </select>
-    </div>
-    <div class="col-md-6 d-flex align-items-end justify-content-end">
-        <button type="submit" class="btn btn-primary">🔍 Lọc dữ liệu</button>
-    </div>
-</div>
-
-            </div>
-
-     
-            
-        </form>
+        <form method="GET" action="{{ route('admin.statistics.profit') }}" 
+        class="mb-4 p-3 bg-white shadow-sm rounded sticky-top" style="top: 0; z-index: 1020;">
+      <input type="hidden" name="tab" id="currentTab" value="{{ request('tab', 'bieudo-profit') }}">
+  
+      <div class="row g-2 align-items-end">
+          <div class="col-md-2">
+              <label>Từ ngày:</label>
+              <input type="date" name="from_date" class="form-control" value="{{ request('from_date') }}">
+          </div>
+          <div class="col-md-2">
+              <label>Đến ngày:</label>
+              <input type="date" name="to_date" class="form-control" value="{{ request('to_date') }}">
+          </div>
+          <div class="col-md-2">
+              <label>Sản phẩm:</label>
+              <input type="text" name="product_name" class="form-control" placeholder="Tên sản phẩm" value="{{ request('product_name') }}">
+          </div>
+          <div class="col-md-2">
+              <label>Danh mục:</label>
+              <select name="category_id" class="form-control">
+                  <option value="">Tất cả</option>
+                  @foreach ($categories as $category)
+                      <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                          {{ $category->name }}
+                      </option>
+                      @if ($category->children)
+                          @foreach ($category->children as $child)
+                              <option value="{{ $child->id }}" {{ request('category_id') == $child->id ? 'selected' : '' }}>
+                                  &nbsp;&nbsp;&nbsp;&nbsp;|__ {{ $child->name }}
+                              </option>
+                              @if ($child->children)
+                                  @foreach ($child->children as $grandchild)
+                                      <option value="{{ $grandchild->id }}" {{ request('category_id') == $grandchild->id ? 'selected' : '' }}>
+                                          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|____ {{ $grandchild->name }}
+                                      </option>
+                                  @endforeach
+                              @endif
+                          @endforeach
+                      @endif
+                  @endforeach
+              </select>
+          </div>
+          <div class="col-md-2">
+              <label>Giới tính:</label>
+              <select name="gender" class="form-control">
+                  <option value="">Tất cả</option>
+                  <option value="male" {{ request('gender') == 'male' ? 'selected' : '' }}>Nam</option>
+                  <option value="female" {{ request('gender') == 'female' ? 'selected' : '' }}>Nữ</option>
+                  <option value="unisex" {{ request('gender') == 'unisex' ? 'selected' : '' }}>Unisex</option>
+              </select>
+          </div>
+          <div class="col-md-2 text-end">
+              <button type="submit" class="btn btn-primary w-100">🔍 Lọc dữ liệu</button>
+          </div>
+      </div>
+  </form>
+  
+  
         <!-- biểu đồ -->
         <!-- <canvas id="monthlyProfitChart" height="100"></canvas>
         <div class="bieudo">
@@ -439,6 +429,62 @@
                  
                 </div>
             </div>
+            <!-- Thống kê hoàn hàng -->
+<div class="tab-pane fade {{ request('tab') == 'return-stats' ? 'show active' : '' }}" id="return-stats">
+    <h2 class="text-center">Thống kê hoàn hàng</h2>
+    <br>
+    <div class="return-statistics">
+        <h4 class="text-center">Tổng quan</h4>
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h6>Tổng số đơn hàng</h6>
+                        <p>{{ $totalAllOrders ?? 0 }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h6>Tổng số yêu cầu hoàn hàng</h6>
+                        <p>{{ $returnStats['total_return_orders'] ?? 0 }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h6>Tỷ lệ hoàn hàng</h6>
+                        <p>{{ number_format($returnStats['return_order_rate'] ?? 0, 2) }}%</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h6>Phân bố trạng thái</h6>
+                        <ul class="list-unstyled">
+                            <li>Đang chờ: {{ $returnStats['return_by_status']['pending'] ?? 0 }}</li>
+                            <li>Đã duyệt: {{ $returnStats['return_by_status']['approved'] ?? 0 }}</li>
+                            <li>Từ chối: {{ $returnStats['return_by_status']['rejected'] ?? 0 }}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h6>Tổng số tiền đã hoàn</h6>
+                        <p>{{ number_format($returnStats['total_refunded_amount'] ?? 0, 0, ',', '.') }} VNĐ</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
         </div>
     </div>
 
@@ -519,61 +565,6 @@
                 }
             });
         </script>
-<!-- Thống kê hoàn hàng -->
-<div class="tab-pane fade {{ request('tab') == 'return-stats' ? 'show active' : '' }}" id="return-stats">
-    <h2 class="text-center">Thống kê hoàn hàng</h2>
-    <br>
-    <div class="return-statistics">
-        <h4 class="text-center">Tổng quan</h4>
-        <div class="row mb-4">
-            <div class="col-md-3">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h6>Tổng số đơn hàng</h6>
-                        <p>{{ $totalAllOrders ?? 0 }}</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-3">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h6>Tổng số yêu cầu hoàn hàng</h6>
-                        <p>{{ $returnStats['total_return_orders'] ?? 0 }}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h6>Tỷ lệ hoàn hàng</h6>
-                        <p>{{ number_format($returnStats['return_order_rate'] ?? 0, 2) }}%</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h6>Phân bố trạng thái</h6>
-                        <ul class="list-unstyled">
-                            <li>Đang chờ: {{ $returnStats['return_by_status']['pending'] ?? 0 }}</li>
-                            <li>Đã duyệt: {{ $returnStats['return_by_status']['approved'] ?? 0 }}</li>
-                            <li>Từ chối: {{ $returnStats['return_by_status']['rejected'] ?? 0 }}</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h6>Tổng số tiền đã hoàn</h6>
-                        <p>{{ number_format($returnStats['total_refunded_amount'] ?? 0, 0, ',', '.') }} VNĐ</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
 
 

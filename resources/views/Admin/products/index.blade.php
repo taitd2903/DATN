@@ -2,12 +2,11 @@
 
 @section('content')
 <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <div>
-            <h2>Danh sách sản phẩm</h2>
-            <p class="text-muted">Danh sách tất cả các sản phẩm và biến thể</p>
-        </div>
-        <a href="{{ route('admin.products.create') }}" class="btn btn-primary">Thêm sản phẩm</a>
+ <div class="d-flex justify-content-center align-items-center mb-3">
+    <div class="w-100 text-center">
+        <h2>Danh sách sản phẩm</h2>
+        <p class="text-muted">Danh sách tất cả các sản phẩm và biến thể</p>
+    </div>
     </div>
 
     @if(session('success'))
@@ -50,22 +49,23 @@
     <option value="asc">Tồn kho ít nhất</option>
 </select>
 <button id="reset-filters" class="btn btn-secondary">Reset lọc</button>
+<a href="{{ route('admin.products.create') }}" class="btn btn-primary">Thêm sản phẩm</a>
 
     </div>
 
     <div class="table-responsive">
         <table class="table table-bordered" id="product-table">
-            <thead class="table-dark">
-                <tr>
+            <thead style="background-color: #457DC9; color: white;">
+                <tr class="textprotr">
                     <th>ID</th>
                     <th>Hình ảnh</th>
                     <th>Tên sản phẩm</th>
                     <th>Mô tả</th>
                     <th>Danh mục</th>
                     <th>Giới tính</th>
-                    <th>Số lượng tồn kho</th>
+                    <th>Tồn kho</th>
                     <th>Đã bán </th>
-                    <th>Số biến thể</th>
+                    <th>Biến thể</th>
                     <th>Hành động</th>
                 </tr>
             </thead>

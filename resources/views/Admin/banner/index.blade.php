@@ -13,9 +13,10 @@
     <div class="alert alert-success">{{ session('success') }}</div>
 @endif
 
+
 <table class="table table-bordered">
-    <thead>
-        <tr>
+    <thead class="textprotr">
+        <tr >
             <th>#</th>
             <th>Hình ảnh</th>
             <th>Tiêu đề</th>
