@@ -576,7 +576,7 @@ ol {
 .footer {
 	background: #111111;
 	padding-top: 70px;
-    margin-top: 30%;
+    /* margin-top: 30%; */
 }
 
 .footer__about {

@@ -33,10 +33,10 @@
         <label class="form-label">Liên kết</label>
         <input type="url" name="link" class="form-control">
     </div>
-    <div class="form-check">
+    <!-- <div class="form-check">
         <input type="checkbox" name="is_active" value="1" class="form-check-input">
         <label class="form-check-label">Hiển thị banner</label>
-    </div>
-    <button type="submit" class="btn btn-success mt-3">Lưu</button>
+    </div> -->
+    <button type="submit" class="btn btn-success mt-3">Thêm mới</button>
 </form>
 @endsection

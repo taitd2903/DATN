@@ -145,7 +145,8 @@
                                         </div>
 
                                         <div class="product__item__text">
-                                            <h6>{{ $product->name }}</h6>
+                                        <h6>{{ Str::limit($product->name, 30) }}</h6>
+
                                             <a href="{{ route('products.show', $product->id) }}" class="add-cart"
                                                 style="text-decoration: none">Xem chi tiết</a>
                                             @php
