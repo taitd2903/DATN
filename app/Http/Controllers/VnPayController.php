@@ -561,10 +561,10 @@ class VnPayController extends Controller
                 $order->update(['payment_status' => 'Đã thanh toán', 'status' => 'Chờ xác nhận']);
 
                 // Xóa các đơn hàng "Chưa thanh toán" khác của user
-                Order::where('user_id', $order->user_id)
-                    ->where('payment_status', 'Chưa thanh toán')
-                    ->where('id', '<>', $order->id)
-                    ->delete();
+                // Order::where('user_id', $order->user_id)
+                //     ->where('payment_status', 'Chưa thanh toán')
+                //     ->where('id', '<>', $order->id)
+                //     ->delete();
 
                 // Ghi lại việc sử dụng mã giảm giá
                 $appliedCoupons = $request->session()->get('applied_coupons_for_vnpay', []);
