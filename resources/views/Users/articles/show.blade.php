@@ -39,7 +39,7 @@
                             </ul>
                         </div> -->
                         <div class="blog__details__text">
-                        <p><strong>Slug:</strong> {{ $article->slug }}</p>
+                        <!-- <p><strong>Slug:</strong> {{ $article->slug }}</p> -->
                         <!-- <p><strong>Mô tả:</strong> {{ $article->description }}</p> -->
                         </div>
                         <div class="blog__details__quote">

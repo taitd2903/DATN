@@ -210,7 +210,7 @@
                         <div id="sizeGuideModal" class="modal">
                             <div class="modal-content">
                                 <span class="close" onclick="closeSizeGuide()">&times;</span>
-                                <img src="../assets/img/bangsize.jpg" alt="Bảng size áo nữ">
+                                <img src="../assets/img/bang-size-quan-ao.jpg" alt="Bảng size áo nữ">
                             </div>
                         </div>
     
