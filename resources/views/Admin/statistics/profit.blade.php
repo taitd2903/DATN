@@ -1,6 +1,7 @@
 @extends('layouts.layout')
 
 @section('content')
+@if (Auth::user()->role === 'admin')
     <div class="container mt-4">
 
         <h1 class="mb-4 text-center">Thống kê</h1>
@@ -483,6 +484,12 @@
             </div>
         </div>
     </div>
+    @else
+    <script>
+        alert("bạn không có quyền truy cập! vui lòng liên hệ với admin.")
+        window.history.back();
+    </script>
+@endif
 </div>
 
         </div>
