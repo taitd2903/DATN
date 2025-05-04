@@ -46,10 +46,10 @@ class StatisticsController extends Controller
         $ordersQuery = Order::where('status', 'Hoàn thành')->with('orderItems');
 
         if ($from) {
-            $ordersQuery->whereDate('created_at', '>=', $from);
+            $ordersQuery->whereDate('complete_ship', '>=', $from);
         }
         if ($to) {
-            $ordersQuery->whereDate('created_at', '<=', $to);
+            $ordersQuery->whereDate('complete_ship', '<=', $to);
         }
         if ($orderId) {
             $ordersQuery->where('id', $orderId);
