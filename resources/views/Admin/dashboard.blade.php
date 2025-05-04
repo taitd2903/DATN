@@ -18,7 +18,7 @@
                     @endif
 
                     <div class="d-flex justify-content-between align-items-center my-3">
-                        <a href="{{ route('users.dashboard') }}" class="btn btn-outline-info">
+                        <a href="{{ route('home') }}" class="btn btn-outline-info">
                             <i class="bi bi-box-arrow-right"></i> Chuyển sang giao diện người dùng
                         </a>
 
