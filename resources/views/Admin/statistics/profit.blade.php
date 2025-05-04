@@ -3,8 +3,6 @@
 @section('content')
 @if (Auth::user()->role === 'admin')
     <div class="container mt-4">
-
-        <h1 class="mb-4 text-center">Thống kê</h1>
         <div class="mb-3">
             <!-- <a href="{{ route('admin.statistics.index') }}" class="btn btn-secondary">
                  sang trang sơ đồ thống kê 
