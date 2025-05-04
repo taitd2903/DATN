@@ -315,53 +315,58 @@ $returnChartData = $this->getReturnStatisticsByTime($request);
         $categoryId = $request->input('category_id');
         $orderId = $request->input('order_id');
         $gender = $request->input('gender');
-        $ordersQuery = Order::where('status', 'Hoàn thành')->with('orderItems');
-
+    
+        $ordersQuery = Order::where('status', 'Hoàn thành')
+            ->whereNotNull('complete_ship')
+            ->with('orderItems');
+    
         if ($from) {
-            $ordersQuery->whereDate('created_at', '>=', $from);
+            $ordersQuery->whereDate('complete_ship', '>=', $from);
         }
         if ($to) {
-            $ordersQuery->whereDate('created_at', '<=', $to);
+            $ordersQuery->whereDate('complete_ship', '<=', $to);
         }
         if ($orderId) {
             $ordersQuery->where('id', $orderId);
         }
-
+    
         $orders = $ordersQuery->get();
         $monthlyProfits = [];
-
+    
         foreach ($orders as $order) {
             $orderRevenue = 0;
             $orderCost = 0;
-
+    
             foreach ($order->orderItems as $item) {
                 $variant = ProductVariant::find($item->variant_id);
                 $product = Product::find($item->product_id);
                 if (!$variant || !$product) continue;
-    if ($gender && $product->gender !== $gender) {
-        continue;
-    }
+    
+                if ($gender && $product->gender !== $gender) {
+                    continue;
+                }
+    
                 if ($productName && stripos($product->name, $productName) === false) {
                     continue;
                 }
-
+    
                 if ($categoryId) {
                     $categoryIds = Category::getDescendantsAndSelfIds($categoryId);
                     if (!in_array($product->category_id, $categoryIds)) {
                         continue;
                     }
                 }
-
+    
                 $itemRevenue = $item->price * $item->quantity;
                 $itemCost = $item->original_price * $item->quantity;
-
+    
                 $orderRevenue += $itemRevenue;
                 $orderCost += $itemCost;
             }
-
+    
             $profit = $orderRevenue - $orderCost;
-            $monthKey = $order->created_at->format('Y-m');
-
+            $monthKey = \Carbon\Carbon::parse($order->complete_ship)->format('Y-m');
+    
             if (!isset($monthlyProfits[$monthKey])) {
                 $monthlyProfits[$monthKey] = [
                     'month' => $monthKey,
@@ -370,16 +375,17 @@ $returnChartData = $this->getReturnStatisticsByTime($request);
                     'profit' => 0,
                 ];
             }
-
+    
             $monthlyProfits[$monthKey]['revenue'] += $orderRevenue;
             $monthlyProfits[$monthKey]['cost'] += $orderCost;
             $monthlyProfits[$monthKey]['profit'] += $profit;
         }
-
+    
         ksort($monthlyProfits);
-
+    
         return response()->json(array_values($monthlyProfits));
     }
+    
 
 
 
