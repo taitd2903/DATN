@@ -212,10 +212,10 @@
             <div class="col-lg-3 col-md-6 col-sm-6">
                 <div class="footer__about">
                     <div class="footer__logo">
-                        <a href="#"><img src="assets/img/logoo.png" alt=""></a>
+                        <a href="#"><img src="/assets/img/logoo.png" alt=""></a>
                     </div>
                     <p>Khách hàng là trung tâm trong mô hình kinh doanh độc đáo của chúng tôi, bao gồm cả thiết kế.</p>
-                    <a href="#"><img src="assets/img/payment.png" alt=""></a>
+                    <!-- <a href="#"><img src="/assets/img/payment.png" alt=""></a> -->
                 </div>
             </div>
 
