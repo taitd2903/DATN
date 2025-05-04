@@ -120,16 +120,18 @@
                                     @method('PUT')
                                     <input type="hidden" name="page" value="{{ request('page') }}">
                                     <select name="status" class="form-control status-select mt-2"
-                                        onchange="this.form.submit()">
-                                        @foreach ($statusOptions as $status)
-                                            @if ($status !== 'Hoàn thành')
-                                                <option value="{{ $status }}"
-                                                    {{ $order->status === $status ? 'selected' : '' }}>
-                                                    {{ $status }}
-                                                </option>
-                                            @endif
-                                        @endforeach
-                                    </select>
+                                    onchange="this.form.submit()"
+                                    @if ($order->payment_method === 'vnpay' && $order->payment_status === 'Chưa thanh toán') disabled @endif>
+                                    @foreach ($statusOptions as $status)
+                                        @if ($status !== 'Hoàn thành')
+                                            <option value="{{ $status }}"
+                                                {{ $order->status === $status ? 'selected' : '' }}>
+                                                {{ $status }}
+                                            </option>
+                                        @endif
+                                    @endforeach
+                                </select>
+                                
                                 </form>
                             </div>
                         @endif
