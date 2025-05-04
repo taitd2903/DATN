@@ -342,7 +342,7 @@
             @empty
                 <div class="text-center py-5" id="noOrders">
                     <i class="fas fa-shopping-bag fa-4x text-muted mb-3"></i>
-                    <p class="text-muted fs-4">Bạn chưa có đơn hàng nào!</p>
+                    <p class="text-muted fs-4">Bạn chưa có đơn hoàn nào!</p>
                     <a href="{{ route('home') }}" class="btn btn-primary px-5 py-3">Mua sắm ngay</a>
                 </div>
             @endforelse
