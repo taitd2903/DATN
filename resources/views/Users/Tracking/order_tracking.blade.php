@@ -178,7 +178,7 @@
                                 @if ($order->payment_method == 'cod')
                                     <form action="{{ route('order.cancel', $order->id) }}" method="POST" class="d-inline">
                                         @csrf
-                                        <button type="submit" class="btn btn-danger btn-sm px-4 py-2">
+                                        <button type="submit" class="btn btn-danger btn-sm px-4 py-2"   onclick="return confirm('Bạn chắc chắn hủy đơn không?')">
                                             <i class="fas fa-times me-2"></i> Hủy đơn
                                         </button>
                                     </form>
