@@ -22,7 +22,7 @@ class ArticleController extends Controller {
     public function store(Request $request)
     {
         $data = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:articles,name',
             'slug' => 'nullable|string|max:255|unique:articles,slug',
             'image' => 'nullable|image|max:2048',
             'description' => 'nullable|string',

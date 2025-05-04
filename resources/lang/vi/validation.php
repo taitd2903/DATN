@@ -11,7 +11,7 @@ return [
     'in' => ':attribute không hợp lệ.',
 
     'attributes' => [
-        'name' => 'Họ tên',
+        'name' => 'Tên',
         'email' => 'Email',
         'password' => 'Mật khẩu',
         'gender' => 'Giới tính',
