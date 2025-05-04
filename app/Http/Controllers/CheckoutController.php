@@ -652,9 +652,53 @@ class CheckoutController extends Controller
 
     public function show(Order $order)
     {
-        return view('admin.orders.show', compact('order'));
-    }
+        if (in_array($order->status ,[ 'Đã giao hàng thành công','Từ chối hoàn hàng'])) {
+            if (Carbon::parse($order->complete_ship)->addDays(7)->lte(now())) {
+                $order->status = 'Hoàn thành';
+                $order->completed_at = now();
+                $order->completed_by = $order->completed_by ?? Auth::id();
+                $order->save();
+    
+                return redirect()->back()->with('success', 'Đơn hàng đã tự động được xác nhận sau 7 ngày.');
+            }
+            if (
+                $order->payment_method === 'vnpay'
+                && $order->payment_status === 'Chưa thanh toán'
+                && $order->status !== 'Hủy' // ✅ Tránh xử lý lại
+                && Carbon::parse($order->created_at)->addMinutes(30)->lte(now())
+            ) {
+                foreach ($order->orderItems as $item) {
+                    $variant = $item->variant;
+                    if ($variant) {
+                        $variant->stock_quantity += $item->quantity;
+                        $variant->sold_quantity -= $item->quantity;
+                        $variant->save();
+                    } else {
+                        $product = $item->product;
+                        if ($product) {
+                            $product->stock_quantity += $item->quantity;
+                            $product->sold_quantity -= $item->quantity;
+                            $product->save();
+                        }
+                    }
+                }
+            
+                $order->status = 'Hủy'; // ✅ Đảm bảo 'Hủy' nằm trong ENUM
+            
+                $order->save();
+            
+                session()->flash('info', 'Đơn hàng vnpay đã bị hủy do quá thời gian thanh toán.');
+            }
+            
+            $order->status = 'Hoàn thành';
+            $order->completed_at = now();
+            $order->completed_by = Auth::id();
+            $order->save();
+    
+      
+    }        return view('admin.orders.show', compact('order'));
 
+}
 
 
     // ===================== Function này của Đạt, cấm động ====================== //
