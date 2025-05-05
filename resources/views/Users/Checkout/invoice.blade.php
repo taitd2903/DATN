@@ -71,7 +71,7 @@
                                             {{ $order->updated_at->format('d/m/Y H:i') }}</div>
                                       
                                         <div><strong>🕒 Thời gian nhận hàng:</strong> {{ $order->complete_ship }}</div>
-                                        <div><strong>🕒 Thời gian hoàn hàng:</strong> {{ $order->complete_ship }}</div>
+                                       
 
 
                                         <!-- Hiển thị mã giảm giá -->
@@ -179,7 +179,7 @@
                                 </a>
                             @endif
                 <div class="mt-5 d-flex justify-content-between">
-                    <a href="{{ route('home') }}" class="btn btn-outline-dark btn-lg px-4">
+                    <a href="{{ route('order.tracking') }}" class="btn btn-outline-dark btn-lg px-4">
                         <i class="fas fa-arrow-left me-2"></i> Quay lại
                     </a>
                     @if (($order->payment_method ?? '') == 'vnpay' && ($status ?? '') == 'Thất bại')

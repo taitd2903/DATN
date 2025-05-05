@@ -578,7 +578,10 @@ class CheckoutController extends Controller
         if ($oldStatus === 'Hủy') {
             return redirect()->route('admin.orders.index')->with('error', 'Đơn hàng đã bị huỷ và không thể cập nhật trạng thái!');
         }
-
+        if ($newStatus === 'Đã giao hàng thành công') {
+            $order->complete_ship = now();
+            $order->save();
+        }
         // Nếu chuyển trạng thái sang "Hủy", hoàn lại hàng vào kho
         if ($newStatus === 'Hủy') {
             foreach ($order->orderItems as $item) {
@@ -690,10 +693,6 @@ class CheckoutController extends Controller
                 session()->flash('info', 'Đơn hàng vnpay đã bị hủy do quá thời gian thanh toán.');
             }
             
-            $order->status = 'Hoàn thành';
-            $order->completed_at = now();
-            $order->completed_by = Auth::id();
-            $order->save();
     
       
     }        return view('admin.orders.show', compact('order'));
